@@ -22,6 +22,7 @@ import {
   markComplete,
   markFailed,
   patchCheckpoint,
+  saveCheckpoint,
 } from './checkpoint.js';
 import { store } from '../core/store.js';
 import { emit } from '../core/events.js';
@@ -94,7 +95,10 @@ export async function runResumableJob(options) {
   const isResume = !!cp;
 
   if (!cp) {
-    cp = createCheckpoint({ phase, label, total: unitsWithRequired.length, input });
+    // Checkpoint harus ada di storage sebelum unit pertama dimulai. Tanpa ini,
+    // patchCheckpoint() tidak menemukan record baru dan progress tidak pernah
+    // bisa di-resume setelah koneksi atau tab terputus.
+    cp = saveCheckpoint(createCheckpoint({ phase, label, total: unitsWithRequired.length, input }));
   } else {
     cp = patchCheckpoint(cp.id, {
       status: 'running',

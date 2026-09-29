@@ -10,6 +10,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { describeJobFailure } from '../src/phases/phase1.js';
+import { classifyError, isFatalError, isRateLimitError } from '../src/services/ai-client.js';
 import { friendlyError } from '../src/services/json.js';
 import { createCheckpoint, saveCheckpoint } from '../src/recovery/checkpoint.js';
 
@@ -91,4 +92,11 @@ test('friendlyError menangani input kosong tanpa melempar', () => {
   assert.doesNotThrow(() => friendlyError(''));
   assert.doesNotThrow(() => friendlyError(null));
   assert.doesNotThrow(() => friendlyError(undefined));
+});
+
+test('kuota tidak dianggap rate-limit yang layak dicoba ulang', () => {
+  const err = new Error('Insufficient credits / quota exceeded');
+  assert.equal(isRateLimitError(err.message), false);
+  assert.equal(isFatalError(err), true);
+  assert.equal(classifyError(err), 'quota');
 });

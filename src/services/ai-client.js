@@ -24,9 +24,9 @@ const DEFAULT_COMPLETION_FEEDBACK =
 // Re-export supaya konsumen cukup mengimpor dari satu modul.
 export { friendlyError };
 
-/** Deteksi pesan error rate-limit / kuota. */
+/** Deteksi rate-limit sementara yang layak dicoba ulang. */
 export function isRateLimitError(message) {
-  return /429|too many|rate[\s_-]?limit|quota/i.test(String(message || ''));
+  return /429|too many|rate[\s_-]?limit/i.test(String(message || ''));
 }
 
 /** Deteksi error yang tidak akan hilang dengan mencoba ulang. */
@@ -39,11 +39,11 @@ export function isFatalError(error) {
 /** Klasifikasi error untuk pesan yang tepat sasaran ke pengguna. */
 export function classifyError(error) {
   const msg = String(error?.message || '');
+  if (/quota|insufficient credits/i.test(msg)) return 'quota';
   if (isRateLimitError(msg)) return 'rate-limit';
   if (/timeout|aborted|etimedout/i.test(msg)) return 'timeout';
   if (/failed to fetch|network|load failed|cors/i.test(msg)) return 'network';
   if (/api[ _-]?key|unauthorized|403|401|authentication/i.test(msg)) return 'auth';
-  if (/quota|insufficient credits/i.test(msg)) return 'quota';
   if (/json/i.test(msg)) return 'invalid-json';
   if (error?.status) return 'http';
   return 'unknown';
