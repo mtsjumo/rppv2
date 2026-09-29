@@ -806,3 +806,146 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ===== WORKSPACE REFRESH ===== */
+:root {
+  --pink: #bf3f5f;
+  --pink-dark: #963149;
+  --pink-light: #f9e7eb;
+  --blue: #16749a;
+  --blue-light: #e3f2f5;
+  --blue-dark: #105c7b;
+  --green: #207a5a;
+  --green-light: #e2f3eb;
+  --orange: #b96523;
+  --orange-light: #fff0df;
+  --red: #ba3a3a;
+  --red-light: #fce9e9;
+  --amber: #9b650f;
+  --amber-light: #fff5dd;
+  --text: #193137;
+  --text-secondary: #5b6e72;
+  --border: #d0dcde;
+  --bg: #f3f7f7;
+  --shadow: 0 2px 8px rgba(25, 49, 55, 0.1);
+}
+
+.app-header {
+  background: #153f45;
+  padding: 14px max(20px, calc((100vw - 1240px) / 2));
+  box-shadow: 0 2px 12px rgba(16, 47, 52, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.app-header h1 { font-size: 1.08rem; line-height: 1.2; }
+.app-header h1 span { color: #c9dcde; font-size: 0.78rem; }
+.app-header .header-actions { margin-top: 0; }
+.app-header .btn-outline { color: #eef8f8; border-color: #56777b; }
+.app-header .btn-outline:hover { background: #29565c; }
+
+.main-container { max-width: 1240px; padding: 28px 24px 44px; }
+.workspace-intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 2px 2px 22px;
+}
+.workspace-kicker {
+  color: var(--blue);
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.workspace-intro h2 {
+  margin-top: 4px;
+  font-size: 1.45rem;
+  line-height: 1.25;
+  color: var(--text);
+}
+.workspace-note {
+  flex: none;
+  border: 1px solid #c8dadd;
+  background: #edf6f7;
+  color: #38636a;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.card {
+  border: 1px solid #dce6e7;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(25, 49, 55, 0.04);
+  padding: 28px;
+  margin-bottom: 20px;
+}
+.card-title {
+  color: var(--text);
+  font-size: 1.2rem;
+  border-bottom-color: #dfe9ea;
+}
+.settings-panel { border: 1px solid #dce6e7; box-shadow: 0 1px 2px rgba(25, 49, 55, 0.04); }
+.settings-toggle { background: #edf6f7; color: #27565e; }
+.settings-toggle:hover { background: #dfeff1; }
+.form-input, .form-select, .form-textarea { border-color: #cbd9db; padding: 9px 12px; }
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px #dceff2;
+}
+
+.wizard-progress {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.wizard-step {
+  text-align: left;
+  padding: 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: #eaf0f0;
+}
+.wizard-step.active { background: #153f45; color: var(--white); }
+.wizard-step.done { border-color: #badfcf; }
+.wizard-step .step-num { border-radius: 6px; }
+
+.form-section {
+  border: 1px solid #e0e9ea;
+  border-left: 3px solid #8ab9c0;
+  border-radius: 6px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.form-section-title { color: #27565e; font-size: 0.9rem; margin-bottom: 12px; }
+.form-actions { margin-top: 20px; padding-top: 18px; border-top: 1px solid #e2eaeb; }
+.form-actions .btn-lg { min-width: 260px; justify-content: center; }
+.phase-status { border-radius: 6px; }
+.progress-container { margin: 18px 0; padding: 18px; background: #f8fbfb; border-color: #d8e7e8; border-radius: 6px; }
+.progress-bar-fill { background: var(--blue); }
+.preview-empty { padding: 56px 20px; border: 1px dashed #cbd9db; border-radius: 6px; background: #f8fbfb; }
+.export-bar { background: #eef5f5; border-radius: 6px; }
+
+@media (max-width: 768px) {
+  .app-header { align-items: flex-start; flex-direction: column; padding: 12px 14px; }
+  .header-actions { width: 100%; }
+  .main-container { padding: 18px 14px 32px; }
+  .card { padding: 18px; }
+  .workspace-intro { align-items: flex-start; flex-direction: column; }
+  .wizard-progress { gap: 5px; }
+  .wizard-step { padding: 8px 6px; }
+  .wizard-step .step-num { margin-right: 3px; }
+  .form-section { padding: 14px; }
+}
+
+@media (max-width: 480px) {
+  .wizard-step { font-size: 0.68rem; padding: 7px 4px; }
+  .wizard-step .step-num { display: none; }
+  .workspace-intro h2 { font-size: 1.18rem; }
+  .workspace-note { font-size: 0.7rem; }
+}
