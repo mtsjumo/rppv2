@@ -1,0 +1,787 @@
+{
+  "rpp": {
+    "identitas": {
+      "namaMadrasah": "MTs Ulfa Pranggong",
+      "namaGuru": "Siti Nafisah, S.Pd.I",
+      "mataPelajaran": "Ilmu Pengetahuan Alam (IPA)",
+      "faseKelasSemester": "D/VIII/1",
+      "alokasiWaktu": "2 X 40 Menit"
+    },
+    "identifikasi": {
+      "pesertaDidik": "Peserta didik kelas VIII MTs Ulfa Pranggong umumnya telah mengetahui bahwa tubuh makhluk hidup itu tersusun dari sel, namun masih perlu bimbingan untuk lebih memahami dan memperdalam materi. Kesiapan belajar cukup baik, terutama jika materi disajikan melalui kegiatan pengamatan langsung, diskusi kelompok, dan penggunaan media visual yang menarik.",
+      "materiPelajaran": "Sel hewan dan sel tumbuhan",
+      "dimensiProfilLulusan": [
+        "Keimanan dan ketakwaan terhadap Tuhan yang Maha Esa",
+        "Penalaran Kritis",
+        "Kolaborasi",
+        "Kreativitas",
+        "Komunikasi"
+      ],
+      "temaKurikulumCinta": ["Cinta Allah dan Rasul-Nya", "Cinta kepada diri sendiri"],
+      "materiIntegrasiKBC": [
+        "Bersyukur atas ciptaan Allah berupa alam semesta sebagai rahmat bagi manusia.",
+        "Membiasakan diri menjaga kebersihan, kesehatan dan keselamatan diri sebagai bentuk Syukur dan tanggung jawab terhadap tubuh yang Allah SWT anugerahkan."
+      ]
+    },
+    "desainPembelajaran": {
+      "capaianPembelajaran": "Pada akhir fase D, peserta didik mampu mendeskripsikan sel sebagai unit terkecil penyusun makhluk hidup dan mampu menganalisis organel sel dan perbedaan sel hewan dan sel tumbuhan",
+      "lintasDisiplinIlmu": [
+        { "nama": "Pendidikan Agama Islam", "detail": "syukur terhadap ciptaan Allah" },
+        {
+          "nama": "Bahasa Indonesia",
+          "detail": "kemampuan mengkomunikasikan dan mempresentasikan hasil diskusi secara lisan"
+        }
+      ],
+      "tujuanPembelajaran": [
+        "Peserta didik mampu mendeskripsikan tentang organel sel hewan dan sel tumbuhan.",
+        "Peserta didik mampu menganalisa perbedaan antara sel hewan dan sel tumbuhan."
+      ],
+      "topikPembelajaran": ["Sel hewan dan sel tumbuhan.", "Perbedaan sel hewan dan sel tumbuhan."],
+      "praktekPedagogis": {
+        "modelPembelajaran": "Problem Based Learning",
+        "sintaksDiscoveryLearning": [
+          "Orientasi murid pada masalah.",
+          "Mengorganisasi murid untuk belajar.",
+          "Membimbing penyelidikan individu maupun kelompok.",
+          "Mengembangkan dan menyajikan hasil.",
+          "Menganalisis dan mengevaluasi proses pemecahan masalah."
+        ],
+        "metodePembelajaran": ["Diskusi", "Tanya jawab", "Penugasan", "Presentasi"]
+      },
+      "kemitraanPembelajaran": [
+        {
+          "pihak": "Orang tua/Wali murid",
+          "peran": "Menginformasikan topik pembelajaran dan mendorong orang tua/wali murid untuk mengajak peserta didik memahami tentang penyusun tubuh makhluk hidup."
+        },
+        { "pihak": "Masyarakat", "peran": "Menyediakan lingkungan belajar yang kondusif." }
+      ],
+      "lingkunganPembelajaran": {
+        "ruangFisik": "Ruang kelas yang fleksibel dan kolaboratif.",
+        "budayaBelajar": "Budaya berpikir kritis, budaya kolaboratif dan empatik, budaya literasi dan refleksi.",
+        "penerapanNyata": [
+          {
+            "aspek": "Ruang fisik",
+            "detail": "Identifikasi organel-organel penyusun sel hewan dan sel tumbuhan."
+          },
+          {
+            "aspek": "Budaya belajar",
+            "detail": "Peserta didik melakukan diskusi untuk mendeskripsikan dan menganalisis perbedaan sel hewan dan sel tumbuhan."
+          }
+        ]
+      },
+      "pemanfaatanDigital": [
+        { "tahap": "Perencanaan", "tools": ["Microsoft Word", "Power Point"] },
+        { "tahap": "Pelaksanaan", "tools": ["Video pembelajaran (YouTube)", "Power Point"] }
+      ]
+    },
+    "langkahPembelajaran": {
+      "prinsipDeepLearning": [
+        "Mindful (berkesadaran)",
+        "Meaningful (bermakna)",
+        "Joyful (menyenangkan)"
+      ],
+      "kegiatanAwal": {
+        "durasi": "10 menit",
+        "prinsip": "Berkesan dan bermakna",
+        "langkah": [
+          "Guru mengucapkan salam dan menyapa peserta didik",
+          "Peserta didik berdoa dipimpin ketua kelas (Keimanan dan Ketakwaan terhadap Tuhan YME) (mindful)",
+          "Peserta didik menyanyikan lagu Indonesia Raya",
+          "Guru mengabsen kehadiran siswa",
+          "Guru mengajukan pertanyaan pemantik: Tahukah kalian, tubuh kalian itu tersusun dari benda terkecil yang tidak bisa dilihat oleh mata biasa, benda apakah itu?",
+          "Guru menyampaikan tujuan pembelajaran dan manfaatnya dalam kehidupan (meaningful)",
+          "Guru mengajak peserta didik untuk melakukan ice breaking sebelum pembelajaran dimulai (joyful)"
+        ]
+      },
+      "kegiatanInti": {
+        "durasi": "50 menit",
+        "tahap": [
+          {
+            "nama": "Memahami (bermakna-menggembirakan)",
+            "langkah": [
+              "Guru mengajukan pertanyaan: Apa yang terjadi jika pengeluaran cairan dalam tubuh tidak seimbang? (Sintaks 1: Orientasi murid pada masalah)",
+              "Peserta didik dan guru mendiskusikan permasalahan tersebut dalam diskusi kelas (Penalaran Kritis)",
+              "Peserta didik menyimak video pembelajaran yang ditayangkan guru.",
+              "Guru menjelaskan materi fungsi dan peranan serta struktur organ ekskresi."
+            ]
+          },
+          {
+            "nama": "Mengaplikasi (bermakna-berkesadaran-menggembirakan)",
+            "langkah": [
+              "Peserta didik dibagi menjadi 4 kelompok yang terdiri dari 4-5 orang.",
+              "Guru membagikan LKPD dan masing-masing kelompok memperhatikan petunjuk belajar dalam menyelesaikan LKPD. (Sintaks 2: Mengorganisasi murid untuk belajar)",
+              "Peserta didik mengerjakan LKPD secara berkelompok dengan bimbingan guru. (Kolaboratif dan Kreativitas) (Sintaks 3: Membimbing penyelidikan individu maupun kelompok)"
+            ]
+          },
+          {
+            "nama": "Merefleksi (berkesadaran-bermakna)",
+            "langkah": [
+              "Peserta didik mempresentasikan hasil diskusinya kepada peserta didik lain dan mendapat umpan balik dari guru dan teman. (Komunikasi) (Sintaks 4: Mengembangkan dan menyajikan hasil karya)",
+              "Guru menyampaikan apresiasi terhadap hasil karya peserta didik.",
+              "Peserta didik menjawab kuis digital yang ditayangkan oleh guru.",
+              "Peserta didik menyimpulkan materi pembelajaran dan guru memberikan penguatan. (Sintaks: Menganalisis dan mengevaluasi proses pemecahan masalah)",
+              "Peserta didik mengerjakan soal evaluasi.",
+              "Murid dan guru melakukan kegiatan refleksi pembelajaran: Apa yang kamu pelajari hari ini? Bagaimana perasaanmu dalam menerima materi pembelajaran hari ini? Apakah ada materi yang masih belum di pahami? Bagian mana yang kamu anggap paling sulit?"
+            ]
+          }
+        ]
+      },
+      "kegiatanPenutup": {
+        "durasi": "10 menit",
+        "langkah": [
+          "Guru memberikan penguatan pembelajaran.",
+          "Menyusun rencana topik selanjutnya.",
+          "Guru mengapresiasi semangat murid selama pembelajaran dan mengajak menyanyikan lagu \"Satu Nusa Satu Bangsa\"",
+          "Guru dan murid mengakhiri pembelajaran dan berdoa bersama"
+        ]
+      }
+    },
+    "asesmenPembelajaran": {
+      "asesmenAwal": ["Sudah dilakukan pada awal pembelajaran dengan soal pilihan ganda"],
+      "asesmenProses": ["Diskusi kelompok", "Presentasi kelompok", "LKPD"],
+      "asesmenAkhir": ["Soal evaluasi individu (tes tertulis)"]
+    }
+  },
+  "lampiran": {
+    "lampiran1_tesDiagnostik": {
+      "judul": "Tes diagnostik awal (asesmen awal pembelajaran)",
+      "soal": [
+        {
+          "nomor": 1,
+          "pertanyaan": "Sel merupakan …",
+          "opsi": [
+            "bagian terkecil dari tubuh manusia",
+            "unit terkecil penyusun makhluk hidup",
+            "zat yang menyusun jaringan",
+            "kumpulan organ tubuh"
+          ],
+          "kunci": "B"
+        },
+        {
+          "nomor": 2,
+          "pertanyaan": "Ilmu yang mempelajari tentang sel disebut …",
+          "opsi": ["Bioteknologi", "Anatomi", "Sitologi", "Fisiologi"],
+          "kunci": "C"
+        },
+        {
+          "nomor": 3,
+          "pertanyaan": "Alat optik pertama yang digunakan untuk mengamati sel Adalah …",
+          "opsi": ["Teleskop", "Mikroskop", "Lup", "Kamera"],
+          "kunci": "B"
+        },
+        {
+          "nomor": 4,
+          "pertanyaan": "Siapa ilmuwan yang pertama kali mengamati sel dan memberi nama \"sel\" …",
+          "opsi": ["Robert Brown", "Antonie van Leeuwenhoek", "Charles Darwin", "Robert Hooke"],
+          "kunci": "D"
+        },
+        {
+          "nomor": 5,
+          "pertanyaan": "Di bawah ini yang bukan merupakan bagian dari teori sel Adalah …",
+          "opsi": [
+            "Sel merupakan unit struktural makhluk hidup",
+            "Sel berasal dari benda mati",
+            "Sel merupakan unit fungsional kehidupan",
+            "Semua makhluk hidup tersusun atas sel"
+          ],
+          "kunci": "B"
+        },
+        {
+          "nomor": 6,
+          "pertanyaan": "Robert Hooke disebut sebagai penemu sel karena …",
+          "opsi": [
+            "Membuat teori evolusi",
+            "Menemukan jaringan otot",
+            "Mengamati ruang kosong pada gabus dan menyebutnya \"sel\"",
+            "Menemukan kloroplas pada sel tumbuhan"
+          ],
+          "kunci": "C"
+        },
+        {
+          "nomor": 7,
+          "pertanyaan": "Sel disebut sebagai unit struktural dan fungsional makhluk hidup karena...",
+          "opsi": [
+            "Sel dapat hidup sendiri tanpa organ",
+            "Sel hanya terdapat pada tumbuhan",
+            "Semua makhluk hidup tersusun dari satu atau banyak sel",
+            "Sel dapat bergerak bebas"
+          ],
+          "kunci": "C"
+        },
+        {
+          "nomor": 8,
+          "pertanyaan": "Siapakah yang mengemukakan bahwa semua tumbuhan tersusun atas sel ?",
+          "opsi": [
+            "Robert Hooke",
+            "Antonie van Leeuwenhoek",
+            "Theodor Schwann",
+            "Matthias Schleiden"
+          ],
+          "kunci": "D"
+        },
+        {
+          "nomor": 9,
+          "pertanyaan": "Theodor Schwann adalah ilmuwan yang menyatakan bahwa...",
+          "opsi": [
+            "Sel hanya terdapat pada tumbuhan",
+            "Sel adalah unit terkecil dari kehidupan",
+            "Semua hewan tersusun atas sel",
+            "Sel berasal dari benda mati"
+          ],
+          "kunci": "C"
+        },
+        {
+          "nomor": 10,
+          "pertanyaan": "Ilmuwan yang menyatakan bahwa semua sel berasal dari sel sebelumnya adalah...",
+          "opsi": ["Matthias Schleiden", "Theodor Schwann", "Rudolf Virchow", "Robert Brown"],
+          "kunci": "C"
+        }
+      ],
+      "rubrik": {
+        "aspek": [
+          {
+            "nama": "Pemahaman Konsep Dasar tentang Sel",
+            "indikator": "Siswa dapat menyebutkan pengertian sel dan fungsinya dalam makhluk hidup",
+            "skor": {
+              "0": "Tidak menjawab / jawaban tidak sesuai",
+              "1": "Menjawab tapi belum tepat",
+              "2": "Menjawab dengan tepat"
+            }
+          },
+          {
+            "nama": "Pengetahuan tentang Struktur Sel",
+            "indikator": "Siswa dapat membedakan struktur sel hewan dan tumbuhan",
+            "skor": {
+              "0": "Tidak menjawab / jawaban salah",
+              "1": "Sebagian benar",
+              "2": "Benar dan lengkap"
+            }
+          },
+          {
+            "nama": "Pengetahuan tentang Fungsi Organel Sel",
+            "indikator": "Siswa dapat menjelaskan fungsi organel seperti nukleus, mitokondria, kloroplas, dll.",
+            "skor": {
+              "0": "Tidak tahu fungsi organel",
+              "1": "Menjawab sebagian benar",
+              "2": "Jawaban benar dan sesuai fungsi"
+            }
+          },
+          {
+            "nama": "Identifikasi Ilmuwan dan Alat",
+            "indikator": "Siswa mengetahui siapa penemu sel dan alat yang digunakan",
+            "skor": {
+              "0": "Tidak menjawab / jawaban salah",
+              "1": "Menjawab sebagian benar",
+              "2": "Jawaban benar dan lengkap"
+            }
+          }
+        ],
+        "interpretasi": [
+          {
+            "rentang": "8-10",
+            "kategori": "Tinggi",
+            "tindakLanjut": "Dapat mengikuti pembelajaran langsung ke konsep lanjut"
+          },
+          {
+            "rentang": "5-7",
+            "kategori": "Sedang",
+            "tindakLanjut": "Perlu penguatan konsep dasar di awal pembelajaran"
+          },
+          {
+            "rentang": "0-4",
+            "kategori": "Rendah",
+            "tindakLanjut": "Perlu remedial / pendampingan intensif sebelum pembelajaran utama"
+          }
+        ]
+      }
+    },
+    "lampiran2_lkpd": {
+      "judul": "Lembar Kerja Peserta Didik (LKPD) IPA Kelas 8: Sel Hewan dan Sel Tumbuhan",
+      "identitas": {
+        "mataPelajaran": "Ilmu Pengetahuan Alam (IPA)",
+        "kelasSemester": "VIII / Ganjil",
+        "materiPokok": "Sel Hewan dan Sel Tumbuhan",
+        "alokasiWaktu": "2 x 40 menit",
+        "kompetensiDasar": [
+          "3.1 Mengidentifikasi struktur dan fungsi sel sebagai unit terkecil kehidupan",
+          "3.2 Menyajikan hasil identifikasi struktur dan fungsi sel tumbuhan dan hewan"
+        ]
+      },
+      "tujuanPembelajaran": [
+        "Mengidentifikasi perbedaan struktur sel tumbuhan dan sel hewan.",
+        "Menyajikan hasil pengamatan model atau gambar sel tumbuhan dan sel hewan."
+      ],
+      "aktivitas1_mengenalStrukturSel": {
+        "deskripsi": "Amati gambar berikut (Guru/Media menyajikan gambar sel tumbuhan dan sel hewan secara terpisah).",
+        "tugas": [
+          "Identifikasilah organel sel yang ada pada masing-masing gambar.",
+          "Lengkapi bagian-bagian sel berikut"
+        ],
+        "kunciJawaban": {
+          "selHewan": [
+            "Membran sel",
+            "Nucleus",
+            "Nucleolus",
+            "Vakuola",
+            "Lisosom",
+            "Sitoplasma",
+            "Mitokondria",
+            "Badan golgi",
+            "RE",
+            "Ribosom"
+          ],
+          "selTumbuhan": [
+            "Dinding sel",
+            "Membran sel",
+            "Nucleus",
+            "RE",
+            "Sitoplasma",
+            "Badan golgi",
+            "Mitokondria",
+            "Vakuola",
+            "Kloroplas",
+            "Ribosom"
+          ]
+        }
+      },
+      "aktivitas2_perbandingan": {
+        "deskripsi": "Lengkapilah tabel berikut!",
+        "kolom": ["No", "Struktur/Organel Sel", "Sel Tumbuhan", "Sel Hewan", "Fungsi"],
+        "data": [
+          {
+            "no": 1,
+            "organel": "Dinding sel",
+            "tumbuhan": "Ada",
+            "hewan": "Tidak",
+            "fungsi": "Memberi bentuk tetap, kekuatan, dan perlindungan pada sel tumbuhan."
+          },
+          {
+            "no": 2,
+            "organel": "Membran sel",
+            "tumbuhan": "Ada",
+            "hewan": "Ada",
+            "fungsi": "Mengatur keluar masuknya zat ke dalam dan ke luar sel (sebagai pelindung dan pengatur lalu lintas sel)."
+          },
+          {
+            "no": 3,
+            "organel": "Inti sel (nukleus)",
+            "tumbuhan": "Ada",
+            "hewan": "Ada",
+            "fungsi": "Mengendalikan seluruh aktivitas sel, menyimpan materi genetik (DNA), tempat replikasi dan transkripsi gen."
+          },
+          {
+            "no": 4,
+            "organel": "Kloroplas",
+            "tumbuhan": "Ada",
+            "hewan": "Tidak",
+            "fungsi": "Tempat berlangsungnya fotosintesis."
+          },
+          {
+            "no": 5,
+            "organel": "Vakuola",
+            "tumbuhan": "Ada (besar)",
+            "hewan": "Ada (kecil/banyak)",
+            "fungsi": "Menyimpan air, zat makanan, dan sisa metabolisme."
+          },
+          {
+            "no": 6,
+            "organel": "Lisosom",
+            "tumbuhan": "Tidak",
+            "hewan": "Ada",
+            "fungsi": "Mengandung enzim pencerna untuk menghancurkan zat asing atau bagian sel yang rusak."
+          },
+          {
+            "no": 7,
+            "organel": "Mitokondria",
+            "tumbuhan": "Ada",
+            "hewan": "Ada",
+            "fungsi": "Tempat respirasi sel untuk menghasilkan energi dalam bentuk ATP."
+          },
+          {
+            "no": 8,
+            "organel": "Retikulum Endoplasma",
+            "tumbuhan": "Ada",
+            "hewan": "Ada",
+            "fungsi": "RE Kasar: Mengandung ribosom, berperan dalam sintesis dan transport protein. RE Halus: Sintesis lipid, detoksifikasi zat berbahaya, dan metabolisme karbohidrat."
+          },
+          {
+            "no": 9,
+            "organel": "Ribosom",
+            "tumbuhan": "Ada",
+            "hewan": "Ada",
+            "fungsi": "Tempat sintesis protein."
+          },
+          {
+            "no": 10,
+            "organel": "Sitoplasma",
+            "tumbuhan": "Ada",
+            "hewan": "Ada",
+            "fungsi": "Tempat berlangsungnya reaksi kimia sel dan tempat organel berada."
+          },
+          {
+            "no": 11,
+            "organel": "Badan golgi",
+            "tumbuhan": "Ada",
+            "hewan": "Ada",
+            "fungsi": "Memodifikasi, mengemas, dan mengirim protein atau lipid ke tempat tujuan."
+          },
+          {
+            "no": 12,
+            "organel": "Plastida",
+            "tumbuhan": "Ada",
+            "hewan": "Tidak",
+            "fungsi": "Tempat fotosintesis (kloroplas), penyimpanan pigmen (kromoplas), penyimpanan pati (leukoplas)."
+          }
+        ],
+        "pertanyaanPemahaman": [
+          {
+            "nomor": 1,
+            "pertanyaan": "Apa perbedaan utama antara sel hewan dan sel tumbuhan?",
+            "jawaban": "Perbedaan utama: Sel tumbuhan memiliki dinding sel (selulosa), kloroplas, vakuola besar, bentuk kaku/persegi, tidak memiliki sentriol. Sel hewan tidak memiliki dinding sel & kloroplas, vakuola kecil/banyak, bentuk fleksibel, memiliki sentriol."
+          },
+          {
+            "nomor": 2,
+            "pertanyaan": "Mengapa sel tumbuhan memiliki kloroplas sedangkan sel hewan tidak?",
+            "jawaban": "Sel tumbuhan memiliki kloroplas karena mereka melakukan fotosintesis untuk membuat makanannya sendiri (ototrof). Kloroplas mengandung klorofil yang menangkap cahaya matahari. Sel hewan tidak memiliki kloroplas karena hewan heterotrof (mendapat energi dengan memakan makhluk lain)."
+          },
+          {
+            "nomor": 3,
+            "pertanyaan": "Apa fungsi vakuola besar dalam sel tumbuhan?",
+            "jawaban": "Menyimpan air, nutrisi, zat sisa metabolisme; memberi tekanan turgor untuk menjaga bentuk & kekakuan; mendukung pertumbuhan sel; menyimpan zat pertahanan/beracun."
+          }
+        ]
+      },
+      "penskoranLKPD": {
+        "aktivitas1": "Masing-masing gambar (sel hewan & sel tumbuhan) benar skor 5, total maksimal 10. Nilai = Jumlah skor x 10",
+        "aktivitas2": "Setiap kolom tabel benar skor 1, 10 kolom, total maksimal 10. Nilai = Skor tabel x 10"
+      }
+    },
+    "lampiran3_bahanAjar": {
+      "judul": "Bahan Ajar: Sel Hewan dan Sel Tumbuhan",
+      "bagian": [
+        {
+          "judul": "A. PENGERTIAN SEL",
+          "konten": "Sel pertama kali ditemukan oleh Robert Hooke pada tahun 1665. Ia mengamati sayatan gabus di bawah mikroskop dan melihat adanya ruangan-ruangan kecil yang ia sebut \"sel\". Robert Hooke adalah seorang ilmuwan Inggris yang pada tahun 1665 mengamati irisan tipis gabus di bawah mikroskop yang ia rancang sendiri. Ia melihat adanya struktur seperti sarang lebah, yang terdiri dari ruang-ruang kecil yang ia sebut \"sel\" (dari bahasa Latin \"cellula\" yang berarti kamar kecil). Penemuan Hooke kemudian diikuti oleh ilmuwan lain seperti Antonie van Leeuwenhoek yang berhasil melihat sel hidup (bakteri dan protozoa). Jadi, Sel adalah unit struktural dan fungsional terkecil dari semua makhluk hidup, serta merupakan tempat berlangsungnya fungsi-fungsi kehidupan. Sel juga dapat didefinisikan sebagai unit dasar kehidupan dan blok bangunan kehidupan, karena sel dapat mereplikasi dirinya sendiri."
+        },
+        {
+          "judul": "B. ORGANEL-ORGANEL SEL",
+          "konten": "Organel sel adalah struktur khusus yang melakukan berbagai tugas di dalam sel. Sebenarnya, ini sama halnya dengan organ tubuh kita yang mempunyai fungsi-fungsi tertentu di dalam tubuh manusia. Perbedaannya yaitu kalau organel ada di dalam sel, sedangkan organ ada di dalam tubuh manusia.",
+          "organel": [
+            {
+              "nama": "1. Nukleus (Inti Sel)",
+              "fungsi": "Pusat kendali sel yang menyimpan dan melindungi materi genetik (DNA). Mengatur aktivitas sel, termasuk pembelahan sel dan ekspresi gen.",
+              "struktur": "Terdiri dari membran ganda (membran nukleus), di dalamnya terdapat DNA, RNA, dan nukleolus (berperan dalam pembentukan ribosom)."
+            },
+            {
+              "nama": "2. Dinding sel",
+              "fungsi": "Lapisan luar yang kaku mengelilingi sel pada tumbuhan, bakteri, fungi, alga, dan beberapa archaea. Tidak ditemukan pada sel hewan. Memberi perlindungan, bentuk, dan dukungan struktural. Terdiri dari selulosa, hemiselulosa, dan pektin.",
+              "struktur": ""
+            },
+            {
+              "nama": "3. Membran sel",
+              "fungsi": "Lapisan tipis dan fleksibel membungkus seluruh sel (membran plasma), memisahkan sitoplasma dari lingkungan. Bersifat semipermeabel, mengatur keluar masuk zat dan menjaga keseimbangan internal.",
+              "struktur": ""
+            },
+            {
+              "nama": "4. Sitoplasma",
+              "fungsi": "Bagian sel di antara membran sel dan membran inti (eukariotik) atau di dalam membran sel (prokariotik). Berisi cairan sel (sitoplasma) dan berbagai organel.",
+              "struktur": ""
+            },
+            {
+              "nama": "a) Mitokondria",
+              "fungsi": "\"Pembangkit listrik\" sel. Produksi energi melalui oksidasi zat makanan (glukosa) dan pelepasan ATP. Memiliki membran ganda dengan membran dalam berlekuk (krista).",
+              "struktur": ""
+            },
+            {
+              "nama": "b) Retikulum Endoplasma (RE)",
+              "fungsi": "Sintesis protein, lipid, steroid, dan detoksifikasi sel. Dua jenis: RE kasar (dengan ribosom) dan RE halus (tanpa ribosom). Jaringan membran saling berhubungan meluas di sitoplasma.",
+              "struktur": ""
+            },
+            {
+              "nama": "c) Badan Golgi",
+              "fungsi": "Memproses, memodifikasi, mengemas protein dan lipid dari RE. Penyortiran dan pengiriman produk seluler. Terdiri dari tumpukan kantong pipih (sisterna).",
+              "struktur": ""
+            },
+            {
+              "nama": "d) Lisosom",
+              "fungsi": "Pencernaan intraseluler, menghancurkan partikel asing, mendaur ulang organel rusak (autofagi). Berbentuk kantong berisi enzim hidrolitik.",
+              "struktur": ""
+            },
+            {
+              "nama": "e) Ribosom",
+              "fungsi": "Sintesis protein. Organel non-membran terbuat dari RNA dan protein.",
+              "struktur": ""
+            },
+            {
+              "nama": "f) Vakuola",
+              "fungsi": "Menyimpan air, nutrisi, ion, limbah sel. Pada sel tumbuhan menjaga tekanan turgor. Kantong berisi cairan dibatasi membran tunggal.",
+              "struktur": ""
+            },
+            {
+              "nama": "g) Plastida",
+              "fungsi": "Organel pada tumbuhan dan alga. Berperan dalam fotosintesis dan penyimpanan zat makanan.",
+              "struktur": "",
+              "jenis": [
+                {
+                  "nama": "Kloroplas",
+                  "detail": "Fotosintesis. Mengandung klorofil (pigmen hijau) mengubah air + CO2 jadi gula + O2."
+                },
+                {
+                  "nama": "Kromoplas",
+                  "detail": "Menyimpan & mensintesis pigmen non-klorofil (karotenoid). Warna merah, kuning, oranye pada bunga, buah, daun tua."
+                },
+                {
+                  "nama": "Leukoplas",
+                  "detail": "Tanpa pigmen, tidak berwarna. Penyimpanan pati (amiloplas), lemak (elaioplas), protein (proteinoplas) pada jaringan non-fotosintetik (akar, umbi, biji)."
+                }
+              ]
+            },
+            {
+              "nama": "h) Sentriol",
+              "fungsi": "Berperan dalam pembelahan sel dengan membentuk spindle fiber. Berbentuk silinder, berpasangan.",
+              "struktur": ""
+            },
+            {
+              "nama": "i) Sitoskeleton",
+              "fungsi": "Jaringan protein kompleks di sel eukariotik. Kerangka sel, dukungan struktural, mengatur pergerakan sel & organel.",
+              "struktur": "",
+              "komponen": [
+                {
+                  "nama": "Mikrotubulus",
+                  "detail": "Protein tubulin. Bentuk sel, pergerakan organel, pembelahan sel."
+                },
+                {
+                  "nama": "Mikrofilamen (filamen aktin)",
+                  "detail": "Protein aktin. Pergerakan sel, kontraksi otot, pembentukan mikrovili."
+                },
+                {
+                  "nama": "Filamen Intermediet",
+                  "detail": "Berbagai protein. Kekuatan mekanis, mempertahankan posisi organel."
+                }
+              ]
+            },
+            {
+              "nama": "j) Peroksisom",
+              "fungsi": "Metabolisme lemak dan detoksifikasi zat beracun (hidrogen peroksida). Vesikel berisi enzim katalase.",
+              "struktur": ""
+            }
+          ]
+        },
+        {
+          "judul": "C. TABEL PERBANDINGAN",
+          "konten": "Sel tumbuhan dan sel hewan memiliki perbedaan mendasar, terutama terkait struktur dan fungsi. Perbedaan utama terletak pada dinding sel dan organel sel. Sel tumbuhan memiliki dinding sel yang kaku, sedangkan sel hewan tidak. Sel tumbuhan memiliki plastida (termasuk kloroplas) untuk fotosintesis, dan vakuola yang lebih besar. Sebaliknya, sel hewan memiliki sentrosom/sentriol dan lisosom yang tidak ditemukan pada sel tumbuhan.",
+          "tabelPerbandingan": [
+            { "aspek": "Dinding sel", "tumbuhan": "Ada (selulosa)", "hewan": "Tidak ada" },
+            { "aspek": "Kloroplas", "tumbuhan": "Ada (fotosintesis)", "hewan": "Tidak ada" },
+            {
+              "aspek": "Vakuola",
+              "tumbuhan": "Satu vakuola besar",
+              "hewan": "Banyak vakuola kecil (jika ada)"
+            },
+            {
+              "aspek": "Bentuk sel",
+              "tumbuhan": "Kaku, berbentuk tetap (persegi)",
+              "hewan": "Fleksibel, bentuk bervariasi"
+            },
+            {
+              "aspek": "Sentriol",
+              "tumbuhan": "Umumnya tidak ada",
+              "hewan": "Ada, berperan dalam pembelahan sel"
+            },
+            { "aspek": "Lisosom", "tumbuhan": "Tidak ada / jarang", "hewan": "Ada" }
+          ]
+        }
+      ]
+    },
+    "lampiran4_mediaPembelajaran": {
+      "judul": "Media Pembelajaran",
+      "items": [
+        "Video pembelajaran (YouTube) tentang struktur sel hewan dan tumbuhan",
+        "Presentasi Power Point materi sel",
+        "Gambar/model sel hewan dan sel tumbuhan",
+        "LKPD (Lembar Kerja Peserta Didik)",
+        "Kuis digital (Google Form / Quizizz / Kahoot)",
+        "Mikroskop dan preparat sel (jika tersedia)"
+      ]
+    },
+    "lampiran5_evaluasi": {
+      "judul": "Lembar Evaluasi (Asesmen Akhir Pembelajaran)",
+      "soal": [
+        {
+          "nomor": 1,
+          "pertanyaan": "Struktur yang hanya dimiliki oleh sel tumbuhan tetapi tidak dimiliki oleh sel hewan adalah...",
+          "opsi": ["Nukleus", "Mitokondria", "Dinding sel", "Membran sel"],
+          "kunci": "C"
+        },
+        {
+          "nomor": 2,
+          "pertanyaan": "Organel yang berfungsi sebagai tempat fotosintesis pada sel tumbuhan adalah...",
+          "opsi": ["Ribosom", "Kloroplas", "Vakuola", "Badan Golgi"],
+          "kunci": "B"
+        },
+        {
+          "nomor": 3,
+          "pertanyaan": "Perbedaan utama antara vakuola pada sel tumbuhan dan sel hewan adalah...",
+          "opsi": [
+            "Sel hewan tidak memiliki vakuola",
+            "Vakuola pada sel tumbuhan lebih kecil",
+            "Vakuola pada sel tumbuhan lebih besar dan permanen",
+            "Vakuola pada sel tumbuhan mengandung enzim pencernaan"
+          ],
+          "kunci": "C"
+        },
+        {
+          "nomor": 4,
+          "pertanyaan": "Organel yang terdapat di semua jenis sel dan berfungsi untuk sintesis protein adalah...",
+          "opsi": ["Kloroplas", "Nukleus", "Ribosom", "Vakuola"],
+          "kunci": "C"
+        },
+        {
+          "nomor": 5,
+          "pertanyaan": "Fungsi dari lisosom dalam sel hewan adalah...",
+          "opsi": [
+            "Menyintesis protein",
+            "Mencerna zat asing atau rusak dalam sel",
+            "Menyimpan cadangan makanan",
+            "Mengatur masuk dan keluarnya zat"
+          ],
+          "kunci": "B"
+        },
+        {
+          "nomor": 6,
+          "pertanyaan": "Bagian sel yang berfungsi sebagai pengatur lalu lintas zat keluar dan masuk ke dalam sel adalah...",
+          "opsi": ["Dinding sel", "Membran sel", "Sitoplasma", "Inti sel"],
+          "kunci": "B"
+        },
+        {
+          "nomor": 7,
+          "pertanyaan": "Seorang siswa mengamati dua preparat sel di bawah mikroskop. Sel A memiliki dinding sel, kloroplas, dan vakuola besar. Sel B tidak memiliki dinding sel dan kloroplas, serta memiliki sentriol. Berdasarkan hasil pengamatan tersebut, manakah simpulan paling tepat...",
+          "opsi": [
+            "Sel A adalah sel hewan, sel B adalah sel tumbuhan",
+            "Sel A dan B adalah jenis sel yang sama",
+            "Sel A adalah sel tumbuhan, sel B adalah sel hewan",
+            "Sel A adalah sel prokariotik, sel B adalah sel eukariotik"
+          ],
+          "kunci": "C"
+        },
+        {
+          "nomor": 8,
+          "pertanyaan": "Jika vakuola besar dalam sel tumbuhan mengalami kerusakan, dampak paling mungkin yang akan terjadi adalah...",
+          "opsi": [
+            "Sel tidak dapat menghasilkan energi",
+            "Sel tidak mampu melakukan pembelahan",
+            "Sel kehilangan bentuk dan tekanan osmotik terganggu",
+            "Sel kehilangan kemampuan untuk menyintesis protein"
+          ],
+          "kunci": "C"
+        },
+        {
+          "nomor": 9,
+          "pertanyaan": "Mengapa sel tumbuhan tidak memerlukan sentriol untuk pembelahan sel, sedangkan sel hewan membutuhkan sentriol, karena …",
+          "opsi": [
+            "Sel tumbuhan tidak mengalami pembelahan",
+            "Dinding sel tumbuhan menggantikan fungsi sentriol",
+            "Sel tumbuhan menggunakan mekanisme pembelahan yang berbeda",
+            "Vakuola tumbuhan membantu pembelahan secara aktif"
+          ],
+          "kunci": "C"
+        },
+        {
+          "nomor": 10,
+          "pertanyaan": "Seorang ilmuwan mengembangkan sel hewan buatan dengan memasukkan kloroplas ke dalamnya. Apa dampak paling mungkin dari modifikasi ini …",
+          "opsi": [
+            "Sel hewan akan berhenti menghasilkan energi",
+            "Sel hewan akan mampu melakukan fotosintesis",
+            "Sel hewan akan menjadi lebih besar dari biasanya",
+            "Sel hewan akan menjadi tidak stabil dan mati"
+          ],
+          "kunci": "B"
+        }
+      ],
+      "penskoran": "Setiap soal benar skor 10, salah skor 0. Total maksimal 100. Nilai = Jumlah skor x 10"
+    },
+    "lampiran6_asesmenProses": {
+      "judul": "Asesmen Proses Pembelajaran",
+      "formatDiskusi": {
+        "kolom": [
+          "No",
+          "Nama",
+          "Berani mengemukakan pendapat",
+          "Kerjasama dan komunikasi",
+          "Keaktifan"
+        ],
+        "skor": [4, 3, 2, 1],
+        "keterangan": {
+          "4": "Sangat Baik (SB)",
+          "3": "Baik (B)",
+          "2": "Cukup (C)",
+          "1": "Perlu bimbingan"
+        },
+        "rumusNilai": "Nilai = Jumlah Skor / 12 x 100"
+      },
+      "rubrikDiskusi": [
+        {
+          "aspek": "Berani mengemukakan pendapat",
+          "SB": "Murid berani mengemukakan pendapat dengan baik dan runtut",
+          "B": "Murid berani mengemukakan pendapat namun belum konsisten",
+          "C": "Murid berani mengemukakan pendapat dengan beberapa teman",
+          "PB": "Murid perlu dimotivasi untuk mengemukakan pendapat"
+        },
+        {
+          "aspek": "Kerjasama dan komunikasi",
+          "SB": "Murid menunjukkan sikap kerjasama dan berkomunikasi dengan sangat baik",
+          "B": "Murid menunjukkan sikap kerjasama dan berkomunikasi namun belum konsisten",
+          "C": "Murid menunjukkan sikap kerjasama dan berkomunikasi dengan beberapa teman",
+          "PB": "Murid perlu dimotivasi untuk menunjukkan sikap kerjasama dan berkomunikasi"
+        },
+        {
+          "aspek": "Keaktifan",
+          "SB": "Murid berpartisipasi aktif dan menginspirasi teman",
+          "B": "Murid mampu menerangkan dengan jelas dan sesuai topik",
+          "C": "Murid mampu menerangkan dengan jelas namun belum sesuai topik",
+          "PB": "Murid jarang berbicara dan perlu dimotivasi untuk berpartisipasi aktif"
+        }
+      ],
+      "formatPresentasi": {
+        "kolom": [
+          "No",
+          "Nama Kelompok",
+          "Kesesuaian dan kelengkapan",
+          "Komunikatif dan kejelasan",
+          "Percaya diri"
+        ],
+        "skor": [4, 3, 2, 1],
+        "keterangan": {
+          "4": "Sangat Baik (SB)",
+          "3": "Baik (B)",
+          "2": "Cukup (C)",
+          "1": "Perlu bimbingan"
+        },
+        "rumusNilai": "Nilai = Jumlah Skor / 12 x 100"
+      },
+      "rubrikPresentasi": [
+        {
+          "aspek": "Kesesuaian dan Kelengkapan",
+          "SB": "Murid mempresentasikan hasil diskusinya sangat sesuai dengan materi dan lengkap",
+          "B": "Murid mempresentasikan hasil diskusinya sesuai dengan materi dan lengkap",
+          "C": "Murid mempresentasikan hasil diskusinya sesuai dengan materi namun kurang lengkap",
+          "PB": "Murid mempresentasikan hasil diskusinya kurang sesuai dengan materi dan kurang lengkap"
+        },
+        {
+          "aspek": "Komunikatif dan Kejelasan",
+          "SB": "Murid mempresentasikan hasil diskusinya dengan sangat komunikatif dan jelas",
+          "B": "Murid mempresentasikan hasil diskusinya dengan komunikatif dan jelas",
+          "C": "Murid mempresentasikan hasil diskusinya dengan cukup komunikatif dan jelas",
+          "PB": "Murid mempresentasikan hasil diskusinya dengan kurang komunikatif dan jelas"
+        },
+        {
+          "aspek": "Percaya Diri",
+          "SB": "Murid mempresentasikan hasil diskusinya dengan sangat percaya diri",
+          "B": "Murid mempresentasikan hasil diskusinya dengan percaya diri",
+          "C": "Murid mempresentasikan hasil diskusinya dengan cukup percaya diri",
+          "PB": "Murid mempresentasikan hasil diskusinya dengan kurang percaya diri"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,201 @@
+/* =============================================================================
+   AI RPP GENERATOR — STYL DOKUMEN (.rpp-document)
+   Dipakai bersama oleh preview, export HTML, dan print.
+   Sengaja terpisah dari app.css supaya bisa disalin utuh ke dokumen export.
+   ============================================================================= */
+
+.rpp-document {
+  font-family: 'Times New Roman', Times, serif;
+  line-height: 1.6;
+  padding: 20px;
+  background: var(--white, #fff);
+}
+.rpp-document .doc-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  color: #000;
+}
+.rpp-document .doc-subtitle {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+.rpp-document .section-header {
+  background: #e91e63;
+  color: #fff;
+  padding: 6px 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin: 16px 0 8px 0;
+  text-transform: uppercase;
+}
+.rpp-document .sub-header {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 5px 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 12px 0 6px 0;
+}
+.rpp-document table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 0.85rem;
+}
+.rpp-document th {
+  background: #fce4ec;
+  color: #e91e63;
+  padding: 6px 8px;
+  border: 1px solid #bdbdbd;
+  font-weight: 700;
+  text-align: left;
+}
+.rpp-document td {
+  padding: 6px 8px;
+  border: 1px solid #bdbdbd;
+  vertical-align: top;
+}
+.rpp-document tr:nth-child(even) td {
+  background: #fafafa;
+}
+.rpp-document ol,
+.rpp-document ul {
+  padding-left: 24px;
+  margin: 6px 0;
+}
+.rpp-document ol ol {
+  list-style-type: lower-alpha;
+}
+.rpp-document ol ol ol {
+  list-style-type: lower-roman;
+}
+.rpp-document .ident-item {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0;
+}
+.rpp-document .ident-label {
+  font-weight: 600;
+  min-width: 160px;
+}
+.rpp-document .pengesahan {
+  margin-top: 32px;
+  text-align: center;
+}
+.rpp-document .pengesahan-table {
+  width: 100%;
+  margin-top: 20px;
+}
+.rpp-document .pengesahan-table td {
+  width: 50%;
+  text-align: center;
+  vertical-align: bottom;
+  height: 80px;
+  border: none;
+  font-size: 0.85rem;
+}
+.rpp-document .pengesahan-table td .nama {
+  font-weight: 700;
+}
+.rpp-document .pengesahan-table td .nuptk {
+  font-size: 0.8rem;
+  color: #555;
+}
+.rpp-document .pengesahan-table td .jabatan {
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+.rpp-document .pengesahan-place {
+  margin-top: 16px;
+  font-style: italic;
+}
+.rpp-document .soal-nomor {
+  display: flex;
+  gap: 6px;
+  margin: 6px 0;
+}
+.rpp-document .soal-opsi {
+  padding-left: 28px;
+  margin: 2px 0;
+}
+.rpp-document .kunci-jawaban {
+  font-weight: 600;
+  color: #c62828;
+}
+.rpp-document .rubrik-table th:first-child,
+.rpp-document .rubrik-table td:first-child {
+  min-width: 180px;
+}
+.rpp-document .page-break {
+  page-break-before: always;
+}
+
+/* ----- Responsif preview ----- */
+@media (max-width: 768px) {
+  .rpp-document {
+    padding: 10px;
+    font-size: 0.8rem;
+  }
+  .rpp-document table {
+    font-size: 0.75rem;
+  }
+  .rpp-document th,
+  .rpp-document td {
+    padding: 4px 6px;
+  }
+  .rpp-document .section-header {
+    font-size: 0.85rem;
+    padding: 5px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .rpp-document {
+    padding: 6px;
+    font-size: 0.75rem;
+  }
+  .rpp-document .doc-title {
+    font-size: 0.9rem;
+  }
+  .rpp-document table {
+    font-size: 0.7rem;
+  }
+}
+
+/* ----- Print: hanya area yang ditandai .print-area yang dicetak ----- */
+@media print {
+  @page {
+    margin: 15mm 20mm;
+    size: A4;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  .print-area .rpp-document {
+    padding: 0;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .rpp-document .section-header,
+  .rpp-document .sub-header,
+  .rpp-document th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

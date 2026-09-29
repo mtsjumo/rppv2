@@ -1,0 +1,5 @@
+# Disable Jekyll processing - we're using static HTML
+exclude:
+  - README.md
+  - schema.json
+  - contoh-rpp-deep-learning-dan-kbc-sel-hewan-dan-sel-tumbuhan-1.pdf

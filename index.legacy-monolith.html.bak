@@ -1,0 +1,3210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI RPP Generator - Kurikulum Merdeka + KBC</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<style>
+:root {
+  --pink: #e91e63;
+  --pink-dark: #c2185b;
+  --pink-light: #fce4ec;
+  --blue: #1976d2;
+  --blue-light: #e3f2fd;
+  --blue-dark: #1565c0;
+  --green: #43a047;
+  --green-light: #e8f5e9;
+  --orange: #ef6c00;
+  --orange-light: #fff3e0;
+  --text: #212121;
+  --text-secondary: #616161;
+  --border: #bdbdbd;
+  --bg: #f5f5f5;
+  --white: #ffffff;
+  --shadow: 0 2px 8px rgba(0,0,0,0.12);
+  --radius: 8px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+.hidden { display: none !important; }
+
+/* ===== HEADER ===== */
+.app-header {
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+  color: var(--white);
+  padding: 16px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow);
+}
+.app-header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.app-header h1 span { font-size: 0.875rem; font-weight: 400; opacity: 0.85; }
+.app-header .header-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font);
+}
+.btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-pink { background: var(--pink); color: var(--white); }
+.btn-pink:hover { background: var(--pink-dark); }
+.btn-blue { background: var(--blue); color: var(--white); }
+.btn-blue:hover { background: var(--blue-dark); }
+.btn-green { background: var(--green); color: var(--white); }
+.btn-green:hover { background: #2e7d32; }
+.btn-orange { background: var(--orange); color: var(--white); }
+.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn-outline:hover { background: var(--bg); }
+.btn-sm { padding: 4px 10px; font-size: 0.75rem; }
+.btn-lg { padding: 12px 24px; font-size: 1rem; }
+.btn-icon { padding: 6px 10px; }
+
+/* ===== MAIN ===== */
+.main-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--pink);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--pink-light);
+}
+
+/* ===== SETTINGS PANEL ===== */
+.settings-panel {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.settings-toggle {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--pink-light);
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--pink);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font);
+}
+.settings-toggle:hover { background: #f8bbd0; }
+.settings-body {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .settings-body { grid-template-columns: 1fr; }
+}
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.form-input, .form-select, .form-textarea {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-family: var(--font);
+  outline: none;
+  transition: border 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 2px var(--pink-light);
+}
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-hint { font-size: 0.75rem; color: var(--text-secondary); font-style: italic; }
+.form-full { grid-column: 1 / -1; }
+
+/* ===== WIZARD ===== */
+.wizard-progress {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 0;
+  list-style: none;
+}
+.wizard-step {
+  flex: 1;
+  text-align: center;
+  padding: 10px 8px;
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--bg);
+  color: var(--text-secondary);
+  position: relative;
+  transition: all 0.3s;
+}
+.wizard-step.active { background: var(--pink); color: var(--white); }
+.wizard-step.done { background: var(--green-light); color: var(--green); }
+.wizard-step .step-num {
+  display: inline-block;
+  width: 24px; height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.1);
+  font-size: 0.75rem;
+  margin-right: 6px;
+}
+.wizard-step.active .step-num { background: rgba(255,255,255,0.3); }
+.wizard-step.done .step-num { background: var(--green); color: var(--white); }
+@media (max-width: 640px) {
+  .wizard-step .step-label { display: none; }
+  .wizard-step .step-num { margin-right: 0; }
+}
+
+/* ===== FORM STEP 0 ===== */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-full { grid-column: 1 / -1; }
+.form-section {
+  border: 1px solid var(--pink-light);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.form-section-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--pink);
+  margin-bottom: 8px;
+}
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* ===== PHASE CONTENT ===== */
+.phase-section {
+  margin-bottom: 20px;
+}
+.phase-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.phase-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.phase-status.pending { background: var(--bg); color: var(--text-secondary); }
+.phase-status.success { background: var(--green-light); color: var(--green); }
+.phase-status.error { background: #ffebee; color: #c62828; }
+.phase-status.loading { background: #fff8e1; color: #f57f17; }
+
+/* ===== PREVIEW TABS ===== */
+.preview-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  border-bottom: 2px solid var(--pink-light);
+  padding-bottom: 0;
+}
+.preview-tab {
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-family: var(--font);
+  transition: all 0.2s;
+}
+.preview-tab:hover { color: var(--pink); }
+.preview-tab.active { color: var(--pink); border-bottom-color: var(--pink); }
+.preview-content { min-height: 200px; padding: 4px 0; }
+.preview-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+.preview-empty .icon { font-size: 2rem; margin-bottom: 8px; }
+
+/* ===== EXPORT BAR ===== */
+.export-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--bg);
+  border-radius: var(--radius);
+}
+.export-bar .label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.loading-spinner {
+  width: 48px; height: 48px;
+  border: 4px solid var(--pink-light);
+  border-top-color: var(--pink);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { margin-top: 12px; font-size: 0.95rem; font-weight: 600; color: var(--text); }
+.loading-sub { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; }
+
+/* ===== PROGRESS BAR ===== */
+.progress-container {
+  margin: 12px 0;
+  padding: 16px;
+  background: var(--white);
+  border: 1px solid var(--pink-light);
+  border-radius: var(--radius);
+}
+.progress-bar-wrap {
+  width: 100%;
+  height: 8px;
+  background: var(--pink-light);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--pink), var(--pink-dark));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  width: 0%;
+}
+.progress-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+.progress-steps {
+  margin-top: 8px;
+  font-size: 0.8rem;
+}
+.progress-step-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  color: var(--text-secondary);
+}
+.progress-step-item.done { color: var(--green); }
+.progress-step-item.active { color: var(--pink); font-weight: 600; }
+.progress-step-item.pending { color: var(--text-secondary); opacity: 0.5; }
+.progress-step-item .p-icon { font-size: 0.75rem; width: 16px; text-align: center; }
+
+/* ===== TOAST ===== */
+.toast-container {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  animation: slideIn 0.3s ease;
+  max-width: 400px;
+}
+.toast.success { background: var(--green-light); color: var(--green); border-left: 4px solid var(--green); }
+.toast.error { background: #ffebee; color: #c62828; border-left: 4px solid #c62828; }
+.toast.warning { background: #fff8e1; color: #f57f17; border-left: 4px solid #f57f17; }
+.toast.info { background: var(--blue-light); color: var(--blue); border-left: 4px solid var(--blue); }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ===== RPP TEMPLATE STYLES (for preview) ===== */
+.rpp-document {
+  font-family: 'Times New Roman', Times, serif;
+  line-height: 1.6;
+  padding: 20px;
+  background: var(--white);
+}
+.rpp-document .doc-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  color: #000;
+}
+.rpp-document .doc-subtitle {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+.rpp-document .section-header {
+  background: #e91e63;
+  color: #fff;
+  padding: 6px 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin: 16px 0 8px 0;
+  text-transform: uppercase;
+}
+.rpp-document .sub-header {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 5px 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 12px 0 6px 0;
+}
+.rpp-document table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 0.85rem;
+}
+.rpp-document th {
+  background: #fce4ec;
+  color: #e91e63;
+  padding: 6px 8px;
+  border: 1px solid #bdbdbd;
+  font-weight: 700;
+  text-align: left;
+}
+.rpp-document td {
+  padding: 6px 8px;
+  border: 1px solid #bdbdbd;
+  vertical-align: top;
+}
+.rpp-document tr:nth-child(even) td { background: #fafafa; }
+.rpp-document ol {
+  padding-left: 24px;
+  margin: 6px 0;
+}
+.rpp-document ul {
+  padding-left: 24px;
+  margin: 6px 0;
+}
+.rpp-document ol ol { list-style-type: lower-alpha; }
+.rpp-document ol ol ol { list-style-type: lower-roman; }
+.rpp-document .ident-item {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0;
+}
+.rpp-document .ident-label {
+  font-weight: 600;
+  min-width: 160px;
+}
+.rpp-document .pengesahan {
+  margin-top: 32px;
+  text-align: center;
+}
+.rpp-document .pengesahan-table {
+  width: 100%;
+  margin-top: 20px;
+}
+.rpp-document .pengesahan-table td {
+  width: 50%;
+  text-align: center;
+  vertical-align: bottom;
+  height: 80px;
+  border: none;
+  font-size: 0.85rem;
+}
+.rpp-document .pengesahan-table td .nama {
+  font-weight: 700;
+}
+.rpp-document .pengesahan-table td .nuptk {
+  font-size: 0.8rem;
+  color: #555;
+}
+.rpp-document .pengesahan-table td .jabatan {
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+.rpp-document .pengesahan-place {
+  margin-top: 16px;
+  font-style: italic;
+}
+.rpp-document .soal-nomor {
+  display: flex;
+  gap: 6px;
+  margin: 6px 0;
+}
+.rpp-document .soal-opsi {
+  padding-left: 28px;
+  margin: 2px 0;
+}
+.rpp-document .kunci-jawaban {
+  font-weight: 600;
+  color: #c62828;
+}
+.rpp-document .rubrik-table th:first-child,
+.rpp-document .rubrik-table td:first-child { min-width: 180px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .app-header h1 { font-size: 1rem; }
+  .app-header h1 span { display: none; }
+  .main-container { padding: 8px; }
+  .card { padding: 12px; margin-bottom: 12px; }
+  .rpp-document { padding: 10px; font-size: 0.8rem; }
+  .rpp-document table { font-size: 0.75rem; }
+  .rpp-document th, .rpp-document td { padding: 4px 6px; }
+  .rpp-document .section-header { font-size: 0.85rem; padding: 5px 8px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid-3 { grid-template-columns: 1fr; }
+  .settings-body { grid-template-columns: 1fr; }
+  .btn-lg { padding: 10px 16px; font-size: 0.875rem; width: 100%; }
+  .phase-actions { flex-direction: column; }
+  .phase-actions .btn { width: 100%; justify-content: center; }
+  .export-bar .btn { flex: 1; justify-content: center; }
+  .header-actions { width: 100%; }
+  .header-actions .btn { flex: 1; justify-content: center; }
+}
+@media (max-width: 480px) {
+  .app-header { padding: 10px 12px; }
+  .app-header h1 { font-size: 0.9rem; }
+  .card-title { font-size: 0.95rem; }
+  .wizard-step { font-size: 0.7rem; padding: 6px 4px; }
+  .rpp-document { padding: 6px; font-size: 0.75rem; }
+  .rpp-document .doc-title { font-size: 0.9rem; }
+  .rpp-document table { font-size: 0.7rem; }
+  .toast { max-width: 90vw; font-size: 0.8rem; padding: 8px 14px; }
+}
+@media print {
+  @page { margin: 15mm 20mm; size: A4; }
+  body * { visibility: hidden; }
+  .print-area, .print-area * { visibility: visible; }
+  .print-area { position: absolute; left: 0; top: 0; width: 100%; }
+  .print-area .rpp-document { padding: 0; }
+  .no-print { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="app-header">
+  <h1>
+    AI RPP Generator
+    <span>— Kurikulum Merdeka + KBC</span>
+  </h1>
+  <div class="header-actions">
+    <button class="btn btn-outline btn-sm" onclick="toggleSettings()">⚙️ Pengaturan</button>
+    <button class="btn btn-outline btn-sm" onclick="resetAll()">↺ Reset</button>
+  </div>
+</header>
+
+<!-- ===== TOAST ===== -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ===== LOADING ===== -->
+<div class="loading-overlay hidden" id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loading-text">Memproses...</div>
+  <div class="loading-sub" id="loading-sub">Mohon tunggu, AI sedang bekerja</div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="main-container">
+
+  <!-- SETTINGS -->
+  <div class="settings-panel hidden" id="settings-panel">
+    <button class="settings-toggle" onclick="toggleSettings()">
+      ⚙️ Pengaturan API & Model
+      <span id="settings-arrow">▲</span>
+    </button>
+    <div class="settings-body" id="settings-body">
+      <div class="form-group form-full">
+        <label for="set-provider">Provider AI</label>
+        <select class="form-select" id="set-provider" onchange="onProviderChange()">
+          <option value="openrouter">OpenRouter</option>
+          <option value="poolside">Poolside (Laguna)</option>
+        </select>
+        <span class="form-hint" id="provider-hint">Gunakan API key OpenRouter untuk model-model gratis.</span>
+      </div>
+      <div class="form-group form-full grp-openrouter">
+        <label for="api-key">OpenRouter API Key</label>
+        <input type="password" class="form-input" id="api-key" placeholder="sk-or-v1-..." autocomplete="off">
+        <span class="form-hint">Dapatkan API key gratis di <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a></span>
+      </div>
+      <div class="form-group form-full grp-poolside" style="display:none;">
+        <label for="poolside-key">Poolside API Key</label>
+        <input type="password" class="form-input" id="poolside-key" placeholder="ps-..." autocomplete="off">
+        <span class="form-hint">Dapatkan API key di dashboard Poolside (lihat <a href="https://docs.poolside.ai/api/overview" target="_blank" rel="noopener">docs.poolside.ai</a>). Key OpenRouter Anda tetap tersimpan terpisah.</span>
+      </div>
+      <div class="form-group grp-openrouter">
+        <label for="model-select">Model AI</label>
+        <select class="form-select" id="model-select">
+          <option value="nvidia/nemotron-3-super-120b-a12b:free">Nemotron-3-Super 120B (Free)</option>
+          <option value="nvidia/nemotron-3-ultra-550b-a55b:free">Nemotron-3-Ultra 550B (Free)</option>
+          <option value="openrouter/free">OpenRouter Auto (Free Router)</option>
+          <option value="openai/gpt-oss-120b:free">GPT-OSS 120B (Free)</option>
+          <option value="google/gemma-4-31b-it:free">Gemma 4 31B (Free)</option>
+          <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (Free)</option>
+          <option value="custom">Kustom (isi sendiri)</option>
+        </select>
+      </div>
+      <div class="form-group grp-openrouter">
+        <label for="model-custom">Kustom Model ID</label>
+        <input type="text" class="form-input" id="model-custom" placeholder="organization/model:free" disabled>
+        <span class="form-hint">Contoh: anthropic/claude-sonnet-4-20250514:free</span>
+      </div>
+      <div class="form-group grp-openrouter">
+        <label for="fallback-model">Fallback Model</label>
+        <select class="form-select" id="fallback-model">
+          <option value="openrouter/free">OpenRouter Auto (Free Router)</option>
+          <option value="nvidia/nemotron-3-ultra-550b-a55b:free">Nemotron-3-Ultra 550B (Free)</option>
+          <option value="nvidia/nemotron-3-super-120b-a12b:free">Nemotron-3-Super 120B (Free)</option>
+          <option value="openai/gpt-oss-120b:free">GPT-OSS 120B (Free)</option>
+          <option value="google/gemma-4-31b-it:free">Gemma 4 31B (Free)</option>
+        </select>
+      </div>
+      <div class="form-group grp-poolside" style="display:none;">
+        <label for="poolside-model">Poolside Model</label>
+        <input type="text" class="form-input" id="poolside-model" placeholder="poolside/laguna-s-2.1">
+        <span class="form-hint">Default: poolside/laguna-s-2.1 (OpenAI-compatible)</span>
+      </div>
+      <details class="form-full grp-poolside" id="grp-proxy-details" style="display:none;">
+        <summary style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);cursor:pointer;">⚙️ Pengaturan lanjutan (Worker URL)</summary>
+        <div class="form-group" style="margin-top:8px;">
+          <label for="poolside-proxy">Worker / Proxy URL</label>
+          <input type="text" class="form-input" id="poolside-proxy" placeholder="https://nama-worker.kamu.workers.dev/?url=">
+          <span class="form-hint">Sudah terisi worker bawaan — ubah hanya jika Anda memakai worker sendiri.</span>
+        </div>
+      </details>
+      <div class="form-group" style="display:flex; flex-direction:row; align-items:flex-end; gap:8px; grid-column:1/-1;">
+        <button class="btn btn-pink" onclick="saveSettings()">💾 Simpan Pengaturan</button>
+        <button class="btn btn-outline" onclick="testAPI()">🧪 Test API</button>
+        <span id="api-status" style="font-size:0.8rem; display:flex; align-items:center; gap:4px;"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WIZARD -->
+  <ul class="wizard-progress" id="wizard">
+    <li class="wizard-step active" data-step="0">
+      <span class="step-num">1</span>
+      <span class="step-label">Identitas</span>
+    </li>
+    <li class="wizard-step" data-step="1">
+      <span class="step-num">2</span>
+      <span class="step-label">RPP + Lampiran</span>
+    </li>
+    <li class="wizard-step" data-step="2">
+      <span class="step-num">3</span>
+      <span class="step-label">Modul Ajar</span>
+    </li>
+    <li class="wizard-step" data-step="3">
+      <span class="step-num">4</span>
+      <span class="step-label">Media</span>
+    </li>
+  </ul>
+
+  <!-- STEP 0: FORM -->
+  <div class="card" id="step-0">
+    <div class="card-title">📝 Identitas RPP</div>
+    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:16px;">
+      Isi data identitas madrasah, guru, kepala madrasah, serta Capaian Pembelajaran (CP), Tujuan Pembelajaran (TP), dan Alur Tujuan Pembelajaran (ATP).
+    </p>
+    <form id="rpp-form" onsubmit="return false;">
+      <div class="form-section">
+        <div class="form-section-title">Madrasah & Guru</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="inp-madrasah">Nama Madrasah *</label>
+            <input type="text" class="form-input" id="inp-madrasah" placeholder="MTs Ulfa Pranggong" required>
+          </div>
+          <div class="form-group">
+            <label for="inp-mapel">Mata Pelajaran *</label>
+            <input type="text" class="form-input" id="inp-mapel" placeholder="Ilmu Pengetahuan Alam (IPA)" required>
+          </div>
+          <div class="form-group">
+            <label for="inp-materi">Materi Pelajaran *</label>
+            <input type="text" class="form-input" id="inp-materi" placeholder="Sel Hewan dan Sel Tumbuhan" required>
+          </div>
+          <div class="form-group">
+            <label for="inp-elemen">Elemen *</label>
+            <input type="text" class="form-input" id="inp-elemen" placeholder="Pemahaman IPA" required>
+          </div>
+          <div class="form-group">
+            <label for="inp-guru">Nama Guru *</label>
+            <input type="text" class="form-input" id="inp-guru" placeholder="Siti Nafisah, S.Pd.I" required>
+          </div>
+          <div class="form-group">
+            <label for="inp-nuptk">NUPTK Guru</label>
+            <input type="text" class="form-input" id="inp-nuptk" placeholder="1234567890123456" maxlength="16">
+          </div>
+          <div class="form-group">
+            <label for="inp-fase">Fase/Kelas/Semester *</label>
+            <input type="text" class="form-input" id="inp-fase" placeholder="D/VIII/1" required>
+          </div>
+          <div class="form-group">
+            <label for="inp-tahun-pelajaran">Tahun Ajaran *</label>
+            <input type="text" class="form-input" id="inp-tahun-pelajaran" placeholder="2025/2026" required>
+          </div>
+          <div class="form-group">
+            <label for="inp-alkok">Alokasi Waktu *</label>
+            <input type="text" class="form-input" id="inp-alkok" placeholder="2 X 40 Menit" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Kepala Madrasah & Pengesahan</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="inp-kepsek">Nama Kepala Madrasah *</label>
+            <input type="text" class="form-input" id="inp-kepsek" placeholder="Ahmad Jazuli, S.Pd" required>
+          </div>
+          <div class="form-group">
+            <label for="inp-kepsek-nuptk">NUPTK Kepala Madrasah</label>
+            <input type="text" class="form-input" id="inp-kepsek-nuptk" placeholder="1234567890123456" maxlength="16">
+          </div>
+          <div class="form-group">
+            <label for="inp-tempat">Tempat *</label>
+            <input type="text" class="form-input" id="inp-tempat" placeholder="Indramayu" required>
+          </div>
+          <div class="form-group">
+            <label for="inp-tanggal">Tanggal Pengesahan *</label>
+            <input type="date" class="form-input" id="inp-tanggal" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Capain, Tujuan, dan Alur Pembelajaran</div>
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label for="inp-cp">Capaian Pembelajaran (CP) *</label>
+            <textarea class="form-textarea" id="inp-cp" placeholder="Pada akhir fase D, peserta didik mampu..." required></textarea>
+          </div>
+          <div class="form-group form-full">
+            <label for="inp-tp">Tujuan Pembelajaran (TP) *</label>
+            <textarea class="form-textarea" id="inp-tp" placeholder="1. Peserta didik mampu mendeskripsikan..." required></textarea>
+          </div>
+          <div class="form-group form-full">
+            <label for="inp-atp">Alur Tujuan Pembelajaran (ATP)</label>
+            <textarea class="form-textarea" id="inp-atp" placeholder="Rincian alur dan waktu pembelajaran..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+        <button type="button" class="btn btn-lg btn-pink" onclick="startPhase1()">
+          🚀 Generate RPP + Lampiran
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- STEP 1: PHASE 1 -->
+  <div class="card hidden" id="step-1">
+    <div class="card-title">
+      📄 RPP + Lampiran
+      <span class="phase-status pending" id="phase1-status">⏳ Belum digenerate</span>
+    </div>
+    <div class="phase-actions">
+      <button class="btn btn-pink btn-sm" onclick="startPhase1()" id="phase1-gen-btn">🚀 Generate</button>
+      <button class="btn btn-outline btn-sm hidden" onclick="showStep(0)" id="phase1-back">✏️ Edit Identitas</button>
+    </div>
+    <div class="progress-container hidden" id="phase1-progress">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="phase1-progress-fill"></div>
+      </div>
+      <div class="progress-text">
+        <span id="phase1-progress-label">Memulai...</span>
+        <span id="phase1-progress-pct">0%</span>
+      </div>
+      <div class="progress-steps" id="phase1-progress-steps"></div>
+    </div>
+    <div id="phase1-preview" class="preview-content">
+      <div class="preview-empty">
+        <div class="icon">📋</div>
+        <p>Generate RPP + Lampiran untuk melihat hasil di sini.</p>
+      </div>
+    </div>
+    <div class="export-bar hidden" id="phase1-regenerate" style="margin-bottom: 12px; background: #fff3cd; border-color: #ffe69c;">
+      <div class="label" style="color: #664d03;">🔄 Regenerate Bagian:</div>
+      <button class="btn btn-outline btn-sm" onclick="regeneratePart(0)" title="Regenerate RPP Core">1. RPP</button>
+      <button class="btn btn-outline btn-sm" onclick="regeneratePart(1)" title="Regenerate LKPD">2. LKPD</button>
+      <button class="btn btn-outline btn-sm" onclick="regeneratePart(2)" title="Regenerate Evaluasi">3. Evaluasi</button>
+      <button class="btn btn-outline btn-sm" onclick="regeneratePart(3)" title="Regenerate Remidial, Pengayaan, Rubrik">4. Remidial/Rubrik</button>
+      <button class="btn btn-outline btn-sm" onclick="regeneratePart(4)" title="Regenerate Tes Diagnostik Awal">5. Diagnostik</button>
+    </div>
+    <div class="export-bar hidden" id="phase1-export">
+      <div class="label">💾 Export Phase 1:</div>
+      <button class="btn btn-blue btn-sm" onclick="exportPhase1PDF()">📄 PDF</button>
+      <button class="btn btn-green btn-sm" onclick="exportPhase1DOCX()">📝 DOCX</button>
+      <button class="btn btn-orange btn-sm" onclick="exportPhase1HTML()">🌐 HTML</button>
+      <button class="btn btn-pink btn-sm" onclick="showStep(2)" id="phase1-next">➡️ Lanjut Modul Ajar</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: PHASE 2 -->
+  <div class="card hidden" id="step-2">
+    <div class="card-title">
+      📖 Modul Ajar
+      <span class="phase-status pending" id="phase2-status">⏳ Belum digenerate</span>
+    </div>
+    <div class="phase-actions">
+      <button class="btn btn-pink btn-sm" onclick="startPhase2()" id="phase2-gen-btn">🚀 Generate</button>
+      <button class="btn btn-outline btn-sm" onclick="showStep(1)">⬅️ Kembali ke RPP</button>
+    </div>
+    <div id="phase2-preview" class="preview-content">
+      <div class="preview-empty">
+        <div class="icon">📖</div>
+        <p>Generate Modul Ajar setelah RPP selesai.</p>
+      </div>
+    </div>
+    <div class="export-bar hidden" id="phase2-export">
+      <div class="label">💾 Export Phase 2:</div>
+      <button class="btn btn-blue btn-sm" onclick="exportPhase2PDF()">📄 PDF</button>
+      <button class="btn btn-green btn-sm" onclick="exportPhase2DOCX()">📝 DOCX</button>
+      <button class="btn btn-orange btn-sm" onclick="exportPhase2HTML()">🌐 HTML</button>
+      <button class="btn btn-pink btn-sm" onclick="showStep(3)" id="phase2-next">➡️ Lanjut Media</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: PHASE 3 -->
+  <div class="card hidden" id="step-3">
+    <div class="card-title">
+      🎬 Media Pembelajaran
+      <span class="phase-status pending" id="phase3-status">⏳ Belum digenerate</span>
+    </div>
+    <div class="phase-actions">
+      <button class="btn btn-pink btn-sm" onclick="startPhase3()" id="phase3-gen-btn">🚀 Generate</button>
+      <button class="btn btn-outline btn-sm" onclick="showStep(2)">⬅️ Kembali ke Modul Ajar</button>
+    </div>
+    <div id="phase3-preview" class="preview-content">
+      <div class="preview-empty">
+        <div class="icon">🎬</div>
+        <p>Generate Media Pembelajaran setelah Modul Ajar selesai.</p>
+      </div>
+    </div>
+    <div class="export-bar hidden" id="phase3-export">
+      <div class="label">💾 Export Phase 3:</div>
+      <button class="btn btn-blue btn-sm" onclick="exportPhase3PDF()">📄 PDF</button>
+      <button class="btn btn-green btn-sm" onclick="exportPhase3DOCX()">📝 DOCX</button>
+      <button class="btn btn-orange btn-sm" onclick="exportPhase3HTML()">🌐 HTML</button>
+    </div>
+  </div>
+
+  <!-- COMBINED EXPORT -->
+  <div class="card hidden" id="combined-export-card">
+    <div class="card-title">📦 Export All Phases (Combined)</div>
+    <div class="export-bar" style="background:transparent; padding:0;">
+      <button class="btn btn-blue" onclick="exportCombinedPDF()">📄 Combined PDF</button>
+      <button class="btn btn-green" onclick="exportCombinedDOCX()">📝 Combined DOCX</button>
+      <button class="btn btn-orange" onclick="exportCombinedHTML()">🌐 Combined HTML</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="text-align:center; padding:20px; font-size:0.8rem; color:var(--text-secondary);">
+    AI RPP Generator — Kurikulum Merdeka + KBC dengan Deep Learning
+    <br>Dibuat untuk membantu guru Indonesia
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+// Alamat Worker default (Pola B: tiap guru pakai key masing-masing).
+// Diisi admin sekali setelah Worker jadi, cth:
+// const DEFAULT_WORKER_URL = 'https://rpp-poolside.kamu.workers.dev/?url=';
+const DEFAULT_WORKER_URL = 'https://rpp.andys-riyans.workers.dev/?url=';
+const APP = {
+  settings: {
+    provider: 'openrouter',
+    apiKey: '',
+    openRouterKey: '',
+    poolsideKey: '',
+    model: 'nvidia/nemotron-3-super-120b-a12b:free',
+    customModel: '',
+    fallbackModel: 'openrouter/free',
+    poolsideModel: 'poolside/laguna-s-2.1',
+    corsProxy: '',
+  },
+  input: {},
+  phase1: null,
+  phase2: null,
+  phase3: null,
+  currentStep: 0,
+};
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem('rpp_generator_settings');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      APP.settings = { ...APP.settings, ...parsed };
+      // Migrasi: settings lama hanya punya `apiKey` (OpenRouter) — pindahkan agar tidak hilang
+      if (APP.settings.apiKey && !APP.settings.openRouterKey) {
+        APP.settings.openRouterKey = APP.settings.apiKey;
+      }
+    }
+  } catch(e) { console.warn('Settings load error:', e); }
+  // Default SELALU berlaku — termasuk di origin/profil baru yang belum punya simpanan
+  // (sebelumnya baris-baris ini hanya jalan bila sudah ada simpanan: bug kolom worker kosong)
+  if (!APP.settings.provider) APP.settings.provider = 'openrouter';
+  if (!APP.settings.poolsideModel) APP.settings.poolsideModel = 'poolside/laguna-s-2.1';
+  if (!APP.settings.corsProxy) APP.settings.corsProxy = DEFAULT_WORKER_URL;
+  applySettingsToUI();
+}
+function applySettingsToUI() {
+  document.getElementById('set-provider').value = APP.settings.provider || 'openrouter';
+  document.getElementById('api-key').value = APP.settings.openRouterKey || APP.settings.apiKey || '';
+  document.getElementById('poolside-key').value = APP.settings.poolsideKey || '';
+  document.getElementById('poolside-model').value = APP.settings.poolsideModel || 'poolside/laguna-s-2.1';
+  document.getElementById('poolside-proxy').value = APP.settings.corsProxy || '';
+  document.getElementById('model-select').value = APP.settings.model === APP.settings.customModel ? 'custom' : APP.settings.model;
+  document.getElementById('model-custom').value = APP.settings.customModel || '';
+  document.getElementById('fallback-model').value = APP.settings.fallbackModel || 'openrouter/free';
+  toggleCustomModel();
+  onProviderChange(false);
+}
+function onProviderChange(save = true) {
+  const provider = document.getElementById('set-provider').value;
+  const isPoolside = provider === 'poolside';
+  document.querySelectorAll('.grp-openrouter').forEach(el => { el.style.display = isPoolside ? 'none' : ''; });
+  document.querySelectorAll('.grp-poolside').forEach(el => { el.style.display = isPoolside ? '' : 'none'; });
+  document.getElementById('provider-hint').textContent = isPoolside
+    ? ((typeof DEFAULT_WORKER_URL !== 'undefined' && DEFAULT_WORKER_URL)
+        ? '✓ Terhubung via worker bawaan — cukup isi API key di bawah.'
+        : 'Poolside tidak mengizinkan panggilan langsung dari browser — buka Pengaturan lanjutan di bawah.')
+    : 'Gunakan API key OpenRouter untuk model-model gratis.';
+  document.getElementById('api-status').innerHTML = '';
+  if (save) {
+    APP.settings.provider = provider;
+    localStorage.setItem('rpp_generator_settings', JSON.stringify(APP.settings));
+  }
+}
+function saveSettings() {
+  const provider = document.getElementById('set-provider').value;
+  const openRouterKey = document.getElementById('api-key').value.trim();
+  const poolsideKey = document.getElementById('poolside-key').value.trim();
+  const poolsideModel = document.getElementById('poolside-model').value.trim() || 'poolside/laguna-s-2.1';
+  const corsProxy = document.getElementById('poolside-proxy').value.trim();
+  const modelSel = document.getElementById('model-select').value;
+  const custom = document.getElementById('model-custom').value.trim();
+  const fallback = document.getElementById('fallback-model').value;
+  APP.settings.provider = provider;
+  // Simpan kedua key secara terpisah agar tidak saling menimpa
+  if (openRouterKey) APP.settings.openRouterKey = openRouterKey;
+  if (poolsideKey) APP.settings.poolsideKey = poolsideKey;
+  APP.settings.apiKey = APP.settings.openRouterKey || '';
+  APP.settings.poolsideModel = poolsideModel;
+  APP.settings.corsProxy = corsProxy;
+  APP.settings.customModel = custom;
+  APP.settings.fallbackModel = fallback;
+  APP.settings.model = modelSel === 'custom' ? (custom || 'nvidia/nemotron-3-super-120b-a12b:free') : modelSel;
+  localStorage.setItem('rpp_generator_settings', JSON.stringify(APP.settings));
+  showToast('Pengaturan tersimpan!', 'success');
+}
+function toggleSettings() {
+  const panel = document.getElementById('settings-panel');
+  const body = document.getElementById('settings-body');
+  const arrow = document.getElementById('settings-arrow');
+  panel.classList.toggle('hidden');
+  if (!panel.classList.contains('hidden')) {
+    body.style.display = '';
+    arrow.textContent = '▼';
+  } else {
+    arrow.textContent = '▲';
+  }
+}
+function toggleCustomModel() {
+  const sel = document.getElementById('model-select').value;
+  document.getElementById('model-custom').disabled = sel !== 'custom';
+}
+document.getElementById('model-select').addEventListener('change', toggleCustomModel);
+
+async function testAPI() {
+  const btn = document.querySelector('#settings-body .btn-outline');
+  const status = document.getElementById('api-status');
+  btn.disabled = true;
+  status.innerHTML = '⏳ Testing...';
+  const provider = document.getElementById('set-provider').value;
+  try {
+    if (provider === 'poolside') {
+      const key = document.getElementById('poolside-key').value.trim();
+      if (!key) { status.innerHTML = '❌ Poolside API Key kosong'; btn.disabled = false; return; }
+      // Poolside OpenAI-compatible: daftar model sebagai uji autentikasi.
+      // Catatan: Poolside tidak mengirim header CORS, jadi tanpa CORS Proxy browser pasti memblokir.
+      const res = await fetch(withCorsProxy('https://inference.poolside.ai/v1/models'), {
+        headers: { 'Authorization': `Bearer ${key}` }
+      });
+      if (res.ok) {
+        status.innerHTML = '✅ Poolside: key valid';
+        APP.settings.poolsideKey = key;
+        APP.settings.provider = 'poolside';
+        localStorage.setItem('rpp_generator_settings', JSON.stringify(APP.settings));
+      } else {
+        const err = await res.json().catch(()=>({}));
+        status.innerHTML = `❌ ${err.error?.message || err.message || res.statusText}`;
+      }
+      btn.disabled = false;
+      return;
+    }
+    const key = document.getElementById('api-key').value.trim();
+    if (!key) { status.innerHTML = '❌ API Key kosong'; btn.disabled = false; return; }
+    const res = await fetch('https://openrouter.ai/api/v1/auth/key', {
+      headers: { 'Authorization': `Bearer ${key}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      status.innerHTML = `✅ ${data.data?.label || 'Valid'} | Sisa: ${data.data?.limit_remaining ?? '?'}`;
+      // Auto-save if test passes
+      APP.settings.openRouterKey = key;
+      APP.settings.apiKey = key;
+      localStorage.setItem('rpp_generator_settings', JSON.stringify(APP.settings));
+    } else {
+      const err = await res.json().catch(()=>({}));
+      status.innerHTML = `❌ ${err.error?.message || res.statusText}`;
+    }
+  } catch(e) {
+    const msg = e.message || String(e);
+    if (/failed to fetch|load failed|networkerror/i.test(msg)) {
+      status.innerHTML = (provider === 'poolside' && !(APP.settings.corsProxy || '').trim())
+        ? '⛔ Browser memblokir request (CORS): Poolside tidak mengizinkan panggilan langsung dari browser. Isi Worker / Proxy URL milik sendiri lalu Test lagi.'
+        : `❌ Jaringan diblokir: ${msg}`;
+    } else {
+      status.innerHTML = `❌ ${msg}`;
+    }
+  }
+  btn.disabled = false;
+}
+
+// ============================================================
+// TOAST & LOADING
+// ============================================================
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 4000);
+}
+function showLoading(text = 'Memproses...', sub = 'Mohon tunggu, AI sedang bekerja') {
+  document.getElementById('loading-text').textContent = text;
+  document.getElementById('loading-sub').textContent = sub;
+  document.getElementById('loading-overlay').classList.remove('hidden');
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.add('hidden');
+  // Setiap generate berakhir di hideLoading() → bebaskan semua kunci busy di sini (satu titik)
+  if (APP._busy) APP._busy = {};
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+// Kunci anti-ganda: cegah 2 generate berjalan bersamaan (klik ganda / console) yang
+// membanjiri API dan memicu rate-limit. Kunci dibebaskan otomatis oleh hideLoading().
+function enterBusy(key) {
+  APP._busy = APP._busy || {};
+  if (APP._busy[key]) { showToast('⏳ Masih memproses, tunggu sampai selesai dulu...', 'warning'); return false; }
+  APP._busy[key] = true;
+  return true;
+}
+
+// ============================================================
+// WIZARD NAVIGATION
+// ============================================================
+function showStep(step) {
+  APP.currentStep = step;
+  document.querySelectorAll('[id^="step-"]').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active', 'done'));
+  document.querySelectorAll('.wizard-step').forEach(el => {
+    const s = parseInt(el.dataset.step);
+    if (s < step) el.classList.add('done');
+    else if (s === step) el.classList.add('active');
+  });
+  const target = document.getElementById(`step-${step}`);
+  if (target) {
+    target.classList.remove('hidden');
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  // Show combined export if all phases done
+  if (APP.phase1 && APP.phase2 && APP.phase3) {
+    document.getElementById('combined-export-card').classList.remove('hidden');
+  }
+}
+
+// ============================================================
+// FORM HANDLING
+// ============================================================
+function collectForm() {
+  const get = (id) => document.getElementById(id)?.value?.trim() || '';
+  const form = {
+    madrasah: get('inp-madrasah'),
+    mapel: get('inp-mapel'),
+    materi: get('inp-materi'),
+    elemen: get('inp-elemen'),
+    guru: get('inp-guru'),
+    nuptk: get('inp-nuptk'),
+    fase: get('inp-fase'),
+    tahunPelajaran: get('inp-tahun-pelajaran'),
+    alkok: get('inp-alkok'),
+    kepsek: get('inp-kepsek'),
+    kepsekNuptk: get('inp-kepsek-nuptk'),
+    tempat: get('inp-tempat'),
+    tanggal: get('inp-tanggal'),
+    cp: get('inp-cp'),
+    tp: get('inp-tp'),
+    atp: get('inp-atp'),
+  };
+  // Validate required
+  const required = { madrasah: 'Nama Madrasah', guru: 'Nama Guru', mapel: 'Mata Pelajaran', fase: 'Fase/Kelas', tahunPelajaran: 'Tahun Ajaran', alkok: 'Alokasi Waktu', kepsek: 'Nama Kepala Madrasah', tempat: 'Tempat', tanggal: 'Tanggal', cp: 'Capaian Pembelajaran', tp: 'Tujuan Pembelajaran' };
+  for (const [key, label] of Object.entries(required)) {
+    if (!form[key]) { showToast(`❌ "${label}" harus diisi!`, 'error'); return null; }
+  }
+  APP.input = form;
+  return form;
+}
+
+// ============================================================
+// AI PROVIDER API (OpenRouter & Poolside, OpenAI-compatible)
+// ============================================================
+const POOLSIDE_BASE = 'https://inference.poolside.ai/v1';
+// Poolside tidak mengirim header CORS, sehingga browser memblokir fetch langsung.
+// Jika user mengisi CORS proxy, lewatkan request melaluinya.
+function withCorsProxy(url) {
+  const px = (APP.settings.corsProxy || '').trim();
+  if (!px) return url;
+  if (px.includes('{url}')) return px.replace('{url}', encodeURIComponent(url));
+  return px + encodeURIComponent(url);
+}
+async function callAIProvider(model, messages, timeoutMs = 120000, maxTokens = 8000) {
+  const provider = APP.settings.provider || 'openrouter';
+  const key = provider === 'poolside'
+    ? (APP.settings.poolsideKey || '')
+    : (APP.settings.openRouterKey || APP.settings.apiKey || '');
+  if (!key) { throw new Error(provider === 'poolside' ? 'Poolside API Key belum diisi. Buka ⚙️ Pengaturan, pilih provider Poolside.' : 'API Key belum diisi. Buka ⚙️ Pengaturan.'); }
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const isPoolside = provider === 'poolside';
+    let url = isPoolside ? `${POOLSIDE_BASE}/chat/completions` : 'https://openrouter.ai/api/v1/chat/completions';
+    if (isPoolside) url = withCorsProxy(url);
+    const headers = { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' };
+    if (!isPoolside) {
+      headers['HTTP-Referer'] = window.location.origin || 'https://rpp-generator.github.io';
+      headers['X-Title'] = 'AI RPP Generator';
+    }
+    const body = { model, messages, temperature: 0.3, max_tokens: maxTokens };
+    // response_format & top_p hanya didukung OpenRouter — Poolside mengandalkan instruksi JSON + extractJSON
+    if (!isPoolside) {
+      body.response_format = { type: 'json_object' };
+      body.top_p = 0.9;
+    }
+    const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body), signal: controller.signal });
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err.error?.message || err.message || `HTTP ${res.status}: ${res.statusText}`);
+    }
+    const data = await res.json();
+    const msgObj = data.choices?.[0]?.message || {};
+    let content = msgObj.content;
+    // Model reasoning/agentic (cth. Laguna) kadang menaruh jawaban di reasoning_content
+    if (!content && typeof msgObj.reasoning_content === 'string' && msgObj.reasoning_content.trim()) content = msgObj.reasoning_content;
+    // Kadang content berupa array parts, bukan string
+    if (Array.isArray(content)) content = content.map(p => typeof p === 'string' ? p : (p?.text || '')).join('');
+    if (!content) { console.error('[RPP] AI tanpa content, dump respons:', data); throw new Error('AI mengembalikan konten kosong'); }
+    return content;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+// Alias kompatibilitas (kode lama memanggil callOpenRouter)
+async function callOpenRouter(model, messages, timeoutMs, maxTokens) {
+  return callAIProvider(model, messages, timeoutMs, maxTokens);
+}
+
+async function generateWithFallback(systemPrompt, userPrompt, phaseName, opts = {}) {
+  const { maxTokens = 8000, checkCompleteness = null } = opts;
+  const provider = APP.settings.provider || 'openrouter';
+  const models = [];
+  if (provider === 'poolside') {
+    // Poolside: satu model (default poolside/laguna-s-2.1), tanpa fallback OpenRouter
+    models.push(APP.settings.poolsideModel || 'poolside/laguna-s-2.1');
+  } else {
+    const model = APP.settings.model;
+    const fallback = APP.settings.fallbackModel || 'openrouter/free';
+    if (model) models.push(model);
+    if (fallback && fallback !== model) models.push(fallback);
+    if (!models.length) models.push('openrouter/free');
+  }
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userPrompt }
+  ];
+  let lastError = null;
+  let rateRetried = false; // backoff 429: tepat 1x jeda+ulang per pemanggilan
+
+  const retryMessages = (msg) => [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userPrompt },
+    { role: 'assistant', content: msg },
+    { role: 'user', content: 'Response di atas bukan JSON valid. Kembalikan HANYA JSON sesuai struktur yang diminta, tanpa teks apapun di luar JSON. Mulai langsung dengan { dan akhiri dengan }.' }
+  ];
+
+  for (const m of models) {
+    try {
+      showLoading(`Phase ${phaseName}: ${m.split('/').pop()}...`, `Provider: ${provider} | Model: ${m}`);
+      const content = await callAIProvider(m, messages, 120000, maxTokens);
+      let json = extractJSON(content);
+      // Auto-retry once with stricter instruction
+      if (!json) {
+        showLoading(`Phase ${phaseName}: ${m.split('/').pop()} (ulang)...`, `Meminta JSON valid`);
+        const retryContent = await callAIProvider(m, retryMessages(content), 120000, maxTokens);
+        json = extractJSON(retryContent);
+      }
+      if (!json) throw new Error('AI tidak menghasilkan JSON yang valid');
+      let validated = validatePhaseJSON(json, phaseName);
+
+      // Completeness check: kalau hasil masih kurang lengkap (jumlah item di bawah minimum),
+      // minta model yang sama melengkapi sebelum diterima, alih-alih diam-diam lolos.
+      if (checkCompleteness) {
+        const first = checkCompleteness(validated);
+        if (!first.ok) {
+          console.warn(`Kelengkapan kurang (${phaseName}):`, first.issues);
+          showLoading(`Phase ${phaseName}: ${m.split('/').pop()} (melengkapi)...`, first.issues.join('; '));
+          try {
+            const completionMessages = [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt },
+              { role: 'assistant', content: JSON.stringify(validated) },
+              { role: 'user', content: `Hasil di atas BELUM lengkap. Masalah: ${first.issues.join('; ')}. Perbaiki dan kembalikan JSON LENGKAP dengan struktur SAMA, penuhi semua jumlah minimum yang diminta di instruksi sebelumnya. Output HANYA JSON, mulai dengan { dan akhiri dengan }.` }
+            ];
+            const fixContent = await callAIProvider(m, completionMessages, 120000, maxTokens);
+            const fixJson = extractJSON(fixContent);
+            if (fixJson) {
+              const fixValidated = validatePhaseJSON(fixJson, phaseName);
+              const second = checkCompleteness(fixValidated);
+              if (second.ok || (fixValidated && JSON.stringify(fixValidated).length > JSON.stringify(validated).length)) {
+                validated = fixValidated;
+              }
+            }
+          } catch (fixErr) {
+            console.warn('Gagal melengkapi, pakai hasil awal:', fixErr.message);
+          }
+        }
+      }
+
+      return validated;
+    } catch (e) {
+      // Rate-limit (429): JANGAN langsung hantam ulang — jeda 20 detik lalu coba model
+      // yang sama tepat 1x. Mencegah banjir request yang memperparah pembatasan.
+      const isRate = /429|too many|rate[\s_-]?limit|quota/i.test(e.message || '');
+      if (isRate && !rateRetried) {
+        rateRetried = true;
+        showToast('⏳ Kena rate-limit API, menunggu 20 detik sebelum coba lagi...', 'warning');
+        showLoading(`Phase ${phaseName}: menunggu rate-limit...`, 'Jeda 20 detik, mohon jangan klik apa-apa');
+        await sleep(20000);
+        try {
+          showLoading(`Phase ${phaseName}: ${m.split('/').pop()} (coba lagi)...`, `Provider: ${provider} | Model: ${m}`);
+          const content2 = await callAIProvider(m, messages, 120000, maxTokens);
+          const json2 = extractJSON(content2);
+          if (!json2) throw new Error('AI tidak menghasilkan JSON yang valid');
+          return validatePhaseJSON(json2, phaseName);
+        } catch (e2) { e = e2; }
+      }
+      lastError = e;
+      console.warn(`Model ${m} gagal:`, e.message);
+      const friendlyMsg = friendlyError(e.message);
+      if (m !== models[models.length-1]) {
+        showToast(`⚠️ ${friendlyMsg} — coba model cadangan...`, 'warning');
+      }
+    }
+  }
+  const finalErr = lastError || new Error('Semua model gagal. Cek API Key/provider di ⚙️ Pengaturan.');
+  // Simpan error asli agar bisa dilihat di Console tanpa reload (ketik: APP.lastError)
+  try { APP.lastError = { phase: phaseName, message: finalErr.message, time: new Date().toISOString() }; } catch(_) {}
+  console.error(`[RPP] Phase ${phaseName} gagal:`, finalErr.message);
+  throw finalErr;
+}
+
+function friendlyError(msg) {
+  if (/failed to fetch|load failed|networkerror/i.test(msg)) return 'Browser memblokir koneksi (CORS/jaringan) — untuk Poolside wajib isi Worker / Proxy URL di ⚙️ Pengaturan';
+  if (/poolside|laguna/i.test(msg) && /404|not found|model/i.test(msg)) return 'Model Poolside tidak ditemukan — pastikan ID "poolside/laguna-s-2.1"';
+  if (/unavailable.*free/i.test(msg)) return 'Model ini sudah tidak gratis';
+  if (/404|not found/i.test(msg)) return 'Model tidak ditemukan, mungkin sudah tidak tersedia';
+  if (/timeout|aborted/i.test(msg)) return 'Koneksi timeout, coba lagi';
+  if (/api.key|unauthorized|403|401/i.test(msg)) return 'API Key tidak valid';
+  if (/rate.limit|too many/i.test(msg)) return 'Terlalu banyak permintaan, tunggu sebentar';
+  if (/quota|limit/i.test(msg)) return 'Kuota API habis';
+  if (/JSON|json/i.test(msg)) return 'AI tidak menghasilkan format JSON yang valid — coba model lain atau generate ulang';
+  return msg.split('.')[0] || 'Error tidak diketahui';
+}
+
+function extractJSON(text) {
+  // Step 1: strip markdown fences
+  let cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
+
+  // Step 2: extract first { ... } block
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace >= 0 && lastBrace > firstBrace) {
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+  }
+
+  // Step 3: direct parse attempt
+  const tryParse = (s) => {
+    try { return JSON.parse(s); } catch(e) { return null; }
+  };
+  let parsed = tryParse(cleaned);
+  if (parsed) return parsed;
+
+  // Step 4: repair common issues
+  let repaired = cleaned
+    .replace(/\\'/g, "'")           // unescape single quotes
+    .replace(/\\([^"\\\/bfnrtu])/g, '\\$&')  // escape backslash for JSON validity
+    .replace(/,(\s*[}\]])/g, '$1')   // trailing commas
+    .replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":')  // unquoted keys
+    .replace(/:\s*'([^']*)'/g, ':"$1"')          // single-quoted strings
+    .replace(/:\s*'([^']*)'(\s*[},])/g, ':"$1"$2'); // more single quotes
+
+  parsed = tryParse(repaired);
+  if (parsed) return parsed;
+
+  // Step 5: try removing newlines inside strings (AI often breaks them)
+  repaired = repaired.replace(/\n\s*/g, ' ');
+  parsed = tryParse(repaired);
+  if (parsed) return parsed;
+
+  // Step 6: last resort — try to salvage partial JSON
+  try {
+    // Find deepest complete JSON structure
+    let best = null;
+    let depth = 0, lastGoodEnd = -1;
+    for (let i = 0; i < repaired.length; i++) {
+      if (repaired[i] === '{') depth++;
+      if (repaired[i] === '}') { depth--; if (depth === 0) lastGoodEnd = i; }
+    }
+    if (lastGoodEnd > 0) {
+      const partial = repaired.substring(0, lastGoodEnd + 1);
+      parsed = tryParse(partial);
+      if (parsed) return parsed;
+    }
+  } catch(e) {}
+
+  return null;
+}
+
+function validatePhaseJSON(json, phaseName) {
+  if (!json || typeof json !== 'object') throw new Error('Response bukan JSON object');
+  const p = String(phaseName);
+  // Sub-phase 1a (RPP Core)
+  if (p === '1a' || p === '1') {
+    if (!json.rpp) json = { rpp: json };
+    if (!json.rpp) throw new Error('Phase RPP Core harus memiliki struktur "rpp"');
+  }
+  // Sub-phase 1b (LKPD)
+  if (p === '1b') {
+    if (!json.lkpd) json = { lkpd: json };
+    if (!json.lkpd) throw new Error('Phase LKPD harus memiliki struktur "lkpd"');
+  }
+  // Sub-phase 1c (Evaluasi)
+  if (p === '1c') {
+    if (!json.evaluasi) json = { evaluasi: json };
+    if (!json.evaluasi) throw new Error('Phase Evaluasi harus memiliki struktur "evaluasi"');
+  }
+  // Sub-phase 1d (Remidial + Pengayaan + Rubrik)
+  if (p === '1d') {
+    if (!json.programRemidial && !json.programPengayaan && !json.rubrikPenilaian) {
+      json = { programRemidial: json.programRemidial || null, programPengayaan: json.programPengayaan || null, rubrikPenilaian: json.rubrikPenilaian || null };
+    }
+  }
+  // Sub-phase 1e (Diagnostik)
+  if (p === '1e') {
+    if (!json.diagnostik) json = { diagnostik: json };
+    if (!json.diagnostik) throw new Error('Phase Diagnostik harus memiliki struktur "diagnostik"');
+  }
+  if (p === '2') {
+    if (!json.modulAjar && !json.bahanAjar) json = { modulAjar: json };
+    if (!json.modulAjar && !json.bahanAjar) throw new Error('Phase 2 harus memiliki "modulAjar" atau "bahanAjar"');
+  }
+  if (p === '3') {
+    if (!json.media) json = { media: json };
+    if (!json.media) throw new Error('Phase 3 harus memiliki "media"');
+  }
+  return json;
+}
+
+// ============================================================
+// FEW-SHOT EXAMPLES (referensi gaya/kedalaman, diambil & dipadatkan
+// dari contoh RPP nyata berkualitas tinggi). Ini KUNCI kualitas output
+// terutama untuk model gratis yang butuh contoh konkret, bukan cuma skema kosong.
+// ============================================================
+function fewshotNote(materiAsli) {
+  return `\n\nPERINGATAN: Contoh di atas topiknya adalah "Sel Hewan dan Sel Tumbuhan" HANYA untuk referensi gaya bahasa, kedalaman, dan struktur JSON. JANGAN salin topik/istilah biologinya. Materi yang HARUS kamu buat adalah "${materiAsli}" — sesuaikan seluruh isi sepenuhnya dengan materi ini.`;
+}
+
+function buildContextSummary(context) {
+  const rpp = context?.rpp;
+  if (!rpp) return '';
+  const desain = rpp.desainPembelajaran || {};
+  const langkah = rpp.langkahPembelajaran || {};
+  const topik = (desain.topikPembelajaran || []).join('; ');
+  const tp = (desain.tujuanPembelajaran || []).join('; ');
+  const model = desain.praktekPedagogis?.modelPembelajaran || '';
+  const tahapNama = (langkah.kegiatanInti?.tahap || []).map(t => t.nama).join(', ');
+  if (!topik && !tp && !model) return '';
+  return `\n\nKONTEKS DARI RPP INTI YANG SUDAH DIBUAT SEBELUMNYA (WAJIB konsisten dengan ini, jangan bertentangan):\n- Topik Pembelajaran: ${topik}\n- Tujuan Pembelajaran: ${tp}\n- Model Pembelajaran: ${model}\n- Tahapan Kegiatan Inti: ${tahapNama}`;
+}
+
+const FEWSHOT_RPP_CORE = `{
+  "rpp": {
+    "identifikasi": {
+      "pesertaDidik": "Peserta didik umumnya sudah mengetahui dasar materi terkait namun perlu bimbingan lebih lanjut. Kesiapan belajar cukup baik, terutama bila materi disajikan lewat pengamatan langsung, diskusi kelompok, dan media visual yang menarik.",
+      "materiPelajaran": "[Materi Utama]",
+      "dimensiProfilLulusan": ["Keimanan dan ketakwaan terhadap Tuhan Yang Maha Esa", "Penalaran Kritis", "Kolaborasi", "Kreativitas", "Komunikasi"],
+      "temaKurikulumCinta": ["Cinta Allah dan Rasul-Nya", "Cinta kepada diri sendiri dan sesama"],
+      "materiIntegrasiKBC": ["Bersyukur atas ilmu pengetahuan sebagai rahmat dari Allah SWT.", "Membiasakan diri bersikap teliti, jujur, dan bertanggung jawab."]
+    },
+    "desainPembelajaran": {
+      "capaianPembelajaran": "Pada akhir fase ini, peserta didik mampu memahami konsep utama dan mengaplikasikannya dalam penyelesaian masalah kontekstual.",
+      "lintasDisiplinIlmu": [{ "nama": "Pendidikan Agama Islam", "detail": "syukur terhadap keteraturan ciptaan Allah" }],
+      "tujuanPembelajaran": ["Peserta didik mampu mendeskripsikan konsep utama materi.", "Peserta didik mampu menganalisis penerapan konsep dalam permasalahan."],
+      "topikPembelajaran": ["Konsep Dasar Materi", "Penerapan dan Analisis Materi"],
+      "praktekPedagogis": { "modelPembelajaran": "Problem Based Learning", "sintaks": ["Orientasi murid pada masalah.", "Mengorganisasi murid untuk belajar.", "Membimbing penyelidikan individu/kelompok.", "Mengembangkan dan menyajikan hasil.", "Menganalisis dan mengevaluasi proses pemecahan masalah."], "metode": ["Diskusi", "Tanya jawab", "Penugasan", "Presentasi"] },
+      "kemitraanPembelajaran": [{ "pihak": "Orang tua/Wali murid", "peran": "Mendorong peserta didik memahami materi terkait di rumah." }],
+      "lingkunganPembelajaran": { "ruangFisik": "Ruang kelas fleksibel dan kolaboratif.", "budayaBelajar": "Budaya berpikir kritis, kolaboratif, dan reflektif.", "penerapanNyata": [{ "aspek": "Penerapan praktis", "detail": "Identifikasi masalah kontekstual dalam kehidupan sehari-hari." }] },
+      "pemanfaatanDigital": [{ "tahap": "Pelaksanaan", "tools": ["Video pembelajaran", "Power Point"] }]
+    },
+    "diferensiasiPembelajaran": {
+      "konten": "Materi disajikan dalam berbagai format (teks, video, infografis) sesuai gaya belajar peserta didik.",
+      "proses": "Peserta didik dapat memilih untuk bekerja secara individu maupun kelompok berdasarkan kesiapan belajar.",
+      "produk": "Hasil penyelesaian masalah dapat disajikan berupa laporan tertulis, mind map, atau presentasi lisan."
+    },
+    "langkahPembelajaran": {
+      "prinsip": ["Mindful (berkesadaran)", "Meaningful (bermakna)", "Joyful (menyenangkan)"],
+      "kegiatanAwal": { "durasi": "10 menit", "langkah": ["Guru menyapa dan mengajak berdoa (mindful)", "Guru mengajukan pertanyaan pemantik terkait materi", "Guru menyampaikan tujuan pembelajaran dan manfaatnya dalam kehidupan (meaningful)"] },
+      "kegiatanInti": { "durasi": "50 menit", "tahap": [
+        { "nama": "Memahami", "langkah": ["Guru mengajukan masalah kontekstual terkait materi (Sintaks 1)", "Peserta didik menyimak penjelasan/video pembelajaran", "Diskusi kelas untuk menggali pemahaman awal"] },
+        { "nama": "Mengaplikasi", "langkah": ["Peserta didik berkelompok mengerjakan LKPD dengan bimbingan guru (Kolaborasi, Kreativitas)", "Guru membimbing penyelidikan tiap kelompok"] },
+        { "nama": "Merefleksi", "langkah": ["Presentasi hasil diskusi dan umpan balik (Komunikasi)", "Peserta didik menyimpulkan materi, guru memberi penguatan", "Refleksi: apa yang dipelajari, bagaimana perasaan, bagian mana yang masih sulit"] }
+      ]},
+      "kegiatanPenutup": { "durasi": "10 menit", "langkah": ["Guru memberi penguatan pembelajaran", "Guru menyampaikan rencana topik selanjutnya", "Doa penutup"] }
+    },
+    "asesmen": { "asesmenAwal": ["Asesmen diagnostik awal"], "asesmenProses": ["Diskusi kelompok", "Presentasi", "LKPD"], "asesmenAkhir": ["Soal evaluasi individu (tes tertulis)"] },
+    "pengesahan": { "tempat": "", "tanggal": "" }
+  }
+}`;
+
+const FEWSHOT_LKPD = `{
+  "lkpd": {
+    "identitas": { "mataPelajaran": "[Mata Pelajaran]", "kelasSemester": "[Kelas / Semester]", "materiPokok": "[Materi Utama]", "alokasiWaktu": "2 x 40 menit" },
+    "tujuan": ["Mengidentifikasi konsep dasar materi.", "Menyajikan hasil analisis/diskusi kelompok."],
+    "aktivitas": [
+      { "nama": "Aktivitas 1: Memahami Konsep", "deskripsi": "Amati fenomena/soal kontekstual yang disajikan.", "tugas": ["Identifikasi unsur-unsur penting.", "Lengkapi rincian yang diminta."] },
+      { "nama": "Aktivitas 2: Perbandingan dan Penerapan", "deskripsi": "Lengkapi tabel perbandingan berikut berdasarkan hasil diskusi.", "tugas": [] }
+    ],
+    "tabelPerbandingan": { "kolom": ["No", "Aspek yang Dibandingkan", "Kategori A", "Kategori B", "Keterangan"], "data": [
+      ["1", "Aspek 1", "Karakteristik A1", "Karakteristik B1", "Penjelasan perbandingan aspek 1."],
+      ["2", "Aspek 2", "Karakteristik A2", "Karakteristik B2", "Penjelasan perbandingan aspek 2."],
+      ["3", "Aspek 3", "Karakteristik A3", "Karakteristik B3", "Penjelasan perbandingan aspek 3."]
+    ]},
+    "pertanyaan": [
+      { "nomor": 1, "pertanyaan": "Apa perbedaan/hubungan utama dari aspek yang dipelajari?", "jawaban": "Penjelasan mendasar berdasarkan hasil diskusi." },
+      { "nomor": 2, "pertanyaan": "Bagaimana penerapan konsep ini dalam situasi kehidupan nyata?", "jawaban": "Kaitkan dengan fungsi dan manfaatnya." }
+    ]
+  }
+}`;
+
+const FEWSHOT_EVALUASI = `{
+  "evaluasi": {
+    "soal": [
+      { "nomor": 1, "pertanyaan": "Pertanyaan konsep dasar (mengingat/memahami) terkait materi...", "opsi": ["A. Pilihan A", "B. Pilihan B", "C. Pilihan C (jawaban benar)", "D. Pilihan D"], "kunci": "C", "level": "C2" },
+      { "nomor": 2, "pertanyaan": "Pertanyaan berupa studi kasus/analisis singkat yang menuntut penalaran, bukan hafalan (contoh: 'Berdasarkan fenomena... kesimpulan yang tepat adalah...')", "opsi": ["A. Pilihan A", "B. Pilihan B (jawaban benar)", "C. Pilihan C", "D. Pilihan D"], "kunci": "B", "level": "C4" }
+    ],
+    "penskoran": "Setiap soal benar skor 10, salah 0. Nilai = jumlah skor benar x 10"
+  }
+}`;
+
+const FEWSHOT_LAMPIRAN_AKHIR = `{
+  "programRemidial": { "deskripsi": "Program bagi peserta didik yang belum mencapai TP.", "langkah": ["Identifikasi peserta didik yang belum tuntas berdasarkan asesmen.", "Berikan pembelajaran ulang dengan metode/media berbeda.", "Bimbingan individu atau kelompok kecil.", "Evaluasi ulang untuk memastikan ketuntasan."] },
+  "programPengayaan": { "deskripsi": "Program bagi peserta didik yang sudah mencapai TP.", "langkah": ["Identifikasi peserta didik yang sudah tuntas.", "Berikan materi pengayaan yang lebih menantang.", "Tugas mandiri eksploratif terkait materi.", "Presentasikan hasil pengayaan."] },
+  "rubrikPenilaian": {
+    "diskusi": { "aspek": [
+      { "nama": "Berani mengemukakan pendapat", "sb": "Berani berpendapat dengan baik dan runtut", "b": "Berani berpendapat namun belum konsisten", "c": "Berani berpendapat dengan beberapa teman saja", "pb": "Perlu dimotivasi untuk berpendapat" },
+      { "nama": "Kerjasama dan komunikasi", "sb": "Kerjasama dan komunikasi sangat baik", "b": "Kerjasama dan komunikasi baik namun belum konsisten", "c": "Kerjasama dengan beberapa teman", "pb": "Perlu dimotivasi untuk bekerjasama" }
+    ]},
+    "presentasi": { "aspek": [
+      { "nama": "Kesesuaian dan Kelengkapan", "sb": "Sangat sesuai materi dan lengkap", "b": "Sesuai materi dan lengkap", "c": "Sesuai materi namun kurang lengkap", "pb": "Kurang sesuai dan kurang lengkap" }
+    ]}
+  }
+}`;
+
+const FEWSHOT_MODUL_AJAR = `{
+  "modulAjar": {
+    "bahanAjar": {
+      "pengertian": "Pengertian komprehensif mengenai materi utama.",
+      "subBab": [
+        { "judul": "Sub Bab 1", "konten": "Penjelasan detail sub bab 1.", "contoh": "Contoh aplikatif sub bab 1." },
+        { "judul": "Sub Bab 2", "konten": "Penjelasan detail sub bab 2.", "contoh": "Contoh aplikatif sub bab 2." },
+        { "judul": "Sub Bab 3", "konten": "Penjelasan detail sub bab 3.", "contoh": "Contoh aplikatif sub bab 3." }
+      ]
+    },
+    "ringkasanMateri": [
+      { "konsep": "Konsep Penting 1", "definisi": "Definisi singkat dan padat.", "contoh": "Contoh nyata." }
+    ],
+    "glosarium": [
+      { "istilah": "Istilah", "definisi": "Definisi istilah teknis yang digunakan dalam materi." }
+    ],
+    "mindmap": {
+      "topik": "Topik Utama",
+      "cabang": [
+        { "nama": "Cabang 1", "rincian": ["Sub cabang 1", "Sub cabang 2"] }
+      ]
+    },
+    "faq": [
+      { "pertanyaan": "Apa yang sering ditanyakan siswa tentang materi ini?", "jawaban": "Jawaban yang jelas dan mudah dipahami." }
+    ],
+    "referensi": [
+      { "sumber": "Buku Paket Kemdikbud Kelas X", "tautan": "" }
+    ],
+    "refleksiGuru": {
+      "pertanyaanRefleksi": [
+        "Apakah kegiatan pembelajaran berjalan sesuai rencana?",
+        "Bagian mana yang paling sulit dipahami peserta didik?",
+        "Apa langkah perbaikan untuk pertemuan selanjutnya?"
+      ],
+      "hal_yang_berhasil": "Peserta didik antusias saat diskusi.",
+      "hal_yang_perlu_diperbaiki": "Manajemen waktu saat presentasi kelompok."
+    }
+  }
+}`;
+
+const FEWSHOT_DIAGNOSTIK = `{
+  "diagnostik": {
+    "soal": [
+      { "nomor": 1, "pertanyaan": "Soal pemahaman dasar terkait materi sebelumnya.", "opsi": ["A. Opsi A", "B. Opsi B", "C. Opsi C (benar)", "D. Opsi D"], "kunci": "C" },
+      { "nomor": 2, "pertanyaan": "Soal pemahaman prasyarat untuk materi yang akan diajarkan.", "opsi": ["A. Opsi A", "B. Opsi B", "C. Opsi C", "D. Opsi D (benar)"], "kunci": "D" }
+    ],
+    "rubrik": {
+      "aspek": ["Pemahaman Prasyarat Kognitif", "Kesiapan Mengikuti Materi Baru"],
+      "interpretasi": [
+        { "rentangSkor": "80-100", "kategori": "Paham Utuh", "tindakLanjut": "Pembelajaran dapat dilanjutkan sesuai rencana CP." },
+        { "rentangSkor": "60-79", "kategori": "Paham Sebagian", "tindakLanjut": "Berikan pendampingan tambahan pada bagian tertentu." },
+        { "rentangSkor": "0-59", "kategori": "Belum Paham", "tindakLanjut": "Lakukan remedial kognitif sebelum masuk ke materi inti." }
+      ]
+    }
+  }
+}`;
+
+// ============================================================
+// PENGECEK KELENGKAPAN — supaya hasil yang jumlah itemnya kurang dari
+// minimum yang diminta tidak lolos begitu saja (silent quality loss).
+// ============================================================
+function checkCompletenessRPP(json) {
+  const issues = [];
+  const rpp = json.rpp || json;
+  const desain = rpp.desainPembelajaran || {};
+  const langkah = rpp.langkahPembelajaran || {};
+  if (!rpp.diferensiasiPembelajaran) issues.push('diferensiasiPembelajaran kosong');
+  if (!(desain.tujuanPembelajaran?.length >= 1)) issues.push('tujuanPembelajaran kosong');
+  if (!(desain.topikPembelajaran?.length >= 1)) issues.push('topikPembelajaran kosong');
+  const tahap = langkah.kegiatanInti?.tahap || [];
+  if (tahap.length < 3) issues.push('kegiatanInti.tahap harus 3 (Memahami/Mengaplikasi/Merefleksi)');
+  if (tahap.some(t => !(t.langkah?.length >= 2))) issues.push('ada tahap kegiatan inti dengan langkah < 2');
+  if (!(langkah.kegiatanAwal?.langkah?.length >= 2)) issues.push('kegiatanAwal.langkah kurang dari 2');
+  if (!(langkah.kegiatanPenutup?.langkah?.length >= 2)) issues.push('kegiatanPenutup.langkah kurang dari 2');
+  return { ok: issues.length === 0, issues };
+}
+function checkCompletenessLKPD(json) {
+  const issues = [];
+  const lkpd = json.lkpd || json;
+  if (!(lkpd.aktivitas?.length >= 2)) issues.push('aktivitas kurang dari 2');
+  if (!(lkpd.tabelPerbandingan?.data?.length >= 3)) issues.push('tabelPerbandingan.data kurang dari 3 baris');
+  if (!(lkpd.pertanyaan?.length >= 2)) issues.push('pertanyaan pemahaman kurang dari 2');
+  return { ok: issues.length === 0, issues };
+}
+function checkCompletenessEvaluasi(json) {
+  const issues = [];
+  const ev = json.evaluasi || json;
+  if (!(ev.soal?.length >= 10)) issues.push(`soal hanya ${ev.soal?.length || 0}, minimal 10`);
+  if (ev.soal?.some(s => !(s.opsi?.length === 4))) issues.push('ada soal dengan opsi bukan 4 pilihan');
+  const c3plus = ev.soal?.filter(s => ['C3','C4','C5','C6'].includes(s.level?.toUpperCase())).length || 0;
+  if (c3plus < 3) issues.push(`soal level C3+ hanya ${c3plus}, minimal 3`);
+  return { ok: issues.length === 0, issues };
+}
+function checkCompletenessLampiranAkhir(json) {
+  const issues = [];
+  if (!(json.programRemidial?.langkah?.length >= 3)) issues.push('programRemidial.langkah kurang dari 3');
+  if (!(json.programPengayaan?.langkah?.length >= 3)) issues.push('programPengayaan.langkah kurang dari 3');
+  if (!(json.rubrikPenilaian?.diskusi?.aspek?.length >= 3)) issues.push('rubrik diskusi: aspek kurang dari 3');
+  if (!(json.rubrikPenilaian?.presentasi?.aspek?.length >= 3)) issues.push('rubrik presentasi: aspek kurang dari 3');
+  return { ok: issues.length === 0, issues };
+}
+function checkCompletenessModulAjar(json) {
+  const issues = [];
+  const ma = json.modulAjar || json;
+  if (!(ma.bahanAjar?.subBab?.length >= 3)) issues.push(`subBab hanya ${ma.bahanAjar?.subBab?.length || 0}, minimal 3`);
+  if (!(ma.glosarium?.length >= 8)) issues.push(`glosarium hanya ${ma.glosarium?.length || 0}, minimal 8`);
+  if (!(ma.faq?.length >= 3)) issues.push(`FAQ hanya ${ma.faq?.length || 0}, minimal 3`);
+  if (!ma.refleksiGuru) issues.push(`refleksiGuru kosong`);
+  return { ok: issues.length === 0, issues };
+}
+function checkCompletenessMedia(json) {
+  const issues = [];
+  const media = json.media || json;
+  if (!(media.slidePresentasi?.length >= 10)) issues.push(`slide hanya ${media.slidePresentasi?.length || 0}, minimal 10`);
+  if (!(media.videoScript?.adegan?.length >= 5)) issues.push('adegan video kurang dari 5');
+  if (!(media.kuisInteraktif?.length >= 5)) issues.push('kuis interaktif kurang dari 5');
+  return { ok: issues.length === 0, issues };
+}
+function checkCompletenessDiagnostik(json) {
+  const issues = [];
+  const dg = json.diagnostik || json;
+  if (!(dg.soal?.length >= 5)) issues.push('soal diagnostik kurang dari 5');
+  if (!(dg.rubrik?.interpretasi?.length >= 2)) issues.push('interpretasi rubrik diagnostik kurang dari 2');
+  return { ok: issues.length === 0, issues };
+}
+const COMPLETENESS_CHECKERS = { a: checkCompletenessRPP, b: checkCompletenessLKPD, c: checkCompletenessEvaluasi, d: checkCompletenessLampiranAkhir, e: checkCompletenessDiagnostik };
+
+// ============================================================
+// PHASE 1: RPP + LAMPIRAN (chunked into 4 sub-phases)
+// ============================================================
+const SUBPHASES = [
+  { id: 'a', label: 'RPP Core', schema: 'rpp', description: 'Identitas, Desain, Langkah, Asesmen, Pengesahan', maxTokens: 12000 },
+  { id: 'b', label: 'LKPD', schema: 'lkpd', description: 'Lembar Kerja Peserta Didik (tabel, aktivitas, pertanyaan)', maxTokens: 10000 },
+  { id: 'c', label: 'Evaluasi + Kunci', schema: 'evaluasi', description: 'Soal pilihan ganda + kunci jawaban + penskoran', maxTokens: 7000 },
+  { id: 'd', label: 'Remidial + Pengayaan + Rubrik', schema: 'lampiranAkhir', description: 'Program remidial, pengayaan, rubrik diskusi & presentasi', maxTokens: 9000 },
+  { id: 'e', label: 'Tes Diagnostik Awal', schema: 'diagnostik', description: 'Soal diagnostik awal kognitif + rubrik interpretasi', maxTokens: 8000 },
+];
+
+function updateProgress(pct, label, subphaseData) {
+  const fill = document.getElementById('phase1-progress-fill');
+  const pctEl = document.getElementById('phase1-progress-pct');
+  const labelEl = document.getElementById('phase1-progress-label');
+  if (fill) fill.style.width = pct + '%';
+  if (pctEl) pctEl.textContent = pct + '%';
+  if (labelEl) labelEl.textContent = label;
+  if (subphaseData) {
+    const container = document.getElementById('phase1-progress-steps');
+    if (container) {
+      container.innerHTML = subphaseData.map(s => {
+        if (s.done) return `<div class="progress-step-item done"><span class="p-icon">✅</span> ${s.label}</div>`;
+        if (s.active) return `<div class="progress-step-item active"><span class="p-icon">⏳</span> ${s.label} — ${s.description}</div>`;
+        return `<div class="progress-step-item pending"><span class="p-icon">⏺️</span> ${s.label}</div>`;
+      }).join('');
+    }
+  }
+}
+
+async function generateSubPhase(subPhaseIndex, context) {
+  const sp = SUBPHASES[subPhaseIndex];
+  const input = APP.input;
+  const contextSummary = buildContextSummary(context);
+  const fewshotSuffix = fewshotNote(input.materi);
+
+  // Build system prompt for each sub-phase
+  let systemPrompt = '';
+  let userPrompt = '';
+
+  const baseRules = `Kamu adalah AI generator RPP Kurikulum Merdeka untuk MTs/SMP di Indonesia. Output HANYA JSON valid, tanpa teks lain. Bahasa Indonesia baku (EYD), formal.
+
+KURIKULUM BERBASIS CINTA (KBC) — Kemenag:
+KBC adalah jiwa implementasi Kurikulum Nasional di madrasah. Bukan mengganti, tetapi menginsersikan nilai cinta ke seluruh proses pembelajaran. Lima nilai Panca Cinta:
+1. Cinta kepada Tuhan Yang Maha Esa — keimanan, spiritualitas, syukur
+2. Cinta kepada Diri dan Sesama — empati, kasih sayang, tolong-menolong
+3. Cinta kepada Ilmu Pengetahuan — semangat belajar, literasi, inovasi
+4. Cinta kepada Lingkungan — ekoteologi, menjaga alam, keberlanjutan
+5. Cinta kepada Bangsa dan Negeri — nasionalisme, toleransi, moderasi beragama
+
+DEEP LEARNING — Kemendikdasmen:
+Tiga pilar Pembelajaran Mendalam (PM):
+- Mindful (Berkesadaran): siswa hadir penuh, termotivasi intrinsik, sadar tujuan belajar, mampu meregulasi diri
+- Meaningful (Bermakna): pembelajaran terhubung dengan kehidupan nyata, siswa merasakan manfaat dan relevansi
+- Joyful (Menggembirakan): lingkungan aman secara psikologis, antusiasme, kegembiraan dari pertumbuhan autentik
+
+Integrasi: KBC menyediakan jiwa dan nilai, Deep Learning menyediakan pendekatan pedagogis. Keduanya saling melengkapi dalam setiap langkah pembelajaran.
+
+Ekspresi matematika tulis \\(...\\) (inline) atau \\[...\\] (display) LaTeX.
+Aksara Arab dan Jawa tulis langsung dalam teks aslinya, JANGAN pakai transliterasi.`;
+
+  if (sp.id === 'a') {
+    systemPrompt = baseRules + `
+
+STRUKTUR JSON (rpp) — isi SEMUA field secara dinamis sesuai CP/TP/materi, JANGAN copy contoh:
+{
+  "rpp": {
+    "identifikasi": {
+      "pesertaDidik": "deskripsi peserta didik sesuai input CP",
+      "materiPelajaran": "materi yang dipelajari",
+      "dimensiProfilLulusan": ["dimensi 1 relevan materi", "dimensi 2 relevan materi"],
+      "temaKurikulumCinta": ["tema cinta relevan materi", "tema cinta relevan materi"],
+      "materiIntegrasiKBC": ["nilai KBC relevan materi 1", "nilai KBC relevan materi 2"]
+    },
+    "desainPembelajaran": {
+      "capaianPembelajaran": "CP dari input",
+      "lintasDisiplinIlmu": [{ "nama": "disiplin terkait", "detail": "uraian" }],
+      "tujuanPembelajaran": ["TP sesuai input"],
+      "topikPembelajaran": ["topik diturunkan dari CP/TP", "topik diturunkan dari CP/TP"],
+      "praktekPedagogis": {
+        "modelPembelajaran": "model sesuai karakter materi & TP",
+        "sintaks": ["langkah sintaks 1", "langkah sintaks 2"],
+        "metode": ["metode 1", "metode 2"]
+      },
+      "kemitraanPembelajaran": [{ "pihak": "pihak relevan", "peran": "perannya" }],
+      "lingkunganPembelajaran": { "ruangFisik": "", "budayaBelajar": "", "penerapanNyata": [{ "aspek": "aspek relevan TP", "detail": "detail penerapan" }] },
+      "pemanfaatanDigital": [{ "tahap": "tahap pembelajaran", "tools": ["tool digital"] }]
+    },
+    "diferensiasiPembelajaran": {
+      "konten": "strategi diferensiasi konten berdasarkan kesiapan/minat/profil belajar",
+      "proses": "strategi diferensiasi proses",
+      "produk": "strategi diferensiasi produk"
+    },
+    "langkahPembelajaran": {
+      "prinsip": ["Mindful (berkesadaran)", "Meaningful (bermakna)", "Joyful (menyenangkan)"],
+      "kegiatanAwal": { "durasi": "10 menit", "langkah": ["langkah kegiatan awal relevan materi"] },
+      "kegiatanInti": { "durasi": "50 menit", "tahap": [{ "nama": "Memahami", "langkah": ["langkah untuk mencapai TP"] }, { "nama": "Mengaplikasi", "langkah": ["langkah untuk mencapai TP"] }, { "nama": "Merefleksi", "langkah": ["langkah untuk mencapai TP"] }] },
+      "kegiatanPenutup": { "durasi": "10 menit", "langkah": ["langkah penutup"] }
+    },
+    "asesmen": { "asesmenAwal": ["asesmen awal relevan"], "asesmenProses": ["asesmen proses relevan"], "asesmenAkhir": ["asesmen akhir relevan"] },
+    "pengesahan": { "tempat": "", "tanggal": "" }
+  }
+}
+
+ATURAN PENTING — KONSISTENSI:
+1. Materi, Elemen, CP, TP, dan ATP HARUS saling berkaitan erat. Setiap bagian RPP harus mendukung pencapaian TP.
+2. Dimensi Profil Pelajar Pancasila, Tema Kurikulum Cinta (Panca Cinta), dan Materi Integrasi KBC harus RELEVAN dengan ${input.materi}, ${input.elemen}, CP, dan TP. JANGAN copy-paste.
+3. Topik pembelajaran, model pembelajaran, sintaks, metode, penerapan nyata, dan pemanfaatan digital HARUS diturunkan secara logis dari CP dan TP. Pilih model/sintaks yang PALING SESUAI dengan karakter materi dan tujuan pembelajaran — jangan asal pakai PBL.
+4. Setiap langkah kegiatan awal, inti (Memahami→Mengaplikasi→Merefleksi), dan penutup harus DIRANCANG untuk mencapai TP. Jika tidak, RPP tidak berguna.
+5. Integrasikan nilai Panca Cinta KBC dan prinsip Deep Learning (Mindful→Meaningful→Joyful) secara KONTEKSTUAL dalam setiap tahap pembelajaran, bukan tempelan.
+6. Sertakan strategi Diferensiasi Pembelajaran (konten, proses, produk) yang spesifik dan dapat diterapkan sesuai materi.
+7. Ekspresi matematika gunakan \\(...\\) (inline) atau \\[...\\] (display) LaTeX. Aksara Arab/Jawa tulis langsung.
+
+CONTOH STRUKTUR & GAYA BAHASA (acuan format, kedalaman isi, dan cara menulis langkah pembelajaran — JANGAN salin topiknya):
+${FEWSHOT_RPP_CORE}
+${fewshotSuffix}`;
+    userPrompt = `Generate RPP Core untuk:
+- Madrasah: ${input.madrasah}
+- Mata Pelajaran: ${input.mapel}
+- Materi: ${input.materi}
+- Elemen: ${input.elemen}
+- Guru: ${input.guru}
+- NUPTK Guru: ${input.nuptk || '-'}
+- Kepala Madrasah: ${input.kepsek}
+- NUPTK Kepala Madrasah: ${input.kepsekNuptk || '-'}
+- Fase/Kelas/Semester: ${input.fase}
+- Alokasi Waktu: ${input.alkok}
+- Tempat/Tanggal: ${input.tempat}, ${input.tanggal}
+
+CP: ${input.cp}
+
+TP: ${input.tp}
+
+${input.atp ? `ATP:\n${input.atp}` : ''}
+
+ATURAN:
+- Dimensi Profil Pelajar Pancasila, Tema Kurikulum Cinta, dan Integrasi KBC harus RELEVAN dengan ${input.materi} dan ${input.elemen}, bukan copy-paste.
+- Topik, model, sintaks, metode, penerapan nyata, pemanfaatan digital HARUS diturunkan dari CP dan TP.
+ - Ekspresi matematika pakai \\(...\\) (inline) atau \\[...\\] (display) LaTeX. Aksara Arab/Jawa tulis langsung.
+
+Output JSON dengan struktur "rpp" saja.`;
+
+  } else if (sp.id === 'b') {
+    systemPrompt = baseRules + `
+
+Kamu sedang melanjutkan generate RPP. Sekarang buat LKPD.
+Output HANYA JSON dengan struktur berikut:
+
+{
+  "lkpd": {
+    "identitas": { "mataPelajaran": "", "kelasSemester": "", "materiPokok": "", "alokasiWaktu": "" },
+    "tujuan": ["Tujuan LKPD"],
+    "aktivitas": [{ "nama": "Aktivitas 1: sesuai materi", "deskripsi": "deskripsi aktivitas", "tugas": ["tugas 1", "tugas 2"] }, { "nama": "Aktivitas 2: Perbandingan/Penerapan", "deskripsi": "deskripsi aktivitas", "tugas": [] }],
+    "tabelPerbandingan": { "kolom": ["No", "nama kolom sesuai materi", "..."], "data": [["1", "nilai kolom 1", "nilai kolom 2", "..."]] },
+    "pertanyaan": [{ "nomor": 1, "pertanyaan": "", "jawaban": "" }]
+  }
+}
+
+PENTING soal "tabelPerbandingan": setiap baris di "data" adalah ARRAY OF STRING (BUKAN object), urutannya HARUS sama persis dengan urutan "kolom". Jumlah kolom bebas menyesuaikan materi (tidak harus 5), minimal 5 baris data yang benar-benar relevan dengan ${input.materi}.`;
+    userPrompt = `Buat LKPD untuk materi ${input.materi}.
+Mapel: ${input.mapel}
+Materi: ${input.materi}
+Elemen: ${input.elemen}
+Kelas: ${input.fase}
+CP: ${input.cp}
+TP: ${input.tp}
+
+Ekspresi matematika pakai \\(...\\) (inline) atau \\[...\\] (display) LaTeX. Aksara Arab/Jawa tulis langsung.
+
+CONTOH STRUKTUR & GAYA (acuan format & kedalaman — JANGAN salin topiknya, dan ingat "data" tabel di contoh ini array-of-array):
+${FEWSHOT_LKPD}
+${fewshotSuffix}
+${contextSummary}
+Output JSON struktur "lkpd" saja.`;
+
+  } else if (sp.id === 'c') {
+    systemPrompt = baseRules + `
+
+Sekarang buat soal evaluasi. Output HANYA JSON:
+
+{
+  "evaluasi": {
+    "soal": [{ "nomor": 1, "pertanyaan": "", "opsi": ["A. ", "B. ", "C. ", "D. "], "kunci": "A", "level": "C1-C6" }],
+    "penskoran": "Setiap soal benar skor 10, salah 0. Nilai = skor x 10"
+  }
+}
+
+Minimal 10 soal pilihan ganda dengan 4 opsi, tentang ${input.materi}. Variasikan level kognitif: sebagian soal mengingat/memahami (C1-C2), dan MINIMAL 3 soal berupa analisis/penerapan/studi kasus (C3-C4) — bukan cuma hafalan.`;
+    userPrompt = `Buat 10 soal evaluasi pilihan ganda tentang ${input.materi}.
+Mapel: ${input.mapel}
+Materi: ${input.materi}
+Elemen: ${input.elemen}
+Kelas: ${input.fase}
+Ekspresi matematika pakai \\(...\\) (inline) atau \\[...\\] (display) LaTeX. Aksara Arab/Jawa tulis langsung.
+
+CONTOH STRUKTUR & GAYA SOAL (acuan format & variasi level kognitif — JANGAN salin topiknya):
+${FEWSHOT_EVALUASI}
+${fewshotSuffix}
+${contextSummary}
+Output struktur "evaluasi" saja, dengan MINIMAL 10 soal.`;
+
+  } else if (sp.id === 'd') {
+    systemPrompt = baseRules + `
+
+Sekarang buat program remidial, pengayaan, dan rubrik. Output HANYA JSON:
+
+{
+  "programRemidial": { "deskripsi": "", "langkah": ["identifikasi siswa yang belum tuntas", "berikan pembelajaran ulang dengan metode berbeda", "bimbingan individu/kelompok", "evaluasi ulang"] },
+  "programPengayaan": { "deskripsi": "", "langkah": ["identifikasi siswa yang sudah tuntas", "berikan materi pengayaan", "tugas mandiri eksploratif", "presentasi hasil pengayaan"] },
+  "rubrikPenilaian": {
+    "diskusi": { "aspek": [{ "nama": "Berani mengemukakan pendapat", "sb": "", "b": "", "c": "", "pb": "" }, { "nama": "Kerjasama dan komunikasi", "sb": "", "b": "", "c": "", "pb": "" }, { "nama": "Keaktifan", "sb": "", "b": "", "c": "", "pb": "" }] },
+    "presentasi": { "aspek": [{ "nama": "Kesesuaian dan Kelengkapan", "sb": "", "b": "", "c": "", "pb": "" }, { "nama": "Komunikatif dan Kejelasan", "sb": "", "b": "", "c": "", "pb": "" }, { "nama": "Percaya Diri", "sb": "", "b": "", "c": "", "pb": "" }] }
+  }
+}
+
+Rubrik 4 level: SB=Sangat Baik, B=Baik, C=Cukup, PB=Perlu Bimbingan. Setiap program (remidial/pengayaan) MINIMAL 3 langkah, setiap rubrik (diskusi/presentasi) MINIMAL 3 aspek.`;
+    userPrompt = `Buat program remidial, pengayaan, dan rubrik penilaian untuk materi ${input.materi}.
+Mapel: ${input.mapel}
+Materi: ${input.materi}
+Elemen: ${input.elemen}
+Kelas: ${input.fase}
+Ekspresi matematika pakai \\(...\\) (inline) atau \\[...\\] (display) LaTeX. Aksara Arab/Jawa tulis langsung.
+
+CONTOH STRUKTUR & GAYA (acuan format & kedalaman — JANGAN salin topiknya):
+${FEWSHOT_LAMPIRAN_AKHIR}
+${fewshotSuffix}
+${contextSummary}
+Output struktur "programRemidial", "programPengayaan", dan "rubrikPenilaian".`;
+  } else if (sp.id === 'e') {
+    systemPrompt = baseRules + `
+
+Sekarang buat tes diagnostik kognitif awal. Output HANYA JSON:
+
+{
+  "diagnostik": {
+    "soal": [{ "nomor": 1, "pertanyaan": "", "opsi": ["A. ", "B. ", "C. ", "D. "], "kunci": "A" }],
+    "rubrik": {
+      "aspek": ["aspek 1", "aspek 2"],
+      "interpretasi": [{ "rentangSkor": "", "kategori": "", "tindakLanjut": "" }]
+    }
+  }
+}
+
+Minimal 5 soal pilihan ganda. Rubrik interpretasi minimal 3 tingkat (Paham Utuh, Paham Sebagian, Belum Paham).`;
+    userPrompt = `Buat tes diagnostik kognitif awal untuk materi ${input.materi}.
+Mapel: ${input.mapel}
+Kelas: ${input.fase}
+CP: ${input.cp}
+
+CONTOH STRUKTUR & GAYA:
+${FEWSHOT_DIAGNOSTIK}
+${fewshotSuffix}
+${contextSummary}
+Output struktur "diagnostik" saja, dengan MINIMAL 5 soal dan 3 tingkat interpretasi.`;
+  }
+
+  // Call API with model+fallback
+  const result = await generateWithFallback(systemPrompt, userPrompt, `1${sp.id}`, {
+    maxTokens: sp.maxTokens || 8000,
+    checkCompleteness: COMPLETENESS_CHECKERS[sp.id] || null
+  });
+  return result;
+}
+
+function buildPhase1Object(merged) {
+  return {
+    rpp: merged.rpp || {},
+    lampiran: {
+      lkpd: merged.lkpd || null,
+      evaluasi: merged.evaluasi || null,
+      programRemidial: merged.programRemidial || null,
+      programPengayaan: merged.programPengayaan || null,
+      rubrikPenilaian: merged.rubrikPenilaian || null,
+      diagnostik: merged.diagnostik || null
+    }
+  };
+}
+// Reset Phase 2 & 3 saat Phase 1 digenerate ulang — mencegah dokumen basi yang
+// tidak nyambung dengan RPP baru ikut ter-export.
+function resetDownstreamPhases() {
+  APP.phase2 = null;
+  APP.phase3 = null;
+  const emptyPhase = (statusId, previewId, exportId, icon, text) => {
+    const st = document.getElementById(statusId);
+    if (st) { st.className = 'phase-status pending'; st.textContent = '⏳ Belum digenerate'; }
+    const pv = document.getElementById(previewId);
+    if (pv) pv.innerHTML = `<div class="preview-empty"><div class="icon">${icon}</div><p>${text}</p></div>`;
+    const ex = document.getElementById(exportId);
+    if (ex) ex.classList.add('hidden');
+  };
+  emptyPhase('phase2-status', 'phase2-preview', 'phase2-export', '📖', 'Generate Modul Ajar setelah RPP selesai.');
+  emptyPhase('phase3-status', 'phase3-preview', 'phase3-export', '🎬', 'Generate Media Pembelajaran setelah Modul Ajar selesai.');
+  document.getElementById('combined-export-card').classList.add('hidden');
+}
+
+async function startPhase1() {
+  const input = collectForm();
+  if (!input) return;
+
+  // Navigate to step 1 to show progress
+  showStep(1);
+
+  // Show progress bar
+  document.getElementById('phase1-progress').classList.remove('hidden');
+  document.getElementById('phase1-gen-btn').disabled = true;
+  document.getElementById('phase1-status').className = 'phase-status loading';
+  document.getElementById('phase1-status').textContent = '⏳ Mengenerate...';
+  if (!enterBusy('phase1')) { document.getElementById('phase1-gen-btn').disabled = false; return; }
+
+  // Phase 1 baru = Phase 2 & 3 lama tidak berlaku lagi → kosongkan agar tak campur aduk
+  if (APP.phase2 || APP.phase3) {
+    resetDownstreamPhases();
+    showToast('ℹ️ Phase 1 digenerate ulang — Modul Ajar & Media lama dikosongkan.', 'warning');
+  }
+
+  const merged = {};
+  let successCount = 0;
+
+  try {
+    for (let i = 0; i < SUBPHASES.length; i++) {
+      const sp = SUBPHASES[i];
+      const isLast = i === SUBPHASES.length - 1;
+
+      // Build step status list
+      const stepList = SUBPHASES.map((s, idx) => ({
+        ...s,
+        done: idx < i,
+        active: idx === i,
+        pending: idx > i
+      }));
+
+      updateProgress(Math.round((i / SUBPHASES.length) * 100), sp.label, stepList);
+
+      const retries = 2;
+      let lastError = null;
+
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          const subResult = await generateSubPhase(i, merged);
+          Object.assign(merged, subResult);
+          successCount++;
+          break; // success, move to next sub-phase
+        } catch (e) {
+          lastError = e;
+          if (attempt < retries) {
+            showToast(`⚠️ ${sp.label} percobaan ${attempt} gagal, coba lagi...`, 'warning');
+            updateProgress(Math.round((i / SUBPHASES.length) * 100), `${sp.label} (ulang ${attempt})...`, stepList);
+            // Rate-limit: jeda 10 detik sebelum percobaan ke-2 (di luar backoff internal GW)
+            if (/429|too many|rate[\s_-]?limit|quota/i.test(lastError.message || '')) {
+              updateProgress(Math.round((i / SUBPHASES.length) * 100), `${sp.label}: rate-limit, jeda 10 detik...`, stepList);
+              await sleep(10000);
+            }
+          }
+        }
+      }
+
+      if (lastError && successCount <= i) {
+        // This sub-phase failed after retries
+        if (i === 0) {
+          throw new Error(`${sp.label} gagal setelah ${retries}x percobaan: ${lastError.message}`);
+        }
+        // Non-critical sub-phase failed, warn but continue
+        showToast(`⚠️ ${sp.label} gagal, lanjut ke bagian berikutnya`, 'warning');
+      }
+
+      // Pacing: jeda 5 detik antar sub-phase agar tidak memicu rate-limit API
+      if (!isLast) {
+        updateProgress(Math.round(((i + 1) / SUBPHASES.length) * 100), `${sp.label} selesai — jeda 5 detik...`, stepList);
+        await sleep(5000);
+      }
+    }
+
+    // Final progress
+    updateProgress(100, 'Selesai!', SUBPHASES.map(s => ({ ...s, done: true, active: false, pending: false })));
+
+    // Validate merged result has minimum structure — RPP Core is mandatory
+    if (!merged.rpp) {
+      throw new Error('RPP Core tidak berhasil digenerate. Coba lagi.');
+    }
+
+    APP.phase1 = buildPhase1Object(merged);
+
+    document.getElementById('phase1-status').className = 'phase-status success';
+    document.getElementById('phase1-status').textContent = '✅ Selesai';
+    renderPhase1(APP.phase1);
+    document.getElementById('phase1-export').classList.remove('hidden');
+    document.getElementById('phase1-regenerate').classList.remove('hidden');
+    document.getElementById('phase1-back').classList.remove('hidden');
+    updateWizardStep(1, 'done');
+    showToast(`✅ RPP + Lampiran berhasil digenerate (${successCount}/${SUBPHASES.length} bagian)!`, 'success');
+  } catch (e) {
+    document.getElementById('phase1-status').className = 'phase-status error';
+    document.getElementById('phase1-status').textContent = '❌ Gagal';
+    updateProgress(0, `❌ Gagal: ${e.message}`, SUBPHASES.map(s => ({ ...s, done: false, active: false, pending: true })));
+    showToast(`❌ ${e.message}`, 'error');
+    // Partial-save: bagian yang sempat jadi tetap disimpan — bisa di-export
+    // atau dilengkapi via Regenerate per bagian, tidak hilang total.
+    if (merged.rpp || merged.lkpd) {
+      APP.phase1 = buildPhase1Object(merged);
+      try {
+        renderPhase1(APP.phase1);
+        document.getElementById('phase1-export').classList.remove('hidden');
+        document.getElementById('phase1-regenerate').classList.remove('hidden');
+        document.getElementById('phase1-back').classList.remove('hidden');
+        showToast(`💾 Hasil sebagian tersimpan (${successCount}/${SUBPHASES.length} bagian).`, 'warning');
+      } catch(_) {}
+    }
+  } finally {
+    document.getElementById('phase1-gen-btn').disabled = false;
+    hideLoading();
+  }
+}
+
+async function regeneratePart(partIndex) {
+  if (!APP.phase1) return showToast('Belum ada data Phase 1!', 'warning');
+  const sp = SUBPHASES[partIndex];
+  if (!confirm(`Apakah Anda yakin ingin meng-generate ulang "${sp.label}"? Bagian ini akan diganti dengan hasil baru.`)) return;
+  if (!enterBusy('regen')) return;
+
+  showLoading(`Meng-generate ulang ${sp.label}...`);
+  try {
+    // Gunakan data gabungan yang ada saat ini sebagai context
+    const currentMerged = {
+      rpp: APP.phase1.rpp,
+      lkpd: APP.phase1.lampiran.lkpd,
+      evaluasi: APP.phase1.lampiran.evaluasi,
+      programRemidial: APP.phase1.lampiran.programRemidial,
+      programPengayaan: APP.phase1.lampiran.programPengayaan,
+      rubrikPenilaian: APP.phase1.lampiran.rubrikPenilaian,
+      diagnostik: APP.phase1.lampiran.diagnostik
+    };
+
+    const newResult = await generateSubPhase(partIndex, currentMerged);
+    
+    // Update data di APP.phase1
+    if (partIndex === 0 && newResult.rpp) {
+      APP.phase1.rpp = newResult.rpp;
+    } else if (partIndex === 1 && newResult.lkpd) {
+      APP.phase1.lampiran.lkpd = newResult.lkpd;
+    } else if (partIndex === 2 && newResult.evaluasi) {
+      APP.phase1.lampiran.evaluasi = newResult.evaluasi;
+    } else if (partIndex === 3) {
+      if (newResult.programRemidial) APP.phase1.lampiran.programRemidial = newResult.programRemidial;
+      if (newResult.programPengayaan) APP.phase1.lampiran.programPengayaan = newResult.programPengayaan;
+      if (newResult.rubrikPenilaian) APP.phase1.lampiran.rubrikPenilaian = newResult.rubrikPenilaian;
+    } else if (partIndex === 4 && newResult.diagnostik) {
+      APP.phase1.lampiran.diagnostik = newResult.diagnostik;
+    }
+
+    renderPhase1(APP.phase1);
+    showToast(`✅ Berhasil meng-generate ulang ${sp.label}!`, 'success');
+  } catch (e) {
+    showToast(`❌ Gagal meng-generate ${sp.label}: ${e.message}`, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+function renderPhase1(json) {
+  const container = document.getElementById('phase1-preview');
+  container.innerHTML = renderCodeCogs(buildRPPHTML(json));
+}
+
+function updateWizardStep(step, state) {
+  const el = document.querySelector(`.wizard-step[data-step="${step}"]`);
+  if (el) {
+    el.classList.remove('active', 'done');
+    if (state === 'done') el.classList.add('done');
+    else if (state === 'active') el.classList.add('active');
+  }
+}
+
+// Rich text helper: escape HTML + render blok tabel markdown (| a | b |) menjadi <table>
+// Dipakai untuk teks soal agar tabel data dari AI tampil sebagai tabel betulan, bukan teks mentah.
+function richText(s) {
+  const escRT = (x) => String(x ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = String(s ?? '').split('\n');
+  const splitRow = (l) => {
+    let t = l.trim();
+    if (t.startsWith('|')) t = t.slice(1);
+    if (t.endsWith('|')) t = t.slice(0, -1);
+    return t.split('|').map(c => c.trim());
+  };
+  const isSepRow = (l) => {
+    if (!l.includes('|')) return false;
+    const cells = splitRow(l);
+    return cells.length > 0 && cells.every(c => /^:?-{2,}:?$/.test(c));
+  };
+  const segs = [];
+  let buf = [];
+  const flush = () => { if (buf.length) { segs.push(buf.map(escRT).join('<br>')); buf = []; } };
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.includes('|') && i + 1 < lines.length && isSepRow(lines[i + 1])) {
+      const headers = splitRow(line);
+      i += 2;
+      const rows = [];
+      while (i < lines.length && lines[i].includes('|') && lines[i].trim() !== '' && !isSepRow(lines[i])) {
+        rows.push(splitRow(lines[i]));
+        i++;
+      }
+      const ncols = headers.length;
+      const h = headers.map(c => `<th>${escRT(c)}</th>`).join('');
+      const r = rows.map(row => {
+        let cells = '';
+        for (let k = 0; k < ncols; k++) cells += `<td>${escRT(row[k] ?? '')}</td>`;
+        return `<tr>${cells}</tr>`;
+      }).join('');
+      flush();
+      segs.push(`<div style="overflow-x:auto;margin:8px 0;"><table><thead><tr>${h}</tr></thead><tbody>${r}</tbody></table></div>`);
+      continue;
+    }
+    if (line.trim() === '') { flush(); i++; continue; }
+    buf.push(line);
+    i++;
+  }
+  flush();
+  return segs.join('');
+}
+
+// ============================================================
+// TEMPLATE RENDERER
+// ============================================================
+function buildRPPHTML(json) {
+  const rpp = json.rpp || json;
+  const lamp = json.lampiran || {};
+  const ident = rpp.identifikasi || {};
+  const desain = rpp.desainPembelajaran || {};
+  const langkah = rpp.langkahPembelajaran || {};
+  const asesmen = rpp.asesmen || {};
+  const pengesahan = rpp.pengesahan || {};
+  const input = APP.input;
+  const today = input.tanggal ? new Date(input.tanggal + 'T00:00:00').toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+  const tempatTanggal = `${input.tempat || ''}${input.tempat && today ? ', ' : ''}${today || ''}`;
+
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function list(items, tag='ol') {
+    if (!Array.isArray(items) || items.length === 0) return '';
+    const li = items.map(i => {
+      if (typeof i === 'string') return `<li>${esc(i)}</li>`;
+      if (typeof i === 'object' && i.nama && i.detail) return `<li><strong>${esc(i.nama)}:</strong> ${esc(i.detail)}</li>`;
+      if (typeof i === 'object' && i.pertanyaan) return `<li><strong>${esc(i.pertanyaan)}</strong>${i.jawaban ? `<br><em>Jawaban: ${esc(i.jawaban)}</em>` : ''}</li>`;
+      return '';
+    }).join('');
+    return `<${tag}>${li}</${tag}>`;
+  }
+  function table(headers, rows) {
+    if (!Array.isArray(rows) || rows.length === 0) return '';
+    const h = headers.map(h => `<th>${esc(h)}</th>`).join('');
+    const r = rows.map(row => {
+      let cells;
+      if (Array.isArray(row)) {
+        // Baris berbasis array (dari AI): urutan sel = urutan header, tidak bergantung nama key.
+        cells = headers.map((_, idx) => `<td>${esc(row[idx] ?? '')}</td>`).join('');
+      } else {
+        cells = headers.map(h => {
+          let val = typeof row === 'object' ? row[h] || row[Object.keys(row).find(k => {
+            const hl = h.toLowerCase().replace(/[^a-z]/g,'');
+            const kl = k.toLowerCase().replace(/[^a-z]/g,'');
+            return kl === hl || kl.includes(hl) || hl.includes(kl);
+          })] : row;
+          return `<td>${esc(val || '')}</td>`;
+        }).join('');
+      }
+      return `<tr>${cells}</tr>`;
+    }).join('');
+    return `<table><thead><tr>${h}</tr></thead><tbody>${r}</tbody></table>`;
+  }
+
+  let html = `<div class="rpp-document">`;
+
+  // TITLE
+  html += `<div class="doc-title">RENCANA PELAKSANAAN PEMBELAJARAN</div>`;
+  html += `<div class="doc-subtitle">PEMBELAJARAN DEEP LEARNING DENGAN KURIKULUM BERBASIS CINTA (KBC)</div>`;
+  html += `<table>
+    <tr><td style="width:200px"><strong>Nama Madrasah</strong></td><td>: ${esc(input.madrasah || '')}</td></tr>
+    <tr><td><strong>Nama Guru</strong></td><td>: ${esc(input.guru || '')}</td></tr>
+              <tr><td><strong>NUPTK</strong></td><td>: ${esc(input.nuptk || '-')}</td></tr>
+    <tr><td><strong>Mata Pelajaran</strong></td><td>: ${esc(input.mapel || '')}</td></tr>
+    <tr><td><strong>Materi Pelajaran</strong></td><td>: ${esc(input.materi || '')}</td></tr>
+    <tr><td><strong>Elemen</strong></td><td>: ${esc(input.elemen || '')}</td></tr>
+    <tr><td><strong>Fase/Kelas/Smt</strong></td><td>: ${esc(input.fase || '')}</td></tr>
+    <tr><td><strong>Tahun Ajaran</strong></td><td>: ${esc(input.tahunPelajaran || '')}</td></tr>
+    <tr><td><strong>Alokasi Waktu</strong></td><td>: ${esc(input.alkok || '')}</td></tr>
+  </table>`;
+
+  // IDENTIFIKASI
+  html += `<div class="section-header">IDENTIFIKASI</div>`;
+  html += `<table>
+    <tr><td style="width:200px"><strong>Peserta Didik</strong></td><td>${esc(ident.pesertaDidik || '')}</td></tr>
+    <tr><td><strong>Materi Pelajaran</strong></td><td>${esc(ident.materiPelajaran || '')}</td></tr>
+    <tr><td><strong>Dimensi Profil Lulusan</strong></td><td>${list(ident.dimensiProfilLulusan || [], 'ol')}</td></tr>
+    <tr><td><strong>Tema Kurikulum Cinta</strong></td><td>${list(ident.temaKurikulumCinta || [], 'ol')}</td></tr>
+    <tr><td><strong>Materi Integrasi KBC</strong></td><td>${list(ident.materiIntegrasiKBC || [], 'ol')}</td></tr>
+  </table>`;
+
+  // DESAIN PEMBELAJARAN
+  html += `<div class="section-header">DESAIN PEMBELAJARAN</div>`;
+  html += `<table>
+    <tr><td style="width:200px"><strong>Capaian Pembelajaran</strong></td><td>${esc(desain.capaianPembelajaran || '')}</td></tr>`;
+  if (desain.lintasDisiplinIlmu?.length) {
+    html += `<tr><td><strong>Lintas Disiplin Ilmu</strong></td><td>${list(desain.lintasDisiplinIlmu, 'ol')}</td></tr>`;
+  }
+  html += `<tr><td><strong>Tujuan Pembelajaran</strong></td><td>${list(desain.tujuanPembelajaran || [], 'ol')}</td></tr>
+    <tr><td><strong>Topik Pembelajaran</strong></td><td>${list(desain.topikPembelajaran || [], 'ol')}</td></tr>`;
+  if (desain.praktekPedagogis) {
+    html += `<tr><td><strong>Model Pembelajaran</strong></td><td>${esc(desain.praktekPedagogis.modelPembelajaran || '')}</td></tr>`;
+    if (desain.praktekPedagogis.sintaks?.length) {
+      html += `<tr><td><strong>Sintaks</strong></td><td>${list(desain.praktekPedagogis.sintaks, 'ol')}</td></tr>`;
+    }
+    if (desain.praktekPedagogis.metode?.length) {
+      html += `<tr><td><strong>Metode</strong></td><td>${list(desain.praktekPedagogis.metode, 'ol')}</td></tr>`;
+    }
+  }
+  if (desain.kemitraanPembelajaran?.length) {
+    html += `<tr><td><strong>Kemitraan</strong></td><td>${list(desain.kemitraanPembelajaran, 'ol')}</td></tr>`;
+  }
+  if (desain.lingkunganPembelajaran) {
+    html += `<tr><td><strong>Lingkungan Pembelajaran</strong></td><td>${esc(desain.lingkunganPembelajaran.ruangFisik || '')}</td></tr>`;
+    if (desain.lingkunganPembelajaran.budayaBelajar) {
+      html += `<tr><td><strong>Budaya Belajar</strong></td><td>${esc(desain.lingkunganPembelajaran.budayaBelajar)}</td></tr>`;
+    }
+    if (desain.lingkunganPembelajaran.penerapanNyata?.length) {
+      html += `<tr><td><strong>Penerapan Nyata</strong></td><td>${list(desain.lingkunganPembelajaran.penerapanNyata, 'ol')}</td></tr>`;
+    }
+  }
+  if (desain.pemanfaatanDigital?.length) {
+    html += `<tr><td><strong>Pemanfaatan Digital</strong></td><td>${list(desain.pemanfaatanDigital, 'ol')}</td></tr>`;
+  }
+  html += `</table>`;
+
+  // DIFERENSIASI PEMBELAJARAN
+  if (rpp.diferensiasiPembelajaran) {
+    html += `<div class="section-header">DIFERENSIASI PEMBELAJARAN</div>`;
+    html += `<table>
+      <tr><td style="width:200px"><strong>Diferensiasi Konten</strong></td><td>${esc(rpp.diferensiasiPembelajaran.konten || '')}</td></tr>
+      <tr><td><strong>Diferensiasi Proses</strong></td><td>${esc(rpp.diferensiasiPembelajaran.proses || '')}</td></tr>
+      <tr><td><strong>Diferensiasi Produk</strong></td><td>${esc(rpp.diferensiasiPembelajaran.produk || '')}</td></tr>
+    </table>`;
+  }
+
+  // LANGKAH PEMBELAJARAN
+  html += `<div class="section-header">LANGKAH-LANGKAH PEMBELAJARAN</div>`;
+  if (langkah.prinsip?.length) {
+    html += `<table><tr><td><strong>Prinsip Deep Learning</strong></td><td>${list(langkah.prinsip, 'ol')}</td></tr></table>`;
+  }
+  if (langkah.kegiatanAwal) {
+    html += `<div class="sub-header">Kegiatan Awal (${esc(langkah.kegiatanAwal.durasi || '10 menit')})</div>`;
+    html += list(langkah.kegiatanAwal.langkah || [], 'ol');
+  }
+  if (langkah.kegiatanInti) {
+    html += `<div class="sub-header">Kegiatan Inti (${esc(langkah.kegiatanInti.durasi || '50 menit')})</div>`;
+    if (langkah.kegiatanInti.tahap?.length) {
+      for (const t of langkah.kegiatanInti.tahap) {
+        html += `<div style="font-weight:600;margin:8px 0 4px;">${esc(t.nama || '')}</div>`;
+        html += list(t.langkah || [], 'ol');
+      }
+    } else {
+      html += list(langkah.kegiatanInti.langkah || [], 'ol');
+    }
+  }
+  if (langkah.kegiatanPenutup) {
+    html += `<div class="sub-header">Kegiatan Penutup (${esc(langkah.kegiatanPenutup.durasi || '10 menit')})</div>`;
+    html += list(langkah.kegiatanPenutup.langkah || [], 'ol');
+  }
+
+  // ASESMEN
+  html += `<div class="section-header">ASESMEN PEMBELAJARAN</div>`;
+  html += `<table>`;
+  if (asesmen.asesmenAwal?.length) html += `<tr><td style="width:160px"><strong>Asesmen Awal</strong></td><td>${list(asesmen.asesmenAwal, 'ol')}</td></tr>`;
+  if (asesmen.asesmenProses?.length) html += `<tr><td><strong>Asesmen Proses</strong></td><td>${list(asesmen.asesmenProses, 'ol')}</td></tr>`;
+  if (asesmen.asesmenAkhir?.length) html += `<tr><td><strong>Asesmen Akhir</strong></td><td>${list(asesmen.asesmenAkhir, 'ol')}</td></tr>`;
+  html += `</table>`;
+
+  // PENGESAHAN
+  html += `<div class="pengesahan">`;
+  html += `<table class="pengesahan-table">
+    <tr>
+      <td>Mengetahui,<br><strong>Kepala Madrasah</strong><br><br><br><br><span class="nama">${esc(input.kepsek || '')}</span><br><span class="nuptk">${input.kepsekNuptk ? `NUPTK: ${esc(input.kepsekNuptk)}` : ''}</span></td>
+      <td>${esc(input.tempat || '')}${tempatTanggal ? ', ' : ''}${esc(today || '')}<br><strong>Guru Pengampu</strong><br><br><br><br><span class="nama">${esc(input.guru || '')}</span><br><span class="nuptk">${input.nuptk ? `NUPTK: ${esc(input.nuptk)}` : ''}</span></td>
+    </tr>
+  </table>`;
+  html += `</div>`;
+
+  // LAMPIRAN: DIAGNOSTIK
+  if (lamp.diagnostik) {
+    const dg = lamp.diagnostik;
+    html += `<div class="section-header" style="page-break-before:always;padding-top:40px;">LAMPIRAN: TES DIAGNOSTIK AWAL KOGNITIF</div>`;
+    if (dg.soal?.length) {
+      html += `<div class="sub-header">Soal Tes Diagnostik</div>`;
+      for (const s of dg.soal) {
+        html += `<div class="soal-nomor"><strong>${s.nomor}.</strong> <span>${richText(s.pertanyaan)}</span></div>`;
+        if (s.opsi?.length) {
+          const labels = ['A', 'B', 'C', 'D'];
+          for (let i = 0; i < s.opsi.length; i++) {
+            const txt = String(s.opsi[i] ?? '').replace(/^[A-Da-d][.\s)]+\s*/, '');
+            html += `<div class="soal-opsi">${labels[i]}. ${richText(txt)}</div>`;
+          }
+        }
+        if (s.kunci) html += `<div class="soal-opsi kunci-jawaban">Kunci: ${esc(s.kunci)}</div>`;
+      }
+    }
+    if (dg.rubrik) {
+      html += `<div class="sub-header">Rubrik Interpretasi Hasil</div>`;
+      if (dg.rubrik.aspek?.length) {
+        html += `<div><strong>Aspek yang dinilai:</strong> ${esc(dg.rubrik.aspek.join(', '))}</div><br>`;
+      }
+      if (dg.rubrik.interpretasi?.length) {
+        const h = ['Rentang Skor', 'Kategori', 'Tindak Lanjut'];
+        const rows = dg.rubrik.interpretasi.map(r => ({
+          'Rentang Skor': r.rentangSkor || '',
+          'Kategori': r.kategori || '',
+          'Tindak Lanjut': r.tindakLanjut || ''
+        }));
+        html += table(h, rows);
+      }
+    }
+  }
+
+  // LAMPIRAN: LKPD
+  if (lamp.lkpd) {
+    const lkpd = lamp.lkpd;
+    html += `<div class="section-header" style="page-break-before:always;padding-top:40px;">LAMPIRAN: LEMBAR KERJA PESERTA DIDIK (LKPD)</div>`;
+    html += `<table>
+      <tr><td style="width:180px"><strong>Mata Pelajaran</strong></td><td>${esc(lkpd.identitas?.mataPelajaran || '')}</td></tr>
+      <tr><td><strong>Kelas/Semester</strong></td><td>${esc(lkpd.identitas?.kelasSemester || '')}</td></tr>
+      <tr><td><strong>Materi Pokok</strong></td><td>${esc(lkpd.identitas?.materiPokok || '')}</td></tr>
+      <tr><td><strong>Alokasi Waktu</strong></td><td>${esc(lkpd.identitas?.alokasiWaktu || '')}</td></tr>
+    </table>`;
+    if (lkpd.tujuan?.length) html += `<div class="sub-header">Tujuan Pembelajaran</div>${list(lkpd.tujuan, 'ol')}`;
+    if (lkpd.aktivitas?.length) {
+      for (const a of lkpd.aktivitas) {
+        html += `<div class="sub-header">${esc(a.nama || '')}</div>`;
+        if (a.deskripsi) html += `<p>${esc(a.deskripsi)}</p>`;
+        if (a.tugas?.length) html += list(a.tugas, 'ol');
+      }
+    }
+    if (lkpd.tabelPerbandingan?.data?.length) {
+      const tabelJudul = lkpd.tabelPerbandingan.judul || `Tabel Perbandingan — ${input.materi || ''}`;
+      html += `<div class="sub-header">${esc(tabelJudul)}</div>`;
+      const cols = lkpd.tabelPerbandingan.kolom || ['No', 'Aspek', 'Keterangan'];
+      html += table(cols, lkpd.tabelPerbandingan.data);
+    }
+    if (lkpd.pertanyaan?.length) {
+      html += `<div class="sub-header">Pertanyaan Pemahaman</div>${list(lkpd.pertanyaan, 'ol')}`;
+    }
+  }
+
+  // LAMPIRAN: EVALUASI
+  if (lamp.evaluasi?.soal?.length) {
+    html += `<div class="section-header">LAMPIRAN: SOAL EVALUASI</div>`;
+    for (const s of lamp.evaluasi.soal) {
+      const levelSpan = s.level ? ` <span style="font-size:0.8rem;background:#eee;padding:2px 6px;border-radius:4px;color:#555;">${esc(s.level)}</span>` : '';
+      html += `<div class="soal-nomor"><strong>${s.nomor}.</strong> <span>${richText(s.pertanyaan)}</span>${levelSpan}</div>`;
+      if (s.opsi?.length) {
+        const labels = ['A', 'B', 'C', 'D'];
+        for (let i = 0; i < s.opsi.length; i++) {
+          const txt = String(s.opsi[i] ?? '').replace(/^[A-Da-d][.\s)]+\s*/, '');
+          html += `<div class="soal-opsi">${labels[i]}. ${richText(txt)}</div>`;
+        }
+      }
+      if (s.kunci) html += `<div class="soal-opsi kunci-jawaban">Kunci: ${esc(s.kunci)}</div>`;
+    }
+    if (lamp.evaluasi.penskoran) html += `<p style="margin-top:8px;"><strong>Penskoran:</strong> ${esc(lamp.evaluasi.penskoran)}</p>`;
+  }
+
+  // LAMPIRAN: REMIDIAL & PENGAYAAN
+  if (lamp.programRemidial?.langkah?.length) {
+    html += `<div class="section-header">LAMPIRAN: PROGRAM REMIDIAL</div>`;
+    if (lamp.programRemidial.deskripsi) html += `<p>${esc(lamp.programRemidial.deskripsi)}</p>`;
+    html += list(lamp.programRemidial.langkah, 'ol');
+  }
+  if (lamp.programPengayaan?.langkah?.length) {
+    html += `<div class="section-header">LAMPIRAN: PROGRAM PENGAYAAN</div>`;
+    if (lamp.programPengayaan.deskripsi) html += `<p>${esc(lamp.programPengayaan.deskripsi)}</p>`;
+    html += list(lamp.programPengayaan.langkah, 'ol');
+  }
+
+  // LAMPIRAN: RUBRIK
+  if (lamp.rubrikPenilaian?.diskusi?.aspek?.length) {
+    html += `<div class="section-header">LAMPIRAN: RUBRIK PENILAIAN DISKUSI</div>`;
+    const h = ['Aspek', 'Sangat Baik (4)', 'Baik (3)', 'Cukup (2)', 'Perlu Bimbingan (1)'];
+    const rows = lamp.rubrikPenilaian.diskusi.aspek.map(a => ({
+      'Aspek': a.nama || '',
+      'Sangat Baik (4)': a.sb || a.SB || '',
+      'Baik (3)': a.b || a.B || '',
+      'Cukup (2)': a.c || a.C || '',
+      'Perlu Bimbingan (1)': a.pb || a.PB || ''
+    }));
+    html += table(h, rows);
+  }
+  if (lamp.rubrikPenilaian?.presentasi?.aspek?.length) {
+    html += `<div class="section-header">LAMPIRAN: RUBRIK PENILAIAN PRESENTASI</div>`;
+    const h = ['Aspek', 'Sangat Baik (4)', 'Baik (3)', 'Cukup (2)', 'Perlu Bimbingan (1)'];
+    const rows = lamp.rubrikPenilaian.presentasi.aspek.map(a => ({
+      'Aspek': a.nama || '',
+      'Sangat Baik (4)': a.sb || a.SB || '',
+      'Baik (3)': a.b || a.B || '',
+      'Cukup (2)': a.c || a.C || '',
+      'Perlu Bimbingan (1)': a.pb || a.PB || ''
+    }));
+    html += table(h, rows);
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+// ============================================================
+// PHASE 2: MODUL AJAR
+// ============================================================
+async function startPhase2() {
+  if (!APP.phase1) { showToast('Generate RPP (Phase 1) dulu!', 'warning'); return; }
+  const btn = document.getElementById('phase2-gen-btn');
+  btn.disabled = true;
+  if (!enterBusy('phase2')) { btn.disabled = false; return; }
+  try {
+    const rppData = APP.phase1;
+    const desain = rppData.rpp?.desainPembelajaran || rppData.desainPembelajaran || {};
+    const ident = rppData.rpp?.identifikasi || rppData.identifikasi || {};
+    const input = APP.input;
+
+    const systemPrompt = `Kamu adalah AI pembuat Modul Ajar Kurikulum Merdeka untuk MTs/SMP Indonesia. Output HANYA JSON valid, tidak ada teks lain.
+
+STRUKTUR JSON:
+{
+  "modulAjar": {
+    "bahanAjar": {
+      "pengertian": "paragraf panjang tentang materi",
+      "subBab": [{ "judul": "", "konten": "", "contoh": "", "gambar": "" }]
+    },
+    "ringkasanMateri": [{ "konsep": "", "definisi": "", "contoh": "" }],
+    "glosarium": [{ "istilah": "", "definisi": "" }],
+    "mindmap": { "topik": "", "cabang": [{ "nama": "", "rincian": [] }] },
+    "faq": [{ "pertanyaan": "", "jawaban": "" }],
+    "referensi": [{ "sumber": "", "tautan": "" }],
+    "refleksiGuru": {
+      "pertanyaanRefleksi": ["pertanyaan refleksi 1", "pertanyaan refleksi 2", "pertanyaan refleksi 3"],
+      "hal_yang_berhasil": "",
+      "hal_yang_perlu_diperbaiki": ""
+    }
+  }
+}
+
+ATURAN:
+1. Bahasa Indonesia baku (EYD), formal-akademik
+2. Bahan ajar MENDALAM dan KOMPREHENSIF sesuai materi pembelajaran
+3. Sub-bab minimal 3, mencakup semua aspek materi
+4. Glosarium minimal 8 istilah penting
+5. FAQ minimal 3 pertanyaan antisipasi siswa
+6. Mindmap dengan minimal 3 cabang utama
+7. Referensi minimal 3 sumber
+8. Sertakan bagian Refleksi Guru untuk evaluasi pembelajaran
+9. NOTASI SAINTIFIK/MATEMATIS WAJIB LaTeX: setiap rumus, persamaan, pecahan, pangkat/indeks,
+   reaksi kimia, dan simbol WAJIB dibungkus \\(...\\) (inline) atau \\[...\\] (display).
+   Lihat detail dan contoh di prompt pengguna.
+10. DILARANG memakai $...$ untuk rumus — selalu \\(...\\) / \\[...\\].`;
+
+    const userPrompt = `Buat Modul Ajar untuk:
+- Madrasah: ${input.madrasah}
+- Mata Pelajaran: ${input.mapel}
+- Materi: ${input.materi}
+- Elemen: ${input.elemen}
+- Fase/Kelas: ${input.fase}
+- CP: ${desain.capaianPembelajaran || input.cp}
+- TP: ${(desain.tujuanPembelajaran || [input.tp]).join('; ')}
+- Topik: ${(desain.topikPembelajaran || []).join('; ')}
+
+Ekspresi matematika pakai \\(...\\) (inline) atau \\[...\\] (display) LaTeX. Aksara Arab/Jawa tulis langsung.
+
+NOTASI SAINTIFIK & MATEMATIS (WAJIB agar tampil sebagai rumus, bukan teks polos):
+- Berlaku di SEMUA field teks: pengertian, konten sub-bab, contoh, definisi, jawaban FAQ.
+- Contoh BENAR: \\(H_{2}SO_{4}\\), \\(x^{2} + 3x - 2 = 0\\), \\[E = m c^{2}\\], \\(\\frac{1}{2}\\).
+- Contoh SALAH (jangan ditiru): H2SO4, x^2, E = mc2, $x^2$.
+- Di dalam JSON, backslash ditulis GANDA agar valid, mis. "rumus": "\\(x^{2}\\)".
+
+CONTOH STRUKTUR (JANGAN salin isinya, gunakan sebagai panduan format dan kedalaman):
+${FEWSHOT_MODUL_AJAR}
+${fewshotNote(input.materi)}
+
+Output JSON sesuai struktur yang ditentukan.`;
+
+    let result = null, lastErr = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        result = await generateWithFallback(systemPrompt, userPrompt, 2, { maxTokens: 12000, checkCompleteness: checkCompletenessModulAjar });
+        break;
+      } catch (e) {
+        lastErr = e;
+        if (attempt < 2) showToast(`⚠️ Percobaan ${attempt} gagal, coba lagi...`, 'warning');
+      }
+    }
+    if (!result) throw lastErr || new Error('Modul Ajar gagal digenerate');
+    APP.phase2 = result;
+    document.getElementById('phase2-status').className = 'phase-status success';
+    document.getElementById('phase2-status').textContent = '✅ Selesai';
+    renderPhase2(result);
+document.getElementById('phase2-export').classList.remove('hidden');
+    updateWizardStep(2, 'done');
+    showToast('✅ Modul Ajar berhasil digenerate!', 'success');
+  } catch (e) {
+    document.getElementById('phase2-status').className = 'phase-status error';
+    document.getElementById('phase2-status').textContent = '❌ Gagal';
+    showToast(`❌ ${friendlyError(e.message)}`, 'error');
+  } finally {
+    btn.disabled = false;
+    hideLoading();
+  }
+}
+
+function renderPhase2(json) {
+  const container = document.getElementById('phase2-preview');
+  container.innerHTML = renderCodeCogs(buildModulAjarHTML(json));
+}
+
+function buildModulAjarHTML(json) {
+  const ma = json.modulAjar || json;
+  const ba = ma.bahanAjar || {};
+  const input = APP.input;
+
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function list(items, tag='ol') {
+    if (!Array.isArray(items) || !items.length) return '';
+    return `<${tag}>${items.map(i => {
+      if (typeof i === 'string') return `<li>${esc(i)}</li>`;
+      if (i.konsep && i.definisi) return `<li><strong>${esc(i.konsep)}:</strong> ${esc(i.definisi)}${i.contoh ? ` <em>(contoh: ${esc(i.contoh)})</em>` : ''}</li>`;
+      if (i.istilah && i.definisi) return `<li><strong>${esc(i.istilah)}:</strong> ${esc(i.definisi)}</li>`;
+      if (i.pertanyaan && i.jawaban) return `<li><strong>Q: ${esc(i.pertanyaan)}</strong><br>A: ${esc(i.jawaban)}</li>`;
+      if (i.nama) return `<li><strong>${esc(i.nama)}</strong>${i.detail ? ': ' + esc(i.detail) : ''}${i.rincian?.length ? '<ul>' + i.rincian.map(r => `<li>${esc(r)}</li>`).join('') + '</ul>' : ''}</li>`;
+      if (i.sumber) return `<li>${esc(i.sumber)}${i.tautan ? ` (${esc(i.tautan)})` : ''}</li>`;
+      return '';
+    }).join('')}</${tag}>`;
+  }
+
+  let html = `<div class="rpp-document">`;
+  html += `<div class="doc-title">MODUL AJAR</div>`;
+  html += `<div class="doc-subtitle">${esc(input.mapel || '')} — ${esc(input.materi || '')}</div>`;
+  html += `<table><tr><td><strong>Madrasah</strong></td><td>: ${esc(input.madrasah || '')}</td></tr>
+    <tr><td><strong>Mata Pelajaran</strong></td><td>: ${esc(input.mapel || '')}</td></tr>
+    <tr><td><strong>Materi</strong></td><td>: ${esc(input.materi || '')}</td></tr>
+    <tr><td><strong>Elemen</strong></td><td>: ${esc(input.elemen || '')}</td></tr>
+    <tr><td><strong>Fase/Kelas</strong></td><td>: ${esc(input.fase || '')}</td></tr>
+    <tr><td><strong>Alokasi Waktu</strong></td><td>: ${esc(input.alkok || '')}</td></tr>
+    <tr><td><strong>Penyusun</strong></td><td>: ${esc(input.guru || '')}</td></tr>
+    <tr><td><strong>NUPTK</strong></td><td>: ${esc(input.nuptk || '-')}</td></tr></table>`;
+
+  // Bahan Ajar
+  html += `<div class="section-header">BAHAN AJAR</div>`;
+  if (ba.pengertian) html += `<p style="text-align:justify;">${esc(ba.pengertian)}</p>`;
+  if (ba.subBab?.length) {
+    for (let bi = 0; bi < ba.subBab.length; bi++) {
+      const sb = ba.subBab[bi];
+      html += `<div class="sub-header">${bi + 1}. ${esc(sb.judul || '')}</div>`;
+      if (sb.konten) html += `<p style="text-align:justify;">${esc(sb.konten)}</p>`;
+      if (sb.contoh) html += `<p style="background:#e8f5e9;border-left:4px solid #43a047;padding:6px 10px;page-break-inside:avoid;"><strong>Contoh:</strong> ${esc(sb.contoh)}</p>`;
+      if (sb.gambar) html += `<p><em>🖼️ Ilustrasi: ${esc(sb.gambar)}</em></p>`;
+    }
+  }
+
+  // Ringkasan Materi
+  if (ma.ringkasanMateri?.length) {
+    html += `<div class="section-header">RINGKASAN MATERI</div>`;
+    const h = ['Konsep', 'Definisi', 'Contoh'];
+    const rows = ma.ringkasanMateri.map(r => {
+      if (typeof r === 'string') return { 'Konsep': r, 'Definisi': '', 'Contoh': '' };
+      return { 'Konsep': r.konsep || '', 'Definisi': r.definisi || '', 'Contoh': r.contoh || '' };
+    });
+    html += tableRender(h, rows);
+  }
+
+  // Mind Map
+  if (ma.mindmap?.cabang?.length) {
+    html += `<div class="section-header">PETA KONSEP (MIND MAP)</div>`;
+    html += `<p style="text-align:center;font-weight:700;font-size:1.1rem;">${esc(ma.mindmap.topik || '')}</p>`;
+    html += `<div style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;">`;
+    for (const c of ma.mindmap.cabang) {
+      const nama = typeof c === 'string' ? c : (c.nama || '');
+      const rincian = (typeof c === 'object' && c.rincian?.length) ? `<ul>${c.rincian.map(r => `<li>${esc(r)}</li>`).join('')}</ul>` : '';
+      html += `<div style="flex:1 1 200px;border:1px solid #bdbdbd;border-radius:8px;overflow:hidden;page-break-inside:avoid;">`
+        + `<div style="background:#e3f2fd;color:#1976d2;font-weight:700;padding:6px 10px;">🌿 ${esc(nama)}</div>`
+        + (rincian ? `<div style="padding:6px 10px;">${rincian}</div>` : '')
+        + `</div>`;
+    }
+    html += `</div>`;
+  }
+
+  // FAQ
+  if (ma.faq?.length) {
+    html += `<div class="section-header">FAQ (FREQUENTLY ASKED QUESTIONS)</div>`;
+    ma.faq.forEach((f, idx) => {
+      const q = typeof f === 'string' ? f : (f.pertanyaan || '');
+      const a = typeof f === 'object' ? (f.jawaban || '') : '';
+      html += `<div style="border:1px solid #bdbdbd;border-radius:8px;margin:8px 0;overflow:hidden;page-break-inside:avoid;">`
+        + `<div style="background:#e3f2fd;padding:6px 10px;font-weight:700;">Q${idx + 1}: ${esc(q)}</div>`
+        + (a ? `<div style="padding:6px 10px;">A: ${esc(a)}</div>` : '')
+        + `</div>`;
+    });
+  }
+
+  // Glosarium
+  if (ma.glosarium?.length) {
+    html += `<div class="section-header">GLOSARIUM</div>`;
+    const h = ['Istilah', 'Definisi'];
+    const rows = ma.glosarium.map(g => ({ 'Istilah': g.istilah || '', 'Definisi': g.definisi || '' }));
+    html += tableRender(h, rows);
+  }
+
+  // Referensi
+  if (ma.referensi?.length) {
+    html += `<div class="section-header">REFERENSI & SUMBER BELAJAR</div>`;
+    html += list(ma.referensi, 'ol');
+  }
+
+  // Refleksi Guru
+  if (ma.refleksiGuru) {
+    html += `<div class="section-header">LEMBAR REFLEKSI GURU</div>`;
+    if (ma.refleksiGuru.pertanyaanRefleksi?.length) {
+      html += `<div class="sub-header">Pertanyaan Refleksi</div>`;
+      html += list(ma.refleksiGuru.pertanyaanRefleksi, 'ol');
+    }
+    if (ma.refleksiGuru.hal_yang_berhasil || ma.refleksiGuru.hal_yang_perlu_diperbaiki) {
+      html += `<table>
+        <tr><td style="width:250px"><strong>Hal yang Berhasil</strong></td><td>${esc(ma.refleksiGuru.hal_yang_berhasil || '')}</td></tr>
+        <tr><td><strong>Hal yang Perlu Diperbaiki</strong></td><td>${esc(ma.refleksiGuru.hal_yang_perlu_diperbaiki || '')}</td></tr>
+      </table>`;
+    }
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+// ============================================================
+// PHASE 3: MEDIA PEMBELAJARAN
+// ============================================================
+async function startPhase3() {
+  if (!APP.phase1) { showToast('Generate RPP (Phase 1) dulu!', 'warning'); return; }
+  const btn = document.getElementById('phase3-gen-btn');
+  btn.disabled = true;
+  if (!enterBusy('phase3')) { btn.disabled = false; return; }
+  try {
+    const desain = APP.phase1.rpp?.desainPembelajaran || APP.phase1.desainPembelajaran || {};
+    const ident = APP.phase1.rpp?.identifikasi || APP.phase1.identifikasi || {};
+    const input = APP.input;
+
+    const systemPrompt = `Kamu adalah AI pembuat Media Pembelajaran kreatif untuk Kurikulum Merdeka. Output HANYA JSON valid.
+
+STRUKTUR JSON:
+{
+  "media": {
+    "slidePresentasi": [{ "slide": 1, "judul": "", "isi": "", "visual": "", "catatanPembicara": "" }],
+    "videoScript": { "durasi": "", "adegan": [{ "waktu": "", "visual": "", "narasi": "", "efek": "" }] },
+    "infografis": { "judul": "", "elemen": [{ "label": "", "data": "", "warna": "" }] },
+    "kuisInteraktif": [{ "nomor": 1, "pertanyaan": "", "opsi": [], "kunci": "", "feedbackBenar": "", "feedbackSalah": "" }],
+    "poster": { "judul": "", "konten": "", "warnaDominan": "", "gambar": "" }
+  }
+}
+
+ATURAN:
+1. Bahasa Indonesia baku
+2. Slide presentasi minimal 10 slide dengan catatan pembicara detail
+3. Video script minimal 5 adegan
+4. Infografis dengan 5-7 elemen data visual
+5. Kuis interaktif minimal 5 soal dengan feedback
+6. Poster edukatif A3 size`;
+
+    const userPrompt = `Buat Media Pembelajaran untuk:
+- Madrasah: ${input.madrasah}
+- Mata Pelajaran: ${input.mapel}
+- Materi: ${input.materi}
+- Elemen: ${input.elemen}
+- Kelas: ${input.fase}
+- CP: ${desain.capaianPembelajaran || input.cp}
+
+Gunakan pendekatan Deep Learning (Mindful, Meaningful, Joyful) dan visual yang menarik.
+Ekspresi matematika pakai \\(...\\) (inline) atau \\[...\\] (display) LaTeX. Aksara Arab/Jawa tulis langsung.
+
+Output JSON sesuai struktur yang ditentukan.`;
+
+    let result = null, lastErr = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        result = await generateWithFallback(systemPrompt, userPrompt, 3, { maxTokens: 12000, checkCompleteness: checkCompletenessMedia });
+        break;
+      } catch (e) {
+        lastErr = e;
+        if (attempt < 2) showToast(`⚠️ Percobaan ${attempt} gagal, coba lagi...`, 'warning');
+      }
+    }
+    if (!result) throw lastErr || new Error('Media Pembelajaran gagal digenerate');
+    APP.phase3 = result;
+    document.getElementById('phase3-status').className = 'phase-status success';
+    document.getElementById('phase3-status').textContent = '✅ Selesai';
+    renderPhase3(result);
+document.getElementById('phase3-export').classList.remove('hidden');
+    document.getElementById('combined-export-card').classList.remove('hidden');
+    updateWizardStep(3, 'done');
+    showToast('✅ Media Pembelajaran berhasil digenerate!', 'success');
+  } catch (e) {
+    document.getElementById('phase3-status').className = 'phase-status error';
+    document.getElementById('phase3-status').textContent = '❌ Gagal';
+    showToast(`❌ ${friendlyError(e.message)}`, 'error');
+  } finally {
+    btn.disabled = false;
+    hideLoading();
+  }
+}
+
+function renderPhase3(json) {
+  const container = document.getElementById('phase3-preview');
+  container.innerHTML = renderCodeCogs(buildMediaHTML(json));
+}
+
+function buildMediaHTML(json) {
+  const media = json.media || json;
+  const input = APP.input;
+
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function list(items, tag='ol') {
+    if (!Array.isArray(items) || !items.length) return '';
+    return `<${tag}>${items.map(i => {
+      if (typeof i === 'string') return `<li>${esc(i)}</li>`;
+      if (i.slide && i.judul) {
+        let out = `<li><strong>Slide ${i.slide}: ${esc(i.judul)}</strong>`;
+        if (i.isi) out += `<br>${esc(i.isi)}`;
+        if (i.visual) out += `<br><em>Visual: ${esc(i.visual)}</em>`;
+        if (i.catatanPembicara) out += `<br><span style="color:#666;">🗣 ${esc(i.catatanPembicara)}</span>`;
+        return out + '</li>';
+      }
+      if (i.waktu && i.visual) {
+        let out = `<li><strong>[${esc(i.waktu)}]</strong> ${esc(i.visual)}`;
+        if (i.narasi) out += `<br>🎤 ${esc(i.narasi)}`;
+        if (i.efek) out += `<br><em>Efek: ${esc(i.efek)}</em>`;
+        return out + '</li>';
+      }
+      if (i.nomor && i.pertanyaan) {
+        let out = `<li><strong>${i.nomor}. ${esc(i.pertanyaan)}</strong>`;
+        if (i.opsi?.length) {
+          const labels = ['A','B','C','D'];
+          out += '<ul>';
+          i.opsi.forEach((o, idx) => { const txt = o.replace(/^[A-Da-d][.\s)]+\s*/, ''); out += `<li>${labels[idx] || (idx+1)}. ${esc(txt)}</li>`; });
+          out += '</ul>';
+        }
+        out += `<br><span style="color:#c62828;">Kunci: ${esc(i.kunci || '')}</span>`;
+        if (i.feedbackBenar) out += `<br><span style="color:#2e7d32;">✅ ${esc(i.feedbackBenar)}</span>`;
+        if (i.feedbackSalah) out += `<br><span style="color:#c62828;">❌ ${esc(i.feedbackSalah)}</span>`;
+        return out + '</li>';
+      }
+      if (i.label && i.data) return `<li><strong>${esc(i.label)}:</strong> ${esc(i.data)}${i.warna ? ` (warna: ${i.warna})` : ''}</li>`;
+      return '';
+    }).join('')}</${tag}>`;
+  }
+
+  let html = `<div class="rpp-document">`;
+  html += `<div class="doc-title">MEDIA PEMBELAJARAN</div>`;
+  html += `<div class="doc-subtitle">${esc(input.mapel || '')} — ${esc(input.materi || '')}</div>`;
+
+  // Slide Presentasi
+  if (media.slidePresentasi?.length) {
+    html += `<div class="section-header">📊 SLIDE PRESENTASI</div>`;
+    html += list(media.slidePresentasi, 'ol');
+  }
+
+  // Video Script
+  if (media.videoScript) {
+    html += `<div class="section-header">🎬 VIDEO PEMBELAJARAN</div>`;
+    if (media.videoScript.durasi) html += `<p><strong>Durasi:</strong> ${esc(media.videoScript.durasi)}</p>`;
+    if (media.videoScript.adegan?.length) {
+      const h = ['Waktu', 'Visual', 'Narasi', 'Efek'];
+      const rows = media.videoScript.adegan.map(a => ({ 'Waktu': a.waktu || '', 'Visual': a.visual || '', 'Narasi': a.narasi || '', 'Efek': a.efek || '' }));
+      html += tableRender(h, rows);
+    }
+  }
+
+  // Infografis
+  if (media.infografis) {
+    html += `<div class="section-header">📈 INFOGRAFIS</div>`;
+    html += `<p style="text-align:center;font-weight:700;font-size:1rem;">${esc(media.infografis.judul || '')}</p>`;
+    if (media.infografis.elemen?.length) {
+      const h = ['Elemen', 'Data', 'Warna'];
+      const rows = media.infografis.elemen.map(e => ({ 'Elemen': e.label || '', 'Data': e.data || '', 'Warna': e.warna || '' }));
+      html += tableRender(h, rows);
+    }
+  }
+
+  // Kuis Interaktif
+  if (media.kuisInteraktif?.length) {
+    html += `<div class="section-header">🎯 KUIS INTERAKTIF</div>`;
+    html += list(media.kuisInteraktif, 'ol');
+  }
+
+  // Poster
+  if (media.poster) {
+    html += `<div class="section-header">🖼️ POSTER EDUKATIF</div>`;
+    html += `<table>
+      <tr><td style="width:120px"><strong>Judul</strong></td><td>${esc(media.poster.judul || '')}</td></tr>
+      <tr><td><strong>Konten</strong></td><td>${esc(media.poster.konten || '')}</td></tr>
+      <tr><td><strong>Warna Dominan</strong></td><td>${esc(media.poster.warnaDominan || '')}</td></tr>
+      <tr><td><strong>Gambar</strong></td><td>${esc(media.poster.gambar || '-')}</td></tr>
+    </table>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+// Shared table helper
+function tableRender(headers, rows) {
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  if (!Array.isArray(rows) || !rows.length) return '';
+  const h = headers.map(header => `<th>${esc(header)}</th>`).join('');
+  const r = rows.map(row => {
+    let cells;
+    if (Array.isArray(row)) {
+      cells = headers.map((_, idx) => `<td>${esc(row[idx] ?? '')}</td>`).join('');
+    } else {
+      cells = headers.map(header => `<td>${esc(row[header] || '')}</td>`).join('');
+    }
+    return `<tr>${cells}</tr>`;
+  }).join('');
+  return `<table><thead><tr>${h}</tr></thead><tbody>${r}</tbody></table>`;
+}
+
+// ============================================================
+// EXPORT PLACEHOLDERS
+// ============================================================
+function exportPhase1PDF() {
+  phaseExportPDF('phase1-preview', 'RPP');
+}
+async function exportPhase1DOCX() {
+  showToast('📝 DOCX: Menyiapkan dokumen...', 'info');
+  if (typeof docx === 'undefined') { showToast('❌ Library DOCX belum siap', 'error'); return; }
+  try {
+    const html = document.getElementById('phase1-preview').innerHTML;
+    const blob = await htmlToDocx(html, 'RPP');
+    saveAs(blob, 'RPP.docx');
+    showToast('✅ DOCX berhasil diunduh!', 'success');
+  } catch(e) { showToast(`❌ Gagal: ${e.message}`, 'error'); }
+}
+function exportPhase1HTML() {
+  showToast('🌐 Menyiapkan HTML...', 'info');
+  const html = document.getElementById('phase1-preview').innerHTML;
+  const style = Array.from(document.styleSheets).map(s => {
+    try { return Array.from(s.cssRules || []).map(r => r.cssText).join('\n'); } catch(e) { return ''; }
+  }).join('\n');
+  const standalone = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>RPP - ${APP.input.madrasah || ''}</title><style>${style}</style></head><body><div class="rpp-document">${html}</div></body></html>`;
+  const blob = new Blob([standalone], { type: 'text/html' });
+  saveAs(blob, 'RPP-portfolio.html');
+  showToast('✅ HTML berhasil diunduh!', 'success');
+}
+
+function exportPhase2PDF() { phaseExportPDF('phase2-preview', 'Modul Ajar'); }
+function exportPhase2DOCX() { phaseExportDOCX('phase2-preview', 'ModulAjar.docx'); }
+function exportPhase2HTML() { phaseExportHTML('phase2-preview', 'ModulAjar-portfolio.html'); }
+function exportPhase3PDF() { phaseExportPDF('phase3-preview', 'Media Pembelajaran'); }
+function exportPhase3DOCX() { phaseExportDOCX('phase3-preview', 'MediaPembelajaran.docx'); }
+function exportPhase3HTML() { phaseExportHTML('phase3-preview', 'MediaPembelajaran-portfolio.html'); }
+
+function phaseExportPDF(previewId, label) {
+  showToast(`🔄 Buka dialog Print → pilih "Save as PDF"`, 'info');
+  const el = document.getElementById(previewId);
+  if (!el) return;
+  el.classList.add('print-area');
+  window.print();
+  const cleanup = () => { el.classList.remove('print-area'); };
+  if (window.onafterprint !== undefined) {
+    window.onafterprint = cleanup;
+    setTimeout(cleanup, 5000);
+  } else {
+    setTimeout(cleanup, 3000);
+  }
+}
+async function phaseExportDOCX(previewId, filename) {
+  showToast('📝 DOCX: Menyiapkan dokumen...', 'info');
+  if (typeof docx === 'undefined') { showToast('❌ Library DOCX belum siap', 'error'); return; }
+  try {
+    const html = document.getElementById(previewId).innerHTML;
+    const blob = await htmlToDocx(html, filename.replace('.docx',''));
+    saveAs(blob, filename);
+    showToast('✅ DOCX berhasil diunduh!', 'success');
+  } catch(e) { showToast(`❌ Gagal: ${e.message}`, 'error'); }
+}
+function phaseExportHTML(previewId, filename) {
+  showToast('🌐 Menyiapkan HTML...', 'info');
+  const html = document.getElementById(previewId).innerHTML;
+  const style = document.querySelector('style')?.innerHTML || '';
+  const standalone = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${filename.replace('-portfolio.html','')}</title><style>${style}</style></head><body><div class="rpp-document">${html}</div></body></html>`;
+  saveAs(new Blob([standalone], { type: 'text/html' }), filename);
+  showToast('✅ HTML berhasil diunduh!', 'success');
+}
+
+function exportCombinedPDF() {
+  showToast(`🔄 Buka dialog Print → pilih "Save as PDF"`, 'info');
+  const temp = document.createElement('div');
+  temp.className = 'print-area';
+  temp.style.cssText = 'position:absolute;left:0;top:0;width:100%;z-index:9999;background:#fff;';
+  const phases = ['phase1-preview', 'phase2-preview', 'phase3-preview'];
+  phases.forEach(id => {
+    const el = document.getElementById(id)?.querySelector('.rpp-document');
+    if (el) {
+      if (temp.children.length > 0) {
+        const br = document.createElement('div');
+        br.style.cssText = 'page-break-before:always;height:1px;';
+        temp.appendChild(br);
+      }
+      temp.appendChild(el.cloneNode(true));
+    }
+  });
+  document.body.appendChild(temp);
+  window.print();
+  const cleanup = () => { if (temp.parentNode) temp.parentNode.removeChild(temp); };
+  if (window.onafterprint !== undefined) { window.onafterprint = cleanup; setTimeout(cleanup, 5000); }
+  else { setTimeout(cleanup, 3000); }
+}
+async function exportCombinedDOCX() {
+  showToast('📝 DOCX: Menyiapkan dokumen gabungan...', 'info');
+  if (typeof docx === 'undefined') { showToast('❌ Library DOCX belum siap', 'error'); return; }
+  try {
+    const { Document, Packer, Paragraph, TextRun, PageBreak } = docx;
+    const children = [];
+    const phases = [
+      { id: 'phase1-preview', label: 'RPP & LAMPIRAN' },
+      { id: 'phase2-preview', label: 'MODUL AJAR' },
+      { id: 'phase3-preview', label: 'MEDIA PEMBELAJARAN' }
+    ];
+    for (const phase of phases) {
+      const el = document.getElementById(phase.id);
+      if (!el || !el.querySelector('.rpp-document')) continue;
+      children.push(new Paragraph({ children: [new TextRun({ text: phase.label, bold: true, size: 28, font: 'Times New Roman' })], spacing: { before: 400, after: 200 } }));
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = el.innerHTML;
+      const texts = Array.from(tempDiv.querySelectorAll('.rpp-document *')).filter(n => n.textContent?.trim()).map(n => n.textContent.trim());
+      for (const t of texts) {
+        if (t.length > 3) children.push(new Paragraph({ children: [new TextRun({ text: t, size: 22, font: 'Times New Roman' })], spacing: { before: 40 } }));
+      }
+      children.push(new Paragraph({ children: [new PageBreak()] }));
+    }
+    const doc = new Document({ title: 'RPP-Complete', sections: [{ properties: { page: { margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } }, children }] });
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, 'RPP-Complete.docx');
+    showToast('✅ Combined DOCX berhasil diunduh!', 'success');
+  } catch(e) { showToast(`❌ Gagal: ${e.message}`, 'error'); }
+}
+function exportCombinedHTML() {
+  showToast('🌐 Menyiapkan HTML gabungan...', 'info');
+  const style = document.querySelector('style')?.innerHTML || '';
+  let body = '';
+  const phases = [
+    { id: 'phase1-preview', label: 'RPP & LAMPIRAN' },
+    { id: 'phase2-preview', label: 'MODUL AJAR' },
+    { id: 'phase3-preview', label: 'MEDIA PEMBELAJARAN' }
+  ];
+  for (const phase of phases) {
+    const el = document.getElementById(phase.id)?.querySelector('.rpp-document');
+    if (el) body += `<div class="doc-title" style="page-break-before:always;padding-top:40px;">${phase.label}</div>${el.innerHTML}`;
+  }
+  if (!body) { showToast('❌ Belum ada data untuk diexport', 'error'); return; }
+  const standalone = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>RPP Complete Portfolio</title><style>${style}</style></head><body><div class="rpp-document">${body}</div></body></html>`;
+  saveAs(new Blob([standalone], { type: 'text/html' }), 'RPP-Complete-portfolio.html');
+  showToast('✅ Combined HTML berhasil diunduh!', 'success');
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function saveAs(blob, filename) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 100);
+}
+async function htmlToDocx(html, title) {
+  const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, TableOfContents, HeadingLevel, AlignmentType, BorderStyle, WidthType, convertInchesToTwip } = docx;
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+  const children = [];
+
+  function getTextContent(node) {
+    if (node.nodeType === 3) return node.textContent;
+    return Array.from(node.childNodes).map(getTextContent).join('');
+  }
+
+  function isBold(el) {
+    const tag = el.tagName.toLowerCase();
+    if (['strong','b','th'].includes(tag)) return true;
+    const fw = (el.style?.fontWeight || '').toString();
+    return fw === '700' || fw === 'bold' || ['section-header'].some(c => el.classList?.contains(c));
+  }
+
+  function parseChildren(parent) {
+    const results = [];
+    const convertTable = (tblEl) => {
+      const rows = Array.from(tblEl.querySelectorAll('tr'));
+      const tableRows = rows.map(tr => {
+        const cells = Array.from(tr.querySelectorAll('td, th'));
+        const isHeader = tr.querySelector('th') !== null;
+        const tableCells = cells.map(cell => {
+          const ct = getTextContent(cell).trim();
+          return new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: ct, bold: isHeader || isBold(cell), size: 20 })] })] });
+        });
+        return new TableRow({ children: tableCells });
+      });
+      if (!tableRows.length) return null;
+      return new Table({ rows: tableRows });
+    };
+    for (const node of parent.childNodes) {
+      if (node.nodeType === 3) { const t = node.textContent.trim(); if (t) results.push(t); continue; }
+      if (node.nodeType !== 1) continue;
+      const tag = node.tagName.toLowerCase();
+      const text = getTextContent(node).trim();
+      if (!text) continue;
+      const bold = isBold(node);
+      const italic = tag === 'i' || tag === 'em';
+      const fontSize = bold ? 22 : 20;
+
+      if (tag === 'table') {
+        const converted = convertTable(node);
+        if (converted) results.push(converted);
+        continue;
+      }
+
+      if (tag === 'ol' || tag === 'ul') {
+        Array.from(node.children).forEach(li => {
+          const lt = getTextContent(li).trim();
+          if (lt) {
+            const isHeader = li.closest ? !!Array.from(document.querySelectorAll('.section-header, .sub-header')).find(h => h.contains(li)) : false;
+            results.push(new Paragraph({ children: [new TextRun({ text: lt, bold: isHeader, size: 20 })], spacing: { before: 40 } }));
+          }
+        });
+        continue;
+      }
+
+      if (['div','p','li'].includes(tag) || node.classList?.contains('section-header') || node.classList?.contains('sub-header')) {
+        const cls = node.classList || { contains: () => false };
+        const isSoalNomor = cls.contains('soal-nomor');
+        const isSoalOpsi = cls.contains('soal-opsi');
+        const isKunci = cls.contains('kunci-jawaban');
+        const nestedTables = Array.from(node.querySelectorAll('table'));
+        const mkPara = (t) => {
+          const run = { text: t, bold: bold || isSoalNomor || isKunci, italics: italic, size: fontSize * 2, font: 'Times New Roman' };
+          if (isKunci) run.color = 'C62828';
+          const para = { children: [new TextRun(run)], spacing: { before: isSoalNomor ? 120 : 60, after: 60 } };
+          if (isSoalOpsi) para.indent = { left: 720 };
+          return new Paragraph(para);
+        };
+        if (nestedTables.length) {
+          // Div soal yang memuat tabel data: keluarkan teks non-tabel dulu,
+          // lalu tiap tabel sebagai tabel DOCX asli (tidak digepeng jadi paragraf)
+          const clone = node.cloneNode(true);
+          clone.querySelectorAll('table').forEach(tbl => tbl.remove());
+          const t = getTextContent(clone).trim();
+          if (t) results.push(mkPara(t));
+          nestedTables.forEach(tbl => { const converted = convertTable(tbl); if (converted) results.push(converted); });
+          continue;
+        }
+        results.push(mkPara(text));
+        continue;
+      }
+    }
+    return results;
+  }
+
+  const parsed = parseChildren(temp);
+  children.push(...parsed);
+
+  const doc = new Document({
+    title,
+    styles: { default: { document: { run: { font: 'Times New Roman', size: 24 } } } },
+    sections: [{ properties: { page: { margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } }, children }]
+  });
+  return Packer.toBlob(doc);
+}
+
+// ============================================================
+// CODECOGS LATEX (render LaTeX as image via CodeCogs, safe for PDF/HTML/DOCX)
+// ============================================================
+function cleanLaTeX(s) {
+  // Fix all control chars from JSON-parse corruption of LaTeX escapes
+  return String(s)
+    .replace(/\u0008/g, '\\b').replace(/\u0009/g, '\\t')
+    .replace(/\u000C/g, '\\f').replace(/\u000D/g, '\\r')
+    // Perbaiki perintah \n... yang rusak karena \n di-parse JSON sebagai newline
+    // cth: "\neq" -> newline+"eq". Daftar: \nabla \neq \neg \newcommand \newline \notin \nmid \not \num \ni
+    .replace(/\n\s*(nabla|neq|neg|newcommand|newline|notin|nmid|not|num|ni)\b/g, '\\n$1');
+}
+function decodeEntities(s) {
+  return String(s).replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+}
+function looksLikeMath(e) {
+  // Hindari false-positive (cth: harga $5000$, teks biasa) — anggap rumus jika ada
+  // backslash perintah LaTeX atau operator ^ _ =
+  return /\\|[\^_=]/.test(e) && /[a-zA-Z0-9\\]/.test(e);
+}
+function renderCodeCogs(text) {
+  text = cleanLaTeX(text);
+  const toImg = (formula, display) => {
+    // esc() sudah mengubah & menjadi &amp; sebelum sampai sini — kembalikan agar rumus utuh
+    const f = decodeEntities(cleanLaTeX(formula.trim()));
+    if (!f) return '';
+    const dpi = display ? 150 : 120;
+    // SELURUH payload di-encode (sebelumnya prefix \inline \dpi... dibiarkan mentah di URL -> sering gagal)
+    const payload = `\\inline \\dpi{${dpi}}${display ? ' \\large' : ''} ${f}`;
+    const src = 'https://latex.codecogs.com/svg.image?' + encodeURIComponent(payload);
+    const alt = f.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const style = display ? 'max-width:100%;' : 'display:inline;vertical-align:middle;max-width:100%;';
+    // onerror: jika CodeCogs down/diblokir, tampilkan teks rumus (mono) agar dokumen tetap terbaca
+    const img = `<img src="${src}" alt="${alt}" style="${style}" loading="lazy" onerror="var s=document.createElement('span');s.style.cssText='font-family:monospace;font-size:0.85em;background:#f5f5f5;border:1px solid #ddd;border-radius:4px;padding:2px 6px;word-break:break-all;';s.textContent=this.alt||'rumus';this.replaceWith(s);">`;
+    return display ? `<div style="text-align:center;margin:8px 0;overflow-x:auto;">${img}</div>` : img;
+  };
+  // \[...\] display math
+  text = text.replace(/\\\[([\s\S]+?)\\\]/g, (_, e) => toImg(e, true));
+  // $$...$$ display math
+  text = text.replace(/\$\$([\s\S]+?)\$\$/g, (_, e) => toImg(e, true));
+  // \(...\) inline math
+  text = text.replace(/\\\(([\s\S]+?)\\\)/g, (_, e) => toImg(e, false));
+  // $...$ inline math — hanya jika terlihat seperti rumus matematika
+  text = text.replace(/(?<!\$)\$([^\n$]+?)\$(?!\$)/g, (_, e) => (looksLikeMath(e) ? toImg(e, false) : `$${e}$`));
+  return text;
+}
+
+// ============================================================
+// RESET
+// ============================================================
+function resetAll() {
+  if (!confirm('Reset semua data? Data yang belum disimpan akan hilang.')) return;
+  APP.phase1 = null;
+  APP.phase2 = null;
+  APP.phase3 = null;
+  APP.input = {};
+  document.getElementById('rpp-form').reset();
+  document.getElementById('phase1-preview').innerHTML = '<div class="preview-empty"><div class="icon">📋</div><p>Generate RPP + Lampiran untuk melihat hasil di sini.</p></div>';
+  document.getElementById('phase2-preview').innerHTML = '<div class="preview-empty"><div class="icon">📖</div><p>Generate Modul Ajar setelah RPP selesai.</p></div>';
+  document.getElementById('phase3-preview').innerHTML = '<div class="preview-empty"><div class="icon">🎬</div><p>Generate Media Pembelajaran setelah Modul Ajar selesai.</p></div>';
+  document.querySelectorAll('.phase-status').forEach(el => { el.className = 'phase-status pending'; el.textContent = '⏳ Belum digenerate'; });
+  document.querySelectorAll('.export-bar').forEach(el => el.classList.add('hidden'));
+  document.getElementById('combined-export-card').classList.add('hidden');
+  document.querySelectorAll('.wizard-step').forEach(el => { el.classList.remove('done', 'active'); });
+  document.querySelector('.wizard-step').classList.add('active');
+  document.querySelectorAll('[id^="step-"]').forEach(el => el.classList.add('hidden'));
+  document.getElementById('step-0').classList.remove('hidden');
+  document.getElementById('phase1-back').classList.add('hidden');
+  // Reset progress bar
+  document.getElementById('phase1-progress').classList.add('hidden');
+  document.getElementById('phase1-progress-fill').style.width = '0%';
+  document.getElementById('phase1-progress-steps').innerHTML = '';
+  APP.currentStep = 0;
+  showToast('↺ Reset berhasil', 'info');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadSettings();
+showStep(0);
+</script>
+</body>
+</html>
