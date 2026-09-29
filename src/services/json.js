@@ -157,8 +157,18 @@ export function friendlyError(msg) {
     return 'Model Poolside tidak ditemukan — pastikan ID "poolside/laguna-s-2.1"';
   }
   if (/unavailable.*free|no longer free/i.test(m)) return 'Model ini sudah tidak gratis';
-  if (/404|not found/i.test(m)) return 'Model tidak ditemukan, mungkin sudah tidak tersedia';
-  if (/timeout|aborted|etimedout/i.test(m)) return 'Koneksi timeout, coba lagi';
+  // OpenRouter sering balas `{"error":{"code":404,"message":"No endpoints found
+  // for ..."}}` — dan pesan itu TIDAK selalu memuat angka 404-nya.
+  if (/no endpoints found|404|not found/i.test(m)) {
+    return 'Model tidak ditemukan, mungkin sudah tidak tersedia';
+  }
+  // Menutup seluruh varian penulisan timeout yang dipakai provider:
+  // "timeout", "time out", "timed out", "time_out", serta "Request timed out
+  // after 120s". Tanpa pola ini, error yang paling sering terjadi justru
+  // tampil mentah ke user dalam bahasa Inggris.
+  if (/timed?[\s_-]?out|aborted|econnreset|network[\s_-]?error/i.test(m)) {
+    return 'Koneksi timeout, coba lagi';
+  }
   if (/api[ _-]?key|unauthorized|403|401|authentication/i.test(m)) return 'API Key tidak valid';
   if (/rate[\s_-]?limit|too many|429/i.test(m)) return 'Terlalu banyak permintaan, tunggu sebentar';
   if (/quota|insufficient credits/i.test(m)) return 'Kuota API habis';

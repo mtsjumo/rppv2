@@ -40,6 +40,7 @@ import {
   showResumeToast,
 } from '../ui/recovery-ui.js';
 import { clearCheckpointFor, getResumeContext, runResumableJob } from '../recovery/job-runner.js';
+import { getCheckpoint } from '../recovery/checkpoint.js';
 import { exportPhaseDOCX } from '../export/docx.js';
 import { printElement } from '../export/pdf.js';
 import { exportPhaseHTML } from '../export/html.js';
@@ -217,7 +218,12 @@ export async function startPhase1(opts = {}) {
     const phase1Data = toPhase1Shape(job.data);
 
     if (!phase1Data.rpp || !Object.keys(phase1Data.rpp).length) {
-      throw new Error('RPP Core tidak berhasil digenerate. Coba lagi.');
+      // Jangan hanya menulis "gagal" — `job.error` menyimpan penyebab NYATA
+      // (API key ditolak, rate limit, timeout, JSON tidak bisa di-parse, dll).
+      // Tanpa itu, pengguna hanya melihat pesan generik yang tidak bisa
+      // ditindaklanjuti, padahal penyebabnya sangat spesifik.
+      const cause = job.error?.message || describeJobFailure(job);
+      throw new Error(`RPP Core gagal: ${cause}`);
     }
 
     // Simpan laporan kualitas gabungan.
@@ -259,6 +265,25 @@ export async function startPhase1(opts = {}) {
     releaseBusy('phase1');
     showRecoveryBannerIfNeeded();
   }
+}
+
+/**
+ * Rangkuman kegagalan yang bisa ditindaklanjuti.
+ *
+ * Dipakai kalau `job.error` kosong — misalnya unit wajib selesai tapi payload-nya
+ * tidak berisi dokumen (kasus "RPP Core kosong"). Sumber kebenaran tetap
+ * `lastError` di checkpoint, karena di situ runner menulis pesan sebenarnya.
+ */
+export function describeJobFailure(job) {
+  const cp = job?.checkpointId ? getCheckpoint(job.checkpointId) : null;
+  if (cp?.lastError) return cp.lastError;
+
+  const failedNames = (job?.failed || [])
+    .map((id) => SUBPHASES.find((sp) => sp.id === id)?.label || id)
+    .join(', ');
+  if (failedNames) return `bagian gagal: ${failedNames}`;
+
+  return 'respons AI tidak berisi dokumen RPP. Periksa API key, kuota, dan koneksi, lalu coba lagi.';
 }
 
 /** Susun laporan kualitas dari data Phase 1 yang sudah ter-shape. */
