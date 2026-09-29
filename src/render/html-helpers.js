@@ -5,20 +5,20 @@
  */
 
 import { escapeHtml } from '../core/dom.js';
-import { renderCodeCogs } from '../services/latex.js';
+import { normalizeMathText, renderCodeCogs } from '../services/latex.js';
 
 export { escapeHtml };
 
 /** Escape + render LaTeX sekaligus (untuk teks bebas). */
 export function text(s) {
-  return renderCodeCogs(escapeHtml(s));
+  return renderCodeCogs(escapeHtml(normalizeMathText(s)));
 }
 
 /**
  * Escape + render LaTeX pada teks soal/stem yang boleh berisi tabel markdown.
  */
 export function richText(s) {
-  return renderCodeCogs(richTextEscape(s));
+  return renderCodeCogs(richTextEscape(normalizeMathText(s)));
 }
 
 /** Escape + render blok tabel markdown (`| a | b |`) menjadi <table>. */

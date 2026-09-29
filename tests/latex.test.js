@@ -1,7 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { cleanLaTeX, looksLikeMath, renderCodeCogs } from '../src/services/latex.js';
+import {
+  cleanLaTeX,
+  looksLikeMath,
+  normalizeMathText,
+  renderCodeCogs,
+} from '../src/services/latex.js';
 
 test('rumus inline \\( \\) diubah menjadi img CodeCogs', () => {
   const out = renderCodeCogs(String.raw`Nilai \(x^2 + y^2\) positif.`);
@@ -55,6 +60,25 @@ test('rumus $...$ yang memang matematika tetap jadi gambar', () => {
   assert.match(renderCodeCogs(String.raw`Nilai $x^2$ di sini.`), /<img/);
   assert.match(renderCodeCogs(String.raw`Nilai $\frac{1}{2}$ di sini.`), /<img/);
   assert.match(renderCodeCogs(String.raw`Nilai $v_1$ di sini.`), /<img/);
+});
+
+test('LaTeX polos dari AI dinormalisasi sebelum dirender', () => {
+  const raw = String.raw`A \times B &#x20;
+(x) = \sqrt{5 - 2x}&#x20;
+\\{(a,1),(b,2),(c,1)\\} &#x20;
+A. x \le \frac{5}{2}
+B. x \ge \frac{5}{2}
+C. x < \frac{5}{2}
+D. x > \frac{5}{2}
+f(x) = \frac{6}{x-2} dengan domain x \neq 2 &#x20;`;
+
+  const normalized = normalizeMathText(raw);
+  const out = renderCodeCogs(normalized);
+
+  assert.doesNotMatch(normalized, /&#x20;|\\\\\{/, 'entity spasi dan double-backslash harus dibersihkan');
+  assert.equal((out.match(/<img /g) || []).length, 9, 'seluruh ekspresi harus menjadi gambar rumus');
+  assert.match(out, /A\. <img/, 'label opsi harus tetap menjadi teks');
+  assert.match(out, /dengan domain/, 'frasa domain tidak boleh ikut menjadi LaTeX');
 });
 
 test('environment LaTeX tidak dirender (batasan yang diketahui)', () => {

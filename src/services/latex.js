@@ -27,6 +27,45 @@ export function cleanLaTeX(s) {
   /* eslint-enable no-control-regex */
 }
 
+/**
+ * Normalisasi keluaran AI sebelum teks di-escape menjadi HTML.
+ *
+ * Model kadang mengirim entity spasi, double-backslash dari JSON, atau rumus
+ * tanpa delimiter walaupun prompt sudah memintanya. Menambah delimiter di sini
+ * membuat semua jalur render (preview, cetak, DOCX, HTML) konsisten.
+ */
+export function normalizeMathText(value) {
+  const normalized = String(value ?? '')
+    // Entity ini tidak perlu dipertahankan sebagai HTML; ia hanya menimbulkan
+    // teks `&#x20;` ketika output AI sudah lebih dulu di-escape oleh renderer.
+    .replace(/(?:&amp;)?&#x0*20;|(?:&amp;)?&#0*32;|&nbsp;/gi, ' ')
+    // AI kadang menulis `\\\\frac` atau `\\\\{...\\\\}` di dalam nilai JSON.
+    // Satu backslash cukup untuk perintah/delimiter LaTeX.
+    .replace(/\\{2,}(?=[A-Za-z{}()[\]])/g, '\\');
+
+  return normalized
+    .split(/(\r?\n)/)
+    .map((part) => (part === '\n' || part === '\r\n' ? part : wrapBareMathLine(part)))
+    .join('');
+}
+
+function wrapBareMathLine(line) {
+  if (!line.trim() || /\\\(|\\\[|\$/.test(line)) return line;
+
+  const wrap = (formula) => `\\(${formula.trim()}\\)`;
+  const option = line.match(/^(\s*[A-Da-d]\.?\s+)(.+)$/);
+  if (option && looksLikeMath(option[2])) return `${option[1]}${wrap(option[2])}`;
+
+  // Bentuk umum soal: "f(x) = ... dengan domain x \\neq ...".
+  // Render kedua ekspresi tanpa ikut memasukkan frasa Bahasa Indonesia ke LaTeX.
+  const domain = line.match(/^(.*?)(\s+dengan\s+domain\s+)(.+)$/i);
+  if (domain && looksLikeMath(domain[1]) && looksLikeMath(domain[3])) {
+    return `${wrap(domain[1])}${domain[2]}${wrap(domain[3])}`;
+  }
+
+  return looksLikeMath(line) ? wrap(line) : line;
+}
+
 /** Kebalikan escape HTML — perlu sebelum mengirim payload ke CodeCogs. */
 export function decodeEntities(s) {
   return String(s)
