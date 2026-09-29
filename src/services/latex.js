@@ -50,20 +50,40 @@ export function normalizeMathText(value) {
 }
 
 function wrapBareMathLine(line) {
-  if (!line.trim() || /\\\(|\\\[|\$/.test(line)) return line;
+  // Baris tabel Markdown diproses oleh richTextEscape(). Jangan menyisipkan
+  // delimiter di sini karena itu akan merusak pemisah `|` antar sel.
+  if (!line.trim() || line.includes('|') || /\\\(|\\\[|\$/.test(line)) return line;
 
   const wrap = (formula) => `\\(${formula.trim()}\\)`;
   const option = line.match(/^(\s*[A-Da-d]\.?\s+)(.+)$/);
-  if (option && looksLikeMath(option[2])) return `${option[1]}${wrap(option[2])}`;
+  if (option && isBareMathExpression(option[2])) return `${option[1]}${wrap(option[2])}`;
 
   // Bentuk umum soal: "f(x) = ... dengan domain x \\neq ...".
   // Render kedua ekspresi tanpa ikut memasukkan frasa Bahasa Indonesia ke LaTeX.
   const domain = line.match(/^(.*?)(\s+dengan\s+domain\s+)(.+)$/i);
-  if (domain && looksLikeMath(domain[1]) && looksLikeMath(domain[3])) {
+  if (domain && isBareMathExpression(domain[1]) && isBareMathExpression(domain[3])) {
     return `${wrap(domain[1])}${domain[2]}${wrap(domain[3])}`;
   }
 
-  return looksLikeMath(line) ? wrap(line) : line;
+  return isBareMathExpression(line) ? wrap(line) : line;
+}
+
+/**
+ * Auto-wrap hanya untuk satu baris yang seluruhnya adalah matematika.
+ * Satu tanda `=` atau `\\frac` di dalam kalimat biasa bukan alasan untuk
+ * mengubah seluruh kalimat menjadi gambar LaTeX.
+ */
+function isBareMathExpression(value) {
+  const expression = String(value).trim();
+  if (!looksLikeMath(expression)) return false;
+
+  // Buang perintah dan simbol matematika, lalu tolak bila masih tersisa kata
+  // natural yang cukup panjang. Nama perintah LaTeX sendiri sudah dihapus.
+  const prose = expression
+    .replace(/\\[a-zA-Z]+/g, ' ')
+    .replace(/[\\{}()[\]^_=+\-*/<>,.0-9\s]/g, ' ')
+    .trim();
+  return !/[a-zA-Z]{3,}/.test(prose);
 }
 
 /** Kebalikan escape HTML — perlu sebelum mengirim payload ke CodeCogs. */

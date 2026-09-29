@@ -41,7 +41,7 @@ function richTextEscape(s) {
   let buf = [];
   const flush = () => {
     if (buf.length) {
-      segs.push(buf.map(escapeHtml).join('<br>'));
+      segs.push(buf.map(text).join('<br>'));
       buf = [];
     }
   };
@@ -63,11 +63,11 @@ function richTextEscape(s) {
         i++;
       }
       const ncols = headers.length;
-      const head = headers.map((c) => `<th>${escapeHtml(c)}</th>`).join('');
+      const head = headers.map((c) => `<th>${text(c)}</th>`).join('');
       const body = rows
         .map((row) => {
           let cells = '';
-          for (let k = 0; k < ncols; k++) cells += `<td>${escapeHtml(row[k] ?? '')}</td>`;
+          for (let k = 0; k < ncols; k++) cells += `<td>${text(row[k] ?? '')}</td>`;
           return `<tr>${cells}</tr>`;
         })
         .join('');
@@ -110,12 +110,12 @@ export function list(items, tag = 'ol', mapItem) {
 export function table(headers, rows, { className = '' } = {}) {
   if (!Array.isArray(rows) || rows.length === 0) return '';
   const cls = className ? ` class="${className}"` : '';
-  const head = headers.map((h) => `<th>${escapeHtml(h)}</th>`).join('');
+  const head = headers.map((h) => `<th>${text(h)}</th>`).join('');
   const body = rows
     .map((row) => {
       const cells = Array.isArray(row)
-        ? headers.map((_, idx) => `<td>${escapeHtml(row[idx] ?? '')}</td>`).join('')
-        : headers.map((h) => `<td>${escapeHtml(matchKey(row, h) ?? '')}</td>`).join('');
+        ? headers.map((_, idx) => `<td>${text(row[idx] ?? '')}</td>`).join('')
+        : headers.map((h) => `<td>${text(matchKey(row, h) ?? '')}</td>`).join('');
       return `<tr>${cells}</tr>`;
     })
     .join('');

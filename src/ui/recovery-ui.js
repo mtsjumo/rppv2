@@ -115,7 +115,8 @@ export function renderQualityReport(container, report) {
   if (!errors.length && !warnings.length && !report.cognitiveSummary) return null;
 
   const box = document.createElement('div');
-  box.className = 'issue-report';
+  // Laporan ini untuk peninjauan di layar, bukan isi dokumen RPP.
+  box.className = 'issue-report no-print';
   box.id = 'quality-report';
 
   const sev = document.createElement('span');

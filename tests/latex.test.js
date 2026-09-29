@@ -81,6 +81,19 @@ f(x) = \frac{6}{x-2} dengan domain x \neq 2 &#x20;`;
   assert.match(out, /dengan domain/, 'frasa domain tidak boleh ikut menjadi LaTeX');
 });
 
+test('kalimat biasa yang memuat simbol matematika tidak dibungkus sebagai rumus', () => {
+  const prose = String.raw`Peserta didik menggunakan rumus x = 5 untuk memeriksa hasil percobaan.`;
+  assert.equal(normalizeMathText(prose), prose);
+
+  const proseWithCommand = String.raw`Guru menjelaskan \frac{1}{2} bagian pizza melalui diskusi kelompok.`;
+  assert.equal(normalizeMathText(proseWithCommand), proseWithCommand);
+});
+
+test('baris tabel Markdown tidak dirusak oleh normalisasi matematika', () => {
+  const row = String.raw`| Nilai x | \frac{1}{2} |`;
+  assert.equal(normalizeMathText(row), row);
+});
+
 test('environment LaTeX tidak dirender (batasan yang diketahui)', () => {
   // Sengaja dibiarkan apa adanya: renderCodeCogs hanya mendukung
   // \[..\], $$..$$, \(..\), dan $..$. Environment \begin{...} belum
