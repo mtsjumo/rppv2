@@ -98,28 +98,73 @@ export function updateProgress(pct, label, steps) {
   if (fill) fill.style.width = `${pct}%`;
   if (pctEl) pctEl.textContent = `${pct}%`;
   if (labelEl) labelEl.textContent = label;
+  $('#phase1-progress-bar')?.setAttribute('aria-valuenow', String(pct));
 
   if (steps) {
     const container = $('#phase1-progress-steps');
-    if (container) container.replaceChildren(...steps.map(stepNode));
+    if (container) syncSteps(container, steps);
   }
   emit('progress:update', { pct, label, steps });
 }
 
-function stepNode(s) {
+const STEP_GLYPH = { done: '✓', failed: '✕', pending: '○', waiting: '⏸', active: '' };
+
+/** Bangun kerangka satu baris langkah (dipakai ulang antar pembaruan). */
+function buildStepShell() {
   const el = document.createElement('div');
-  el.className = `progress-step-item ${s.done ? 'done' : s.active ? 'active' : 'pending'}`;
 
   const icon = document.createElement('span');
   icon.className = 'p-icon';
   icon.setAttribute('aria-hidden', 'true');
-  icon.textContent = s.done ? '✅' : s.active ? '⏳' : '⏺️';
 
-  const label = document.createElement('span');
-  label.textContent = s.active && s.description ? `${s.label} — ${s.description}` : s.label;
+  const main = document.createElement('div');
+  main.className = 'p-main';
+  const title = document.createElement('div');
+  title.className = 'p-title';
+  const detail = document.createElement('div');
+  detail.className = 'p-detail';
+  const bar = document.createElement('div');
+  bar.className = 'p-bar';
+  const fill = document.createElement('i');
+  bar.appendChild(fill);
+  main.append(title, detail, bar);
 
-  el.append(icon, label);
+  el.append(icon, main);
   return el;
+}
+
+/** Perbarui satu baris langkah di tempat (tanpa membuat ulang node). */
+function paintStep(el, s) {
+  const status = s.status || (s.done ? 'done' : s.active ? 'active' : 'pending');
+  const cls = `progress-step-item ${status}`;
+  if (el.className !== cls) el.className = cls;
+
+  const [icon, main] = el.children;
+  const glyph = STEP_GLYPH[status] ?? '';
+  if (icon.textContent !== glyph) icon.textContent = glyph;
+
+  const [title, detail, bar] = main.children;
+  if (title.textContent !== s.label) title.textContent = s.label;
+
+  const detailText = s.detail || (status === 'active' ? s.description || '' : '');
+  if (detail.textContent !== detailText) detail.textContent = detailText;
+
+  const showBar = (status === 'active' || status === 'waiting') && typeof s.fraction === 'number';
+  bar.style.display = showBar ? '' : 'none';
+  if (showBar) bar.firstElementChild.style.width = `${Math.round(s.fraction * 100)}%`;
+}
+
+/** Sinkronkan daftar langkah ke kontainer dengan memakai ulang node yang ada. */
+function syncSteps(container, steps) {
+  while (container.children.length > steps.length) container.lastElementChild.remove();
+  steps.forEach((s, i) => {
+    let el = container.children[i];
+    if (!el) {
+      el = buildStepShell();
+      container.appendChild(el);
+    }
+    paintStep(el, s);
+  });
 }
 
 /** Tampilkan/sembunyikan container progress. */

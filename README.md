@@ -17,6 +17,12 @@ browser; satu-satunya panggilan keluar adalah ke API AI.
 - **Autosave form**: isian form disimpan dan dipulihkan saat reload
 - **Export 3 format**: PDF, DOCX, dan satu file HTML mandiri
 - **Anti-klik-ganda (busy lock)**: tidak ada dua proses generate bersamaan
+- **Generate lebih cepat**: setelah RPP Core selesai, LKPD, Evaluasi, Remidial/Rubrik,
+  dan Diagnostik dibuat paralel (atur `SUBPHASE_CONCURRENCY` di `src/config.js`;
+  isi `1` untuk kembali berurutan bila provider sering menjawab 429)
+- **Progres yang terlihat**: status per bagian, jumlah karakter yang sedang ditulis
+  model (streaming), waktu berjalan, dan pratinjau yang muncul bertahap
+- **Batal yang sungguhan**: tombol Batalkan menghentikan permintaan yang sedang jalan
 - **Rumus LaTeX** dikonversi menjadi gambar (CodeCogs) saat render
 - **Zero-config hosting**: build menghasilkan satu `dist/` yang bisa langsung
   di-upload ke GitHub Pages maupun dibuka lewat `file://`

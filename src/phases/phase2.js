@@ -95,6 +95,7 @@ export async function startPhase2(opts = {}) {
               maxTokens: TOKEN_LIMITS[2],
               checkCompleteness: checkCompletenessModulAjar,
               signal,
+              onStatus: (s) => updateLoadingFromStatus(s),
             });
             return { data, meta };
           },

@@ -10,6 +10,7 @@
  */
 
 import './styles/app.css';
+import './styles/experience.css';
 import './styles/document.css';
 
 import { $, $$, delegate, setHidden } from './core/dom.js';
@@ -75,6 +76,7 @@ const ACTIONS = {
   },
 
   'start-phase1': () => startPhase1(),
+  'fill-example': () => fillExample(),
   'start-phase2': () => startPhase2(),
   'start-phase3': () => startPhase3(),
   'regenerate-part': (el) => regeneratePart(parseInt(el.dataset.part, 10)),
@@ -96,6 +98,48 @@ const ACTIONS = {
   // oleh showLoading() dan mengikat callback onCancel-nya sendiri. Menambahkan
   // 'cancel-generate' di sini akan membuat satu klik memicu abort dua kali.
 };
+
+// ---------------------------------------------------------------------------
+// Data contoh
+// ---------------------------------------------------------------------------
+
+/** Data contoh generik agar pengguna baru bisa langsung mencoba alurnya. */
+const EXAMPLE_INPUT = {
+  'inp-madrasah': 'MTs Contoh Nusantara',
+  'inp-mapel': 'Ilmu Pengetahuan Alam (IPA)',
+  'inp-materi': 'Sel Hewan dan Sel Tumbuhan',
+  'inp-elemen': 'Pemahaman IPA',
+  'inp-guru': 'Siti Nafisah, S.Pd.I',
+  'inp-fase': 'D/VIII/1',
+  'inp-tahun-pelajaran': '2026/2027',
+  'inp-alkok': '2 X 40 Menit',
+  'inp-kepsek': 'Ahmad Jazuli, S.Pd',
+  'inp-tempat': 'Temanggung',
+  'inp-cp':
+    'Pada akhir fase D, peserta didik mampu mengidentifikasi sel sebagai unit struktural dan fungsional makhluk hidup serta membedakan struktur sel hewan dan sel tumbuhan.',
+  'inp-tp':
+    '1. Peserta didik mampu mendeskripsikan struktur dan fungsi organel sel.\n2. Peserta didik mampu membedakan sel hewan dan sel tumbuhan melalui pengamatan mikroskop.',
+  'inp-atp': 'Pertemuan 1: struktur sel. Pertemuan 2: perbandingan sel hewan dan tumbuhan.',
+};
+
+/** Isi form dengan data contoh (hanya field yang masih kosong, atau setelah konfirmasi). */
+function fillExample() {
+  const filled = Object.keys(EXAMPLE_INPUT).some((id) => $(`#${id}`)?.value?.trim());
+  if (filled && !window.confirm('Isian yang sudah ada akan ditimpa data contoh. Lanjutkan?')) return;
+
+  for (const [id, value] of Object.entries(EXAMPLE_INPUT)) {
+    const el = $(`#${id}`);
+    if (!el) continue;
+    el.value = value;
+    el.dispatchEvent(new Event('input', { bubbles: true })); // picu autosave draft
+  }
+  const tanggal = $('#inp-tanggal');
+  if (tanggal) {
+    tanggal.value = new Date().toISOString().slice(0, 10);
+    tanggal.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  showToast('Data contoh terisi. Ubah sesuai kebutuhan, lalu klik Generate.', 'info');
+}
 
 // ---------------------------------------------------------------------------
 // Reset

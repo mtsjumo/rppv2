@@ -40,11 +40,14 @@
     <!-- ===== TOAST (live region) ===== -->
     <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="false"></div>
 
-    <!-- ===== LOADING ===== -->
-    <div class="loading-overlay hidden" id="loading-overlay" role="dialog" aria-modal="true" aria-label="Memproses">
+    <!-- ===== STATUS PROSES (panel melayang, tidak menutup layar) ===== -->
+    <div class="loading-overlay hidden" id="loading-overlay" role="status" aria-live="polite" aria-label="Memproses">
       <div class="loading-spinner" aria-hidden="true"></div>
-      <div class="loading-text" id="loading-text">Memproses...</div>
-      <div class="loading-sub" id="loading-sub">Mohon tunggu, AI sedang bekerja</div>
+      <div class="loading-body">
+        <div class="loading-text" id="loading-text">Memproses...</div>
+        <div class="loading-sub" id="loading-sub">Mohon tunggu, AI sedang bekerja</div>
+        <div class="loading-meta" id="loading-elapsed"></div>
+      </div>
       <div class="loading-stale-actions" id="loading-actions"></div>
     </div>
 
@@ -347,8 +350,10 @@
           </fieldset>
 
           <div class="form-actions">
+            <span class="form-actions-hint">Belum siap? Coba dulu dengan data contoh.</span>
+            <button type="button" class="btn btn-outline" data-action="fill-example">Isi data contoh</button>
             <button type="button" class="btn btn-lg btn-pink" data-action="start-phase1">
-              🚀 Generate RPP + Lampiran
+              Generate RPP + Lampiran
             </button>
           </div>
         </form>
@@ -369,19 +374,26 @@
         </div>
 
         <div class="progress-container hidden" id="phase1-progress">
+          <div class="progress-head">
+            <div class="progress-head-title">
+              <span id="phase1-progress-label">Memulai...</span>
+              <span class="progress-elapsed" id="phase1-progress-elapsed"></span>
+            </div>
+            <div class="progress-head-side">
+              <span class="progress-pct" id="phase1-progress-pct">0%</span>
+              <span id="phase1-progress-actions"></span>
+            </div>
+          </div>
           <div
             class="progress-bar-wrap"
             role="progressbar"
+            aria-label="Progres generate RPP"
             aria-valuemin="0"
             aria-valuemax="100"
             aria-valuenow="0"
             id="phase1-progress-bar"
           >
             <div class="progress-bar-fill" id="phase1-progress-fill"></div>
-          </div>
-          <div class="progress-text">
-            <span id="phase1-progress-label">Memulai...</span>
-            <span id="phase1-progress-pct">0%</span>
           </div>
           <div class="progress-steps" id="phase1-progress-steps"></div>
         </div>

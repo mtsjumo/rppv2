@@ -93,6 +93,7 @@ export async function startPhase3(opts = {}) {
               maxTokens: TOKEN_LIMITS[3],
               checkCompleteness: checkCompletenessMedia,
               signal,
+              onStatus: (s) => updateLoadingFromStatus(s),
             });
             return { data, meta };
           },

@@ -1,0 +1,615 @@
+/* =============================================================================
+   AI RPP GENERATOR — LAPISAN PENGALAMAN PENGGUNA (UX v3)
+
+   Dimuat SETELAH app.css dan SEBELUM document.css. Sengaja hanya menargetkan
+   selektor chrome aplikasi (header, stepper, form, progres, panel status,
+   toast). Variabel warna lama (--pink, --blue, ...) TIDAK diubah karena
+   document.css / hasil cetak masih memakainya; warna baru memakai --ux-*.
+   ============================================================================= */
+
+:root {
+  --ux-ink: #10262b;
+  --ux-muted: #5b6e72;
+  --ux-line: #dbe6e8;
+  --ux-surface: #ffffff;
+  --ux-soft: #f3f8f8;
+  --ux-primary: #0f6b6b;
+  --ux-primary-dark: #0b5555;
+  --ux-primary-soft: #e3f2f1;
+  --ux-ok: #1f7a55;
+  --ux-warn: #a86a0a;
+  --ux-bad: #b83a3a;
+  --ux-radius: 12px;
+  --ux-shadow: 0 1px 2px rgba(16, 38, 43, 0.06), 0 8px 24px rgba(16, 38, 43, 0.06);
+  --shadow: 0 2px 8px rgba(16, 38, 43, 0.12); /* perbaiki nilai lama yang tak valid ("8" tanpa px) */
+}
+
+body {
+  background: linear-gradient(180deg, #eaf3f3 0, var(--bg) 260px);
+  color: var(--ux-ink);
+}
+
+/* ===== Tombol ===== */
+.btn {
+  border-radius: 10px;
+  padding: 9px 16px;
+  letter-spacing: 0.005em;
+}
+.btn:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(16, 38, 43, 0.14);
+}
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.btn-pink {
+  background: linear-gradient(180deg, #158080, var(--ux-primary));
+  color: #fff;
+}
+.btn-pink:hover {
+  background: linear-gradient(180deg, var(--ux-primary), var(--ux-primary-dark));
+}
+.btn-outline {
+  background: var(--ux-surface);
+  border-color: #c5d5d8;
+  color: var(--ux-ink);
+}
+.btn-outline:hover {
+  background: var(--ux-soft);
+}
+.btn-lg {
+  padding: 13px 26px;
+  font-size: 1rem;
+}
+.btn:focus-visible,
+.wizard-step:focus-visible {
+  outline: 3px solid rgba(15, 107, 107, 0.35);
+  outline-offset: 2px;
+}
+
+/* ===== Kartu ===== */
+.card {
+  border-radius: var(--ux-radius);
+  border: 1px solid var(--ux-line);
+  box-shadow: var(--ux-shadow);
+}
+.card-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--ux-ink);
+  border-bottom: 1px solid var(--ux-line);
+}
+.card-title .phase-status {
+  margin-left: auto;
+}
+.phase-status {
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+
+/* ===== Stepper (garis penghubung + lingkaran bernomor) ===== */
+.wizard-progress {
+  gap: 0;
+  margin-bottom: 24px;
+}
+.wizard-step,
+.wizard-step.active,
+.wizard-step.done {
+  background: transparent;
+  border: none;
+  color: var(--ux-muted);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 4px;
+  cursor: pointer;
+  position: relative;
+}
+.wizard-step::before {
+  content: '';
+  position: absolute;
+  top: 21px;
+  left: -50%;
+  width: 100%;
+  height: 3px;
+  background: #d3e0e2;
+  border-radius: 2px;
+}
+.wizard-step:first-child::before {
+  display: none;
+}
+.wizard-step.done::before,
+.wizard-step.active::before {
+  background: var(--ux-primary);
+}
+.wizard-step .step-num,
+.wizard-step.active .step-num,
+.wizard-step.done .step-num {
+  position: relative;
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  line-height: 28px;
+  margin: 0;
+  border-radius: 50%;
+  border: 2px solid #c9d8db;
+  background: #fff;
+  color: var(--ux-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all 0.25s;
+}
+.wizard-step.active .step-num {
+  background: var(--ux-primary);
+  border-color: var(--ux-primary);
+  color: #fff;
+  box-shadow: 0 0 0 5px rgba(15, 107, 107, 0.16);
+}
+.wizard-step.done .step-num {
+  background: var(--ux-ok);
+  border-color: var(--ux-ok);
+  color: #fff;
+  font-size: 0;
+}
+.wizard-step.done .step-num::after {
+  content: '✓';
+  font-size: 0.85rem;
+}
+.wizard-step.active .step-label {
+  color: var(--ux-ink);
+  font-weight: 700;
+}
+.wizard-step.done .step-label {
+  color: var(--ux-ok);
+}
+
+/* ===== Form ===== */
+#rpp-form {
+  counter-reset: sec;
+}
+.form-section {
+  counter-increment: sec;
+  border: 1px solid var(--ux-line);
+  border-left: 1px solid var(--ux-line);
+  border-radius: var(--ux-radius);
+  background: #fbfdfd;
+  padding: 20px;
+}
+.form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ux-ink);
+  font-size: 0.95rem;
+  padding: 0 6px;
+}
+.form-section-title::before {
+  content: counter(sec);
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ux-primary-soft);
+  color: var(--ux-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+.form-group label {
+  color: var(--ux-ink);
+  font-weight: 600;
+}
+.form-input,
+.form-select,
+.form-textarea {
+  border-radius: 9px;
+  border-color: #c5d5d8;
+  background: #fff;
+  padding: 10px 12px;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.form-input:hover,
+.form-select:hover,
+.form-textarea:hover {
+  border-color: #9dbabf;
+}
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--ux-primary);
+  box-shadow: 0 0 0 4px rgba(15, 107, 107, 0.14);
+}
+.form-actions {
+  align-items: center;
+  flex-wrap: wrap;
+}
+.form-actions-hint {
+  margin-right: auto;
+  color: var(--ux-muted);
+  font-size: 0.82rem;
+}
+.form-actions .btn-lg {
+  min-width: 240px;
+  justify-content: center;
+}
+
+/* ===== Monitor progres Phase 1 ===== */
+.progress-container {
+  background: var(--ux-surface);
+  border: 1px solid var(--ux-line);
+  border-radius: var(--ux-radius);
+  padding: 18px 18px 14px;
+}
+.progress-container.is-running {
+  position: sticky;
+  top: 68px;
+  z-index: 20;
+  box-shadow: 0 10px 28px rgba(16, 38, 43, 0.14);
+}
+.progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.progress-head-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  min-width: 0;
+}
+.progress-elapsed {
+  margin-left: 10px;
+  color: var(--ux-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.progress-head-side {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+}
+.progress-pct {
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ux-primary);
+}
+.progress-bar-wrap {
+  height: 10px;
+  border-radius: 999px;
+  background: #e2edee;
+}
+.progress-bar-fill {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #12857f, #2aa198);
+  transition: width 0.6s ease;
+}
+.progress-container.is-running .progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: translateX(-100%);
+  animation: sweep 1.6s ease-in-out infinite;
+}
+@keyframes sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+.progress-steps {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+.progress-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--ux-line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ux-ink);
+  font-weight: 400;
+  opacity: 1;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.progress-step-item.pending {
+  opacity: 0.6;
+  background: var(--ux-soft);
+}
+.progress-step-item.active {
+  border-color: #8cc4c0;
+  background: #f2fafa;
+  font-weight: 400;
+}
+.progress-step-item.done {
+  border-color: #bfe0d2;
+  background: #f4fbf7;
+}
+.progress-step-item.failed {
+  border-color: #efc3c3;
+  background: #fdf3f3;
+}
+.progress-step-item.waiting {
+  border-color: #ecd49b;
+  background: #fffaee;
+}
+.p-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: #e3ecee;
+  color: var(--ux-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+.progress-step-item.done .p-icon {
+  background: var(--ux-ok);
+  color: #fff;
+}
+.progress-step-item.failed .p-icon {
+  background: var(--ux-bad);
+  color: #fff;
+}
+.progress-step-item.waiting .p-icon {
+  background: var(--ux-warn);
+  color: #fff;
+}
+.progress-step-item.active .p-icon {
+  background: transparent;
+  border: 3px solid #bfe0dd;
+  border-top-color: var(--ux-primary);
+  animation: spin 0.8s linear infinite;
+}
+.p-main {
+  flex: 1;
+  min-width: 0;
+}
+.p-title {
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+.p-detail {
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: var(--ux-muted);
+  font-variant-numeric: tabular-nums;
+}
+.p-detail:empty {
+  display: none;
+}
+.progress-step-item.failed .p-detail {
+  color: var(--ux-bad);
+}
+.p-bar {
+  height: 4px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: #dceaeb;
+  overflow: hidden;
+}
+.p-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--ux-primary);
+  transition: width 0.4s ease;
+}
+
+/* ===== Pratinjau: kerangka & hasil sementara ===== */
+.skeleton {
+  display: grid;
+  gap: 12px;
+  padding: 26px;
+  border: 1px solid var(--ux-line);
+  border-radius: var(--ux-radius);
+  background: #fff;
+}
+.skeleton-title,
+.skeleton-line,
+.skeleton-block {
+  border-radius: 6px;
+  background: linear-gradient(90deg, #e8f0f1 25%, #f6fafa 37%, #e8f0f1 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.5s ease infinite;
+}
+.skeleton-title {
+  height: 26px;
+  width: 52%;
+}
+.skeleton-line {
+  height: 12px;
+}
+.skeleton-block {
+  height: 110px;
+}
+@keyframes shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+.preview-content.is-partial::before {
+  content: 'Pratinjau sementara — bagian lain masih dikerjakan dan akan muncul otomatis.';
+  display: block;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--ux-primary-soft);
+  color: var(--ux-primary-dark);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.preview-empty {
+  border-radius: var(--ux-radius);
+  border-color: #c5d5d8;
+  background: var(--ux-soft);
+}
+
+/* ===== Panel status proses (menggantikan overlay layar penuh) ===== */
+.loading-overlay {
+  inset: auto 20px 20px auto;
+  width: min(400px, calc(100vw - 32px));
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: var(--ux-surface);
+  border: 1px solid var(--ux-line);
+  border-radius: 14px;
+  box-shadow: 0 14px 40px rgba(16, 38, 43, 0.22);
+}
+.loading-overlay.is-stale {
+  background: #fffaee;
+  border-color: #ecd49b;
+}
+.loading-spinner {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-width: 3px;
+  border-color: #cfe6e4;
+  border-top-color: var(--ux-primary);
+}
+.loading-body {
+  flex: 1;
+  min-width: 0;
+}
+.loading-text {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  font-size: 0.92rem;
+}
+.loading-sub {
+  margin-top: 4px;
+  padding: 0;
+  text-align: left;
+  font-size: 0.8rem;
+}
+.loading-meta {
+  margin-top: 6px;
+  color: var(--ux-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.loading-stale-actions {
+  width: 100%;
+  margin: 0;
+  justify-content: flex-end;
+}
+.loading-stale-actions:empty {
+  display: none;
+}
+
+/* ===== Toast ===== */
+.toast,
+.toast.success,
+.toast.error,
+.toast.warning,
+.toast.info {
+  background: #fff;
+  color: var(--ux-ink);
+  border: 1px solid var(--ux-line);
+  border-left-width: 4px;
+  border-radius: 10px;
+  font-weight: 500;
+  box-shadow: 0 10px 30px rgba(16, 38, 43, 0.16);
+}
+.toast.success {
+  border-left-color: var(--ux-ok);
+}
+.toast.error {
+  border-left-color: var(--ux-bad);
+}
+.toast.warning {
+  border-left-color: var(--ux-warn);
+}
+.toast.info {
+  border-left-color: var(--ux-primary);
+}
+.toast-action {
+  background: var(--ux-primary);
+  border-color: var(--ux-primary);
+  color: #fff;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
+  .progress-container.is-running {
+    top: 56px;
+  }
+  .progress-head {
+    flex-wrap: wrap;
+  }
+  .wizard-step .step-label {
+    font-size: 0.68rem;
+  }
+  .form-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 30;
+    flex-direction: column-reverse;
+    align-items: stretch;
+    margin: 16px -12px -12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid var(--ux-line);
+    backdrop-filter: blur(6px);
+  }
+  .form-actions-hint {
+    display: none;
+  }
+  .form-actions .btn,
+  .form-actions .btn-lg {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+  .loading-overlay {
+    inset: auto 8px 8px 8px;
+    width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  /* app.css menyembunyikan nomor langkah di layar sempit; stepper baru butuh nomornya. */
+  .wizard-step .step-num {
+    display: inline-block;
+  }
+  .wizard-step::before {
+    top: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-title,
+  .skeleton-line,
+  .skeleton-block,
+  .progress-container.is-running .progress-bar-fill::after {
+    animation: none;
+  }
+}

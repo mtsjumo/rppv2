@@ -34,11 +34,38 @@ export const TOKEN_LIMITS = {
   3: 12000,
 };
 
-/** Timeout satu panggilan ke provider. */
+/**
+ * Batas diam (idle) satu panggilan ke provider.
+ *
+ * Dengan streaming, timer di-reset tiap ada potongan teks masuk, jadi generate
+ * panjang (10k+ token) tidak lagi dibunuh di detik ke-120 selama model masih
+ * menulis. Tanpa streaming, angka ini tetap berlaku sebagai batas total.
+ */
 export const REQUEST_TIMEOUT_MS = 120_000;
 
-/** Jeda antar sub-phase agar tidak memicu rate-limit provider gratis. */
+/** Batas mutlak satu panggilan (streaming) agar tidak menggantung selamanya. */
+export const REQUEST_HARD_TIMEOUT_MS = 480_000;
+
+/** Jeda antar sub-phase pada mode berurutan (concurrency = 1). */
 export const SUBPHASE_COOLDOWN_MS = 5_000;
+
+/**
+ * Berapa sub-phase Phase 1 yang boleh jalan bersamaan setelah RPP Core selesai.
+ *
+ * LKPD, Evaluasi, Remidial/Rubrik, dan Diagnostik hanya butuh RPP Core, jadi
+ * tidak perlu antre. Naikkan bila provider kuat; set 1 untuk kembali ke mode
+ * berurutan (mis. model gratis yang sering kena 429).
+ */
+export const SUBPHASE_CONCURRENCY = 3;
+
+/** Selisih waktu mulai antar sub-phase paralel (ms) agar tidak menembak API serentak. */
+export const SUBPHASE_STAGGER_MS = 1_200;
+
+/**
+ * Perkiraan panjang output (karakter) tiap sub-phase, dipakai HANYA untuk
+ * memperhalus progress bar selama streaming. Bukan batas keras.
+ */
+export const SUBPHASE_EXPECTED_CHARS = { a: 14000, b: 9000, c: 11000, d: 9000, e: 8000 };
 
 /** Backoff saat kena 429 (detik). */
 export const RATE_LIMIT_BACKOFF_SECONDS = 20;

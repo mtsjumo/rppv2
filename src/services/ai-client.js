@@ -10,7 +10,7 @@ import { emit } from '../core/events.js';
 import { sleep } from '../core/dom.js';
 import { extractJSON, validatePhaseJSON, friendlyError } from './json.js';
 import {
-  callAIProvider,
+  callAIProvider as rawCallAIProvider,
   candidateModels,
   prettyModelName,
   currentProvider,
@@ -88,6 +88,16 @@ export async function generateWithFallback(systemPrompt, userPrompt, phaseName, 
       throw err;
     }
   };
+
+  // Bungkus panggilan provider: teruskan sinyal batal (fetch yang sedang jalan
+  // ikut di-abort) dan laporkan progres streaming ke UI. Nama sengaja sama
+  // dengan fungsi aslinya agar seluruh pemanggilan di bawah otomatis memakainya.
+  const callAIProvider = (model, msgs, timeoutMs, tokens) =>
+    rawCallAIProvider(model, msgs, timeoutMs, tokens, {
+      signal,
+      onProgress: ({ chars, thinking }) =>
+        report({ state: 'streaming', model, label: prettyModelName(model), chars, thinking }),
+    });
 
   const jsonRetryMessages = (content) => [
     { role: 'system', content: systemPrompt },
@@ -206,7 +216,12 @@ export async function generateWithFallback(systemPrompt, userPrompt, phaseName, 
       // Rate-limit: jeda, lalu coba model yang sama tepat 1x.
       if (isRateLimitError(e.message) && !rateRetried) {
         rateRetried = true;
-        report({ state: 'rate-limited', model, label: prettyModelName(model) });
+        report({
+          state: 'rate-limited',
+          model,
+          label: prettyModelName(model),
+          seconds: RATE_LIMIT_BACKOFF_SECONDS,
+        });
         await sleep(RATE_LIMIT_BACKOFF_SECONDS * 1000);
         try {
           report({ state: 'calling', model, label: prettyModelName(model), retry: true });

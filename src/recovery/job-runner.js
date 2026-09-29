@@ -6,7 +6,18 @@
  *   2. bisa dihentikan (abort) tanpa kehilangan progress yang sudah tercapai,
  *   3. bisa dilanjutkan dari checkpoint terakhir setelah app dimuat ulang,
  *   4. melapor status lewat event sehingga UI (progress bar, banner recovery)
- *      tidak perlu tahu detail retry.
+ *      tidak perlu tahu detail retry,
+ *   5. (baru) menjalankan unit-unit yang tidak saling bergantung secara PARALEL.
+ *
+ * Mode eksekusi
+ * -------------
+ *   - `concurrency: 1` (default): berurutan, dengan jeda `SUBPHASE_COOLDOWN_MS`
+ *     antar unit. Perilaku lama, aman untuk provider yang ketat rate-limit.
+ *   - `concurrency: N > 1`: unit PERTAMA berjalan sendirian (ia menghasilkan
+ *     konteks yang dipakai unit lain, dan kalau gagal semuanya sia-sia). Setelah
+ *     itu unit sisanya dijalankan maksimal N sekaligus, dengan selisih waktu
+ *     mulai `staggerMs` supaya API tidak ditembak serentak. Tidak ada cooldown
+ *     tetap 5 detik lagi — itu yang membuat Phase 1 terasa lambat.
  *
  * Kontrak data: runResumableJob mengembalikan `data` sebagai record
  * `persistKey -> hasil`, bukan objek domain. Orchestrator phase yang memetakan
@@ -63,6 +74,8 @@ export { describeCheckpoint, listResumable, discardCheckpoint, getCheckpoint };
  * @param {string} [options.checkpointId] checkpoint yang dilanjutkan
  * @param {string[]} [options.resumeDone] unit yang sudah selesai di sesi lalu
  * @param {object} [options.resumeData]  data dari checkpoint sebelumnya
+ * @param {number} [options.concurrency] maks unit bersamaan setelah unit pertama (default 1)
+ * @param {number} [options.staggerMs]   selisih waktu mulai antar unit paralel (ms)
  * @param {AbortSignal} [options.signal]
  * @param {(status: object) => void} [options.onStatus]
  * @param {(unit: JobUnit, result: any, data: object) => void} [options.onUnit]
@@ -82,6 +95,8 @@ export async function runResumableJob(options) {
     resumeDone = [],
     resumeData = {},
     checkpointId = null,
+    concurrency = 1,
+    staggerMs = 0,
   } = options;
 
   // Tandai unit pertama sebagai wajib: kalau ini gagal, unit lain tak berguna.
@@ -142,18 +157,20 @@ export async function runResumableJob(options) {
     cp = patchCheckpoint(cp.id, { data, completed: Array.from(doneSet) }) || cp;
   };
 
-  for (let i = 0; i < unitsWithRequired.length; i++) {
-    const unit = unitsWithRequired[i];
-
+  /**
+   * Jalankan satu unit lengkap dengan retry, checkpoint, dan pelaporan.
+   * @returns {Promise<'ok'|'skipped'|'failed'|'aborted'|'fatal'>}
+   */
+  const executeUnit = async (unit, i) => {
     if (signal?.aborted) {
       aborted = true;
-      break;
+      return 'aborted';
     }
 
     // Sudah selesai di sesi sebelumnya → lewati, data diambil dari resumeData.
     if (doneSet.has(unit.id)) {
       report({ state: 'unit-skipped', unit: unit.id, index: i, label: unit.label });
-      continue;
+      return 'skipped';
     }
 
     report({ state: 'unit-start', unit: unit.id, index: i, label: unit.label });
@@ -201,20 +218,21 @@ export async function runResumableJob(options) {
       failed.push(unit.id);
       if (signal?.aborted || lastError?.name === 'AbortError') {
         aborted = true;
-        break;
+        return 'aborted';
       }
       if (unit.required) {
-        fatalError = lastError;
-        break;
+        fatalError = fatalError || lastError;
+        return 'fatal';
       }
       // Unit pelengkap gagal: lewati saja, bisa di-generate ulang terpisah.
       report({ state: 'unit-failed-skipped', unit: unit.id, label: unit.label });
-      continue;
+      return 'failed';
     }
 
     // Sukses → simpan ke checkpoint SEBELUM lanjut ke unit berikutnya.
     data[unit.persistKey] = unitResult;
     doneSet.add(unit.id);
+    if (store.state.activeJob) store.state.activeJob.done = doneSet.size;
     persistProgress();
 
     // Beri tahu orchestrator bahwa unit ini sudah punya data final.
@@ -224,16 +242,70 @@ export async function runResumableJob(options) {
       try {
         onUnit(unit, unitResult, data);
       } catch {
-        // Callback murni untuk pembaruan konteks; kegagalan di sini tidak
-        // boleh menggagalkan job yang sudah berhasil.
+        // Callback murni untuk pembaruan konteks/preview; kegagalan di sini
+        // tidak boleh menggagalkan job yang sudah berhasil.
       }
     }
 
     report({ state: 'unit-done', unit: unit.id, index: i, label: unit.label });
+    return 'ok';
+  };
 
-    if (i < unitsWithRequired.length - 1) {
-      report({ state: 'cooldown', unit: unit.id, seconds: SUBPHASE_COOLDOWN_MS / 1000 });
-      await sleep(SUBPHASE_COOLDOWN_MS);
+  const parallel = concurrency > 1 && unitsWithRequired.length > 1;
+
+  if (!parallel) {
+    // ---- Mode berurutan (perilaku lama) --------------------------------
+    for (let i = 0; i < unitsWithRequired.length; i++) {
+      const outcome = await executeUnit(unitsWithRequired[i], i);
+      if (outcome === 'aborted' || outcome === 'fatal') break;
+
+      if (outcome === 'ok' && i < unitsWithRequired.length - 1) {
+        report({
+          state: 'cooldown',
+          unit: unitsWithRequired[i].id,
+          seconds: SUBPHASE_COOLDOWN_MS / 1000,
+        });
+        await sleep(SUBPHASE_COOLDOWN_MS);
+      }
+    }
+  } else {
+    // ---- Mode paralel --------------------------------------------------
+    // 1) Unit pertama sendirian: ia menghasilkan konteks untuk unit lain.
+    const firstOutcome = await executeUnit(unitsWithRequired[0], 0);
+
+    if (firstOutcome !== 'aborted' && firstOutcome !== 'fatal') {
+      // 2) Sisanya lewat pool berukuran `concurrency`.
+      const queue = unitsWithRequired.map((u, i) => i).slice(1);
+      let cursor = 0;
+      let stopped = false;
+      let nextStartAt = Date.now();
+
+      // Selisih waktu mulai antar unit; slot diklaim SEBELUM menunggu supaya
+      // beberapa worker tidak mendapat slot yang sama.
+      const waitForSlot = async () => {
+        const startAt = Math.max(nextStartAt, Date.now());
+        nextStartAt = startAt + staggerMs;
+        const wait = startAt - Date.now();
+        if (wait > 0) await sleep(wait);
+      };
+
+      const worker = async () => {
+        while (!stopped) {
+          const qi = cursor++;
+          if (qi >= queue.length) return;
+          const i = queue[qi];
+          const unit = unitsWithRequired[i];
+
+          if (!doneSet.has(unit.id)) await waitForSlot();
+          if (stopped) return;
+
+          const outcome = await executeUnit(unit, i);
+          if (outcome === 'aborted' || outcome === 'fatal') stopped = true;
+        }
+      };
+
+      const workerCount = Math.min(concurrency, queue.length);
+      await Promise.all(Array.from({ length: workerCount }, () => worker()));
     }
   }
 

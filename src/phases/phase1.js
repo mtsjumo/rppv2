@@ -5,12 +5,26 @@
  *   - tiap sub-phase yang sukses langsung di-checkpoint,
  *   - gagal di tengah tidak menghapus progress,
  *   - bisa dilanjutkan dari sub-phase terakhir setelah reload.
+ *
+ * Kecepatan & keterlihatan proses:
+ *   - RPP Core (a) berjalan dulu; LKPD, Evaluasi, Remidial/Rubrik, dan
+ *     Diagnostik (b–e) hanya butuh RPP Core sehingga dijalankan PARALEL.
+ *   - Progres tampil inline lewat `progress-monitor` (status per bagian,
+ *     karakter yang sudah ditulis model, waktu berjalan), bukan overlay.
+ *   - Pratinjau muncul bertahap: RPP Core tampil begitu selesai, lampiran
+ *     menyusul satu per satu.
  */
 
 import { $, setHidden } from '../core/dom.js';
 import { store } from '../core/store.js';
 import { enterBusy, releaseBusy } from '../core/busy.js';
-import { EMPTY_PREVIEW, SUBPHASES, TOKEN_LIMITS } from '../config.js';
+import {
+  EMPTY_PREVIEW,
+  SUBPHASES,
+  SUBPHASE_CONCURRENCY,
+  SUBPHASE_STAGGER_MS,
+  TOKEN_LIMITS,
+} from '../config.js';
 import { buildSubPhasePrompt } from '../prompts/phase1.js';
 import { generateWithFallback, friendlyError } from '../services/ai-client.js';
 import { COMPLETENESS_CHECKERS, checkCompletenessEvaluasi } from '../validation/completeness.js';
@@ -24,7 +38,6 @@ import {
   updateLoadingFromStatus,
 } from '../ui/loading.js';
 import {
-  buildStepList,
   setPhaseStatus,
   showExportBar,
   showProgressBar,
@@ -32,6 +45,7 @@ import {
   updateProgress,
   updateWizardStep,
 } from '../ui/wizard.js';
+import { createMonitor, skeletonHTML } from '../ui/progress-monitor.js';
 import { collectForm } from '../ui/form.js';
 import {
   renderQualityReport,
@@ -54,7 +68,7 @@ const UNIT_KEYS = { a: 'rpp', b: 'lkpd', c: 'evaluasi', d: 'lampiranAkhir', e: '
 /**
  * Bangun unit-unit pekerjaan untuk job runner.
  * Setiap unit menghasilkan potongan data; runner yang mengoordinasikan retry,
- * checkpoint, dan cooldown.
+ * checkpoint, dan paralelisme.
  */
 function buildUnits(getContext) {
   return SUBPHASES.map((sp) => ({
@@ -65,12 +79,25 @@ function buildUnits(getContext) {
     run: async ({ signal, report }) => {
       const input = store.state.input;
       const { systemPrompt, userPrompt } = buildSubPhasePrompt(sp.id, input, getContext());
-      report({ state: 'unit-start', unit: sp.id, label: sp.label });
 
       const { data, meta } = await generateWithFallback(systemPrompt, userPrompt, `1${sp.id}`, {
         maxTokens: TOKEN_LIMITS[`1${sp.id}`] || 8000,
         checkCompleteness: COMPLETENESS_CHECKERS[sp.id] || null,
         signal,
+        // Teruskan status AI (streaming, retry JSON, rate-limit, fallback model)
+        // ke job runner supaya UI bisa menampilkannya per bagian.
+        onStatus: (s) =>
+          report({
+            state: s.state,
+            unit: sp.id,
+            label: sp.label,
+            modelName: s.label,
+            chars: s.chars,
+            thinking: s.thinking,
+            issues: s.issues,
+            seconds: s.seconds,
+            retry: s.retry,
+          }),
       });
       return { data, meta };
     },
@@ -127,6 +154,23 @@ export function renderPhase1(phase1Data, report = null) {
 }
 
 /**
+ * Pratinjau sementara dari data yang sudah terkumpul (selama generate berjalan).
+ * Kegagalan render tidak boleh menghentikan job, jadi error ditelan.
+ */
+function renderPartialPreview(jobData) {
+  const container = $('#phase1-preview');
+  if (!container) return;
+  try {
+    const shape = toPhase1Shape(jobData);
+    if (!shape.rpp || !Object.keys(shape.rpp).length) return;
+    container.innerHTML = renderCodeCogs(buildRPPHTML(shape));
+    container.classList.add('is-partial');
+  } catch (e) {
+    console.warn('[phase1] Pratinjau sementara gagal dirender:', e.message);
+  }
+}
+
+/**
  * Generate Phase 1.
  * @param {{resume?: boolean}} [opts] resume: lanjutkan dari checkpoint
  */
@@ -160,22 +204,31 @@ export async function startPhase1(opts = {}) {
   // Phase 1 baru = Phase 2 & 3 lama tidak berlaku lagi.
   if (store.state.phase2 || store.state.phase3) {
     resetDownstreamPhases();
-    showToast('ℹ️ Phase 1 digenerate ulang — Modul Ajar & Media lama dikosongkan.', 'warning');
+    showToast('Phase 1 digenerate ulang — Modul Ajar & Media lama dikosongkan.', 'warning');
   }
 
   currentController = new AbortController();
   setCancellable(currentController);
-  showLoading(
-    'Generate Phase 1: RPP + Lampiran',
-    isResume
-      ? `Melanjutkan dari bagian ${resumeCtx.summary.done}/${resumeCtx.summary.total}`
-      : 'Total 5 bagian, butuh 2–5 menit',
-    { showCancel: true, onCancel: () => currentController?.abort() }
-  );
+
+  const monitor = createMonitor({
+    units: SUBPHASES,
+    doneIds: isResume ? resumeCtx.completed : [],
+    onCancel: () => currentController?.abort(),
+  });
+  monitor.start();
+
+  // Area pratinjau: lanjutan → tampilkan bagian yang sudah ada; baru → kerangka.
+  const previewEl = $('#phase1-preview');
+  if (previewEl) previewEl.classList.remove('is-partial');
+  if (isResume && Object.keys(resumeCtx.data || {}).length) {
+    renderPartialPreview(resumeCtx.data);
+  } else if (previewEl) {
+    previewEl.innerHTML = skeletonHTML();
+  }
 
   // Konteks untuk sub-phase berikutnya: data yang sudah terkumpul.
   //
-  // PENTING: `live` ليلتقط unit yang SELESAI pada run ini (bukan hanya
+  // PENTING: `live` menangkap unit yang SELESAI pada run ini (bukan hanya
   // snapshot resume). Tanpa ini, sub-phase yang berjalan di dalam run yang
   // sama akan menerima RPP Core kosong karena `job.data` baru terisi
   // setelah seluruh job selesai.
@@ -195,21 +248,29 @@ export async function startPhase1(opts = {}) {
       resumeDone: isResume ? resumeCtx.completed : [],
       resumeData: isResume ? resumeCtx.data : {},
       signal: currentController.signal,
+      concurrency: SUBPHASE_CONCURRENCY,
+      staggerMs: SUBPHASE_STAGGER_MS,
       onUnit: (unit, result, allData) => {
         live[unit.persistKey] = result;
         Object.assign(live, allData);
+        // Tampilkan hasil begitu tersedia — pengguna tidak perlu menunggu semua bagian.
+        renderPartialPreview(allData);
       },
-      onStatus: (status) => {
-        updateProgressFromStatus(status);
-        updateLoadingFromStatus(status);
-      },
+      onStatus: (status) => monitor.handle(status),
     });
 
+    monitor.stop();
+
     if (job.aborted) {
+      monitor.settle();
       setPhaseStatus(1, 'partial');
-      updateProgress(job.doneCount, '⏹ Dibatalkan — progress tersimpan', null);
+      updateProgress(
+        Math.round((job.doneCount / job.total) * 100),
+        'Dibatalkan — progress tersimpan',
+        monitor.steps()
+      );
       showResumeToast(
-        `⏹ Generate dibatalkan. ${job.doneCount}/${job.total} bagian selesai & tersimpan.`,
+        `Generate dibatalkan. ${job.doneCount}/${job.total} bagian selesai & tersimpan.`,
         () => startPhase1({ resume: true })
       );
       return;
@@ -220,8 +281,6 @@ export async function startPhase1(opts = {}) {
     if (!phase1Data.rpp || !Object.keys(phase1Data.rpp).length) {
       // Jangan hanya menulis "gagal" — `job.error` menyimpan penyebab NYATA
       // (API key ditolak, rate limit, timeout, JSON tidak bisa di-parse, dll).
-      // Tanpa itu, pengguna hanya melihat pesan generik yang tidak bisa
-      // ditindaklanjuti, padahal penyebabnya sangat spesifik.
       const cause = job.error?.message || describeJobFailure(job);
       throw new Error(`RPP Core gagal: ${cause}`);
     }
@@ -231,34 +290,41 @@ export async function startPhase1(opts = {}) {
     store.state.phaseReports[1] = report;
     store.state.phase1 = phase1Data;
 
+    previewEl?.classList.remove('is-partial');
     renderPhase1(phase1Data, report);
     setPhaseStatus(1, job.failed.length ? 'partial' : 'success');
-    updateProgress(
-      100,
-      job.failed.length ? '⚠️ Sebagian selesai' : 'Selesai!',
-      buildStepListByDone(job.total)
-    );
+    updateProgress(100, job.failed.length ? 'Sebagian selesai' : 'Selesai', monitor.steps());
     showExportBar(1, true);
-    setHidden($('#phase1-regenerate'), true);
+    // Bar Regenerate dulu tersembunyi permanen sehingga fitur regenerate per
+    // bagian tak terjangkau; sekarang tampil setelah generate selesai.
+    setHidden($('#phase1-regenerate'), false);
     setHidden($('#phase1-back'), false);
     updateWizardStep(1, 'done');
 
     if (job.failed.length) {
       showToast(
-        `⚠️ ${job.completed ? 'Phase 1 selesai' : 'Sebagian gagal'}: ${job.total - job.failed.length}/${job.total} bagian. Bisa dilengkapi dengan Regenerate.`,
+        `${job.completed ? 'Phase 1 selesai' : 'Sebagian gagal'}: ${job.total - job.failed.length}/${job.total} bagian. Bagian yang gagal bisa dilengkapi dengan Regenerate.`,
         'warning'
       );
     } else {
-      showToast(`✅ RPP + Lampiran berhasil digenerate (${job.total} bagian)!`, 'success');
+      showToast(`RPP + Lampiran berhasil digenerate (${job.total} bagian)!`, 'success');
     }
   } catch (e) {
+    monitor.stop();
+    monitor.settle();
     setPhaseStatus(1, 'error');
-    updateProgress(0, `❌ Gagal: ${friendlyError(e.message)}`, null);
-    showToast(`❌ ${friendlyError(e.message)}`, 'error', {
+    updateProgress(0, `Gagal: ${friendlyError(e.message)}`, monitor.steps());
+    // Kembalikan area pratinjau ke keadaan kosong bila belum ada hasil apa pun.
+    if (previewEl && previewEl.querySelector('.skeleton')) {
+      const { icon, text } = EMPTY_PREVIEW.phase1;
+      previewEl.innerHTML = `<div class="preview-empty"><div class="icon">${icon}</div><p>${text}</p></div>`;
+    }
+    showToast(friendlyError(e.message), 'error', {
       actionLabel: 'Lanjutkan',
       onAction: () => startPhase1({ resume: true }),
     });
   } finally {
+    monitor.stop();
     if (genBtn) genBtn.disabled = false;
     currentController = null;
     hideLoading();
@@ -293,59 +359,6 @@ function buildCombinedReport(phase1Data) {
   // Validasi ulang di data final supaya laporan selalu cocok dengan yang
   // benar-benar akan ditampilkan pengguna.
   return checkCompletenessEvaluasi({ evaluasi: ev });
-}
-
-/** Update progress bar dari status job runner. */
-function updateProgressFromStatus(status) {
-  if (!status) return;
-  const idx = Math.max(
-    0,
-    SUBPHASES.findIndex((s) => s.id === status.unit)
-  );
-  const done = status.done ?? 0;
-  const total = status.total ?? SUBPHASES.length;
-  const pct = Math.round((done / total) * 100);
-
-  switch (status.state) {
-    case 'unit-start':
-      updateProgress(pct, status.label || 'Memproses...', buildStepList(idx));
-      break;
-    case 'unit-done':
-      updateProgress(pct, `${status.label} selesai`, buildStepListByDone(done));
-      break;
-    case 'unit-retry':
-      updateProgress(
-        pct,
-        `${status.label} (percobaan ${status.attempt}/${status.maxAttempts})...`,
-        buildStepList(idx)
-      );
-      break;
-    case 'rate-limit-wait':
-      updateProgress(
-        pct,
-        `${status.label}: rate-limit, jeda ${status.seconds} detik...`,
-        buildStepList(idx)
-      );
-      break;
-    case 'unit-failed':
-      updateProgress(pct, `❌ ${status.label} gagal: ${status.error}`, buildStepList(idx));
-      break;
-    case 'cooldown':
-      updateProgress(pct, `Jeda ${status.seconds} detik agar tidak kena rate-limit...`, null);
-      break;
-    default:
-      break;
-  }
-}
-
-/** Step list berdasarkan jumlah unit yang sudah selesai. */
-function buildStepListByDone(doneCount) {
-  return SUBPHASES.map((s, i) => ({
-    ...s,
-    done: i < doneCount,
-    active: i === doneCount,
-    pending: i > doneCount,
-  }));
 }
 
 /** Tampilkan banner pemulihan bila masih ada checkpoint belum selesai. */
@@ -393,7 +406,12 @@ export async function regeneratePart(partIndex) {
   if (!confirmed) return;
   if (!enterBusy('regen')) return;
 
-  showLoading(`Meng-generate ulang ${sp.label}...`, 'Bagian lain tidak berubah');
+  const controller = new AbortController();
+  setCancellable(controller);
+  showLoading(`Membuat ulang ${sp.label}…`, 'Bagian lain tidak berubah', {
+    showCancel: true,
+    onCancel: () => controller.abort(),
+  });
   try {
     const { systemPrompt, userPrompt } = buildSubPhasePrompt(sp.id, store.state.input, {
       rpp: store.state.phase1.rpp,
@@ -401,13 +419,19 @@ export async function regeneratePart(partIndex) {
     const { data, meta } = await generateWithFallback(systemPrompt, userPrompt, `1${sp.id}`, {
       maxTokens: TOKEN_LIMITS[`1${sp.id}`] || 8000,
       checkCompleteness: COMPLETENESS_CHECKERS[sp.id] || null,
+      signal: controller.signal,
+      onStatus: (s) => updateLoadingFromStatus({ ...s, label: sp.label }),
     });
     applyPartToPhase1(store.state.phase1, partIndex, data);
     store.state.phaseReports[1] = meta;
     renderPhase1(store.state.phase1, meta);
-    showToast(`✅ Berhasil meng-generate ulang ${sp.label}!`, 'success');
+    showToast(`${sp.label} berhasil dibuat ulang!`, 'success');
   } catch (e) {
-    showToast(`❌ Gagal meng-generate ${sp.label}: ${friendlyError(e.message)}`, 'error');
+    if (e?.name === 'AbortError') {
+      showToast(`Pembuatan ulang ${sp.label} dibatalkan.`, 'info');
+    } else {
+      showToast(`Gagal membuat ulang ${sp.label}: ${friendlyError(e.message)}`, 'error');
+    }
   } finally {
     hideLoading();
     releaseBusy('regen');
@@ -450,16 +474,16 @@ export function exportPhase1PDF() {
 export async function exportPhase1DOCX() {
   try {
     await exportPhaseDOCX('phase1-preview', 'RPP.docx');
-    showToast('✅ DOCX berhasil diunduh!', 'success');
+    showToast('DOCX berhasil diunduh!', 'success');
   } catch (e) {
-    showToast(`❌ Gagal export DOCX: ${friendlyError(e.message)}`, 'error');
+    showToast(`Gagal export DOCX: ${friendlyError(e.message)}`, 'error');
   }
 }
 
 export function exportPhase1HTML() {
   const madrasah = store.state.input.madrasah || 'RPP';
   if (exportPhaseHTML('phase1-preview', `RPP-${slug(madrasah)}-portfolio.html`)) {
-    showToast('✅ HTML berhasil diunduh!', 'success');
+    showToast('HTML berhasil diunduh!', 'success');
   }
 }
 
