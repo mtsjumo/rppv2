@@ -3,6 +3,89 @@
  * Semua fungsi murni — bisa diuji tanpa DOM.
  */
 
+import { KNOWN_COMMANDS } from './latex-commands.js';
+
+/**
+ * Perbaiki backslash di dalam string JSON yang ditulis model.
+ *
+ * Model sering menulis LaTeX dengan satu backslash (`\frac`, `\(x\)`) padahal
+ * JSON mewajibkan dua. Akibatnya:
+ *   - `\(`, `\alpha`, `\sqrt` → escape tidak sah → parse gagal,
+ *   - `\frac`, `\times`, `\neq`, `\beta`, `\right` → escape SAH (`\f`, `\t`,
+ *     `\n`, `\b`, `\r`) sehingga parse "berhasil" tetapi rumusnya rusak,
+ *   - `\underline`, `\upsilon` → `\u` bukan hex → parse gagal total.
+ *
+ * Perbaikan lama menggandakan backslash pada escape tidak sah lewat regex,
+ * yang justru merusak `\\(` yang sudah benar bila JSON gagal parse karena hal
+ * lain. Di sini string dipindai per karakter: escape yang sah dipertahankan,
+ * `\n`/`\t`/`\r`/`\b`/`\f` hanya dianggap LaTeX bila huruf-huruf sesudahnya
+ * membentuk perintah LaTeX yang dikenal, dan sisanya digandakan.
+ * Untuk JSON yang sudah benar, fungsi ini tidak mengubah apa pun.
+ *
+ * @param {string} text potongan JSON mentah
+ * @returns {string}
+ */
+export function repairJsonEscapes(text) {
+  let out = '';
+  let inString = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+
+    if (!inString) {
+      if (ch === '"') inString = true;
+      out += ch;
+      continue;
+    }
+    if (ch === '"') {
+      inString = false;
+      out += ch;
+      continue;
+    }
+    if (ch !== '\\') {
+      out += ch;
+      continue;
+    }
+
+    const next = text[i + 1];
+    if (next === undefined) {
+      out += '\\\\'; // backslash menggantung di akhir teks
+      break;
+    }
+    if (next === '\\' || next === '"' || next === '/') {
+      out += ch + next; // escape sah
+      i++;
+      continue;
+    }
+    if (next === "'") {
+      out += "'"; // \' tidak sah di JSON; apostrof tak perlu di-escape
+      i++;
+      continue;
+    }
+    if (next === 'u') {
+      if (/^[0-9a-fA-F]{4}$/.test(text.slice(i + 2, i + 6))) {
+        out += text.slice(i, i + 6); // \uXXXX sah
+        i += 5;
+      } else {
+        out += '\\\\'; // \underline, \upsilon, ...
+      }
+      continue;
+    }
+    if ('bfnrt'.includes(next)) {
+      const run = /^[A-Za-z]+/.exec(text.slice(i + 1))[0];
+      if (KNOWN_COMMANDS.has(run)) {
+        out += '\\\\'; // \frac, \times, \neq, ... = LaTeX
+      } else {
+        out += ch + next; // escape JSON biasa (\n, \t, ...)
+        i++;
+      }
+      continue;
+    }
+    out += '\\\\'; // escape tidak sah lain: \( \[ \alpha \sqrt ...
+  }
+  return out;
+}
+
 /**
  * Coba parsing JSON dari teks yang mungkin dikelilingi markdown fence, penjelasan,
  * atau karakter kontrol dari pelarian LaTeX yang rusak.
@@ -32,14 +115,13 @@ export function extractJSON(text) {
     }
   };
 
-  // Step 3: parse langsung.
+  // Step 3: perbaiki backslash LaTeX lebih dulu, lalu parse.
+  cleaned = repairJsonEscapes(cleaned);
   let parsed = tryParse(cleaned);
   if (parsed) return parsed;
 
-  // Step 4: perbaiki masalah umum.
+  // Step 4: perbaiki masalah umum lain (backslash sudah ditangani di atas).
   let repaired = cleaned
-    .replace(/\\'/g, "'")
-    .replace(/\\([^"\\/bfnrtu])/g, '\\$&')
     .replace(/,(\s*[}\]])/g, '$1') // trailing comma
     .replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":') // key tanpa kutip
     .replace(/:\s*'([^']*)'/g, ':"$1"') // string kutip tunggal

@@ -76,7 +76,8 @@ ATURAN PENTING — KONSISTENSI:
 4. Setiap langkah kegiatan awal, inti (Memahami→Mengaplikasi→Merefleksi), dan penutup harus DIRANCANG untuk mencapai TP. Jika tidak, RPP tidak berguna.
 5. Integrasikan nilai Panca Cinta KBC dan prinsip Deep Learning (Mindful→Meaningful→Joyful) secara KONTEKSTUAL dalam setiap tahap pembelajaran, bukan tempelan.
 6. Sertakan strategi Diferensiasi Pembelajaran (konten, proses, produk) yang spesifik dan dapat diterapkan sesuai materi.
-7. Ekspresi matematika gunakan \\(...\\) (inline) atau \\[...\\] (display) LaTeX. Aksara Arab/Jawa tulis langsung.
+7. Notasi matematika/sains mengikuti aturan NOTASI di atas: teks Unicode untuk yang sederhana, LaTeX hanya untuk pecahan, akar, sigma/integral, matriks. Aksara Arab/Jawa tulis langsung.
+8. Kegiatan inti harus berisi pertanyaan pemantik, contoh kasus, atau instruksi tugas yang benar-benar ditulis (bukan hanya disebutkan), lengkap dengan media/bahan yang dipakai dan produk yang dihasilkan peserta didik.
 
 CONTOH STRUKTUR & GAYA BAHASA (acuan format, kedalaman isi, dan cara menulis langkah pembelajaran — JANGAN salin topiknya):
 ${FEWSHOT_RPP_CORE}
@@ -130,7 +131,9 @@ Output HANYA JSON dengan struktur berikut:
   }
 }
 
-PENTING soal "tabelPerbandingan": setiap baris di "data" adalah ARRAY OF STRING (BUKAN object), urutannya HARUS sama persis dengan urutan "kolom". Jumlah kolom bebas menyesuaikan materi (tidak harus 5), minimal 5 baris data yang benar-benar relevan dengan ${input.materi}.`;
+PENTING soal "tabelPerbandingan": setiap baris di "data" adalah ARRAY OF STRING (BUKAN object), urutannya HARUS sama persis dengan urutan "kolom". Jumlah kolom bebas menyesuaikan materi (tidak harus 5), minimal 5 baris data yang benar-benar relevan dengan ${input.materi}.
+
+MUTU LKPD: tiap aktivitas memuat bahan/alat (bila ada), langkah kerja yang bisa langsung dikerjakan, dan hasil yang harus ditulis/digambar peserta didik. Bila aktivitas butuh tabel pengamatan atau tabel isian, tulis sebagai tabel Markdown di dalam "deskripsi" dengan kolom yang jelas. Pertanyaan pemahaman menuntut penalaran (mengapa/bagaimana/apa akibatnya), bukan sekadar menyebutkan definisi, dan "jawaban" memuat kunci yang benar-benar bisa dipakai guru.`;
 
   const userPrompt = `Buat LKPD untuk materi ${input.materi}.
 ${identityBlock(input)}
@@ -174,7 +177,10 @@ Komposisi yang diminta:
 - Minimal 2 soal pada level C4 atau lebih tinggi (menganalisis/menilai).
 - Capai maksimal 40% soal di level C1–C2.
 - Sebar kunci jawaban A/B/C/D secara merata, jangan menumpuk di satu huruf.
-- Setiap soal harus punya tepat satu opsi yang benar dan teks opsi tidak boleh memuat jawaban (cth. "semua jawaban benar").`;
+- Setiap soal harus punya tepat satu opsi yang benar dan teks opsi tidak boleh memuat jawaban (cth. "semua jawaban benar").
+- Soal C3 ke atas WAJIB berbasis stimulus (kasus, data/tabel kecil, percobaan, atau situasi sehari-hari) yang ditulis lengkap di "pertanyaan", bukan pertanyaan definisi yang diberi kata "analisislah".
+- Pengecoh (distraktor) harus masuk akal dan mewakili miskonsepsi umum; panjang dan gaya keempat opsi seimbang sehingga kunci tidak bisa ditebak dari bentuknya.
+- Tidak ada dua soal yang menguji hal yang sama; cakup seluruh TP.`;
 
   const userPrompt = `Buat 10 soal evaluasi pilihan ganda tentang ${input.materi}.
 ${identityBlock(input)}
@@ -206,7 +212,9 @@ Sekarang buat program remidial, pengayaan, dan rubrik. Output HANYA JSON:
   }
 }
 
-Rubrik 4 level: SB=Sangat Baik, B=Baik, C=Cukup, PB=Perlu Bimbingan. Setiap program (remidial/pengayaan) MINIMAL 3 langkah, setiap rubrik (diskusi/presentasi) MINIMAL 3 aspek.`;
+Rubrik 4 level: SB=Sangat Baik, B=Baik, C=Cukup, PB=Perlu Bimbingan. Setiap program (remidial/pengayaan) MINIMAL 3 langkah, setiap rubrik (diskusi/presentasi) MINIMAL 3 aspek.
+
+MUTU: langkah remidial dan pengayaan harus spesifik untuk materi ini (sebut kegiatan, media, atau tugas yang konkret, bukan langkah umum yang cocok untuk semua mapel). Deskriptor rubrik harus terukur dan dapat diamati (mis. jumlah, ketepatan, bukti perilaku), bukan pengulangan kata sifat; keempat level harus berbeda nyata satu sama lain.`;
 
   const userPrompt = `Buat program remidial, pengayaan, dan rubrik penilaian untuk materi ${input.materi}.
 ${identityBlock(input)}

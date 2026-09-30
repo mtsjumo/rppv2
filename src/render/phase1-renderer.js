@@ -4,7 +4,17 @@
  */
 
 import { store } from '../core/store.js';
-import { escapeHtml, kvTable, list, renderSoalBlock, table, text } from './html-helpers.js';
+import {
+  deriveColumns,
+  escapeHtml,
+  itemHtml,
+  kvTable,
+  list,
+  para,
+  renderSoalBlock,
+  table,
+  text,
+} from './html-helpers.js';
 
 /** Tanggal pengesahan dalam format Indonesia. */
 function formatTanggal(isoDate) {
@@ -14,21 +24,13 @@ function formatTanggal(isoDate) {
   return d.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
-/** Pemetaan objek umum → <li> (dipakai banyak daftar). */
+/**
+ * Pemetaan objek umum → <li> (dipakai banyak daftar).
+ * Semua bentuk item (nama/detail, pihak/peran, aspek/detail, tahap/tools,
+ * pertanyaan/jawaban, key tak dikenal) dirender oleh `itemHtml` tanpa membuang isi.
+ */
 function defaultListItem(item) {
-  if (item === null || item === undefined) return '';
-  if (typeof item === 'string') return `<li>${text(item)}</li>`;
-  if (typeof item === 'object') {
-    if (item.nama && item.detail) {
-      return `<li><strong>${text(item.nama)}:</strong> ${text(item.detail)}</li>`;
-    }
-    if (item.pertanyaan) {
-      return `<li><strong>${text(item.pertanyaan)}</strong>${
-        item.jawaban ? `<br><em>Jawaban: ${text(item.jawaban)}</em>` : ''
-      }</li>`;
-    }
-  }
-  return '';
+  return itemHtml(item);
 }
 
 /**
@@ -246,14 +248,16 @@ function renderLKPD(lkpd, input) {
   if (lkpd.aktivitas?.length) {
     for (const a of lkpd.aktivitas) {
       html += `<div class="sub-header">${escapeHtml(a.nama || '')}</div>`;
-      if (a.deskripsi) html += `<p>${text(a.deskripsi)}</p>`;
+      if (a.deskripsi) html += para(a.deskripsi);
       if (a.tugas?.length) html += list(a.tugas, 'ol', (i) => `<li>${text(i)}</li>`);
     }
   }
   if (lkpd.tabelPerbandingan?.data?.length) {
     const judul = lkpd.tabelPerbandingan.judul || `Tabel Perbandingan — ${input.materi || ''}`;
     html += `<div class="sub-header">${escapeHtml(judul)}</div>`;
-    const cols = lkpd.tabelPerbandingan.kolom || ['No', 'Aspek', 'Keterangan'];
+    const cols = lkpd.tabelPerbandingan.kolom?.length
+      ? lkpd.tabelPerbandingan.kolom
+      : deriveColumns(lkpd.tabelPerbandingan.data);
     html += table(cols, lkpd.tabelPerbandingan.data);
   }
   if (lkpd.pertanyaan?.length) {
@@ -280,12 +284,12 @@ function renderRemedialPengayaan(lamp) {
   let html = '';
   if (lamp.programRemidial?.langkah?.length) {
     html += `<div class="section-header">LAMPIRAN: PROGRAM REMIDIAL</div>`;
-    if (lamp.programRemidial.deskripsi) html += `<p>${text(lamp.programRemidial.deskripsi)}</p>`;
+    if (lamp.programRemidial.deskripsi) html += para(lamp.programRemidial.deskripsi);
     html += list(lamp.programRemidial.langkah, 'ol', (i) => `<li>${text(i)}</li>`);
   }
   if (lamp.programPengayaan?.langkah?.length) {
     html += `<div class="section-header">LAMPIRAN: PROGRAM PENGAYAAN</div>`;
-    if (lamp.programPengayaan.deskripsi) html += `<p>${text(lamp.programPengayaan.deskripsi)}</p>`;
+    if (lamp.programPengayaan.deskripsi) html += para(lamp.programPengayaan.deskripsi);
     html += list(lamp.programPengayaan.langkah, 'ol', (i) => `<li>${text(i)}</li>`);
   }
   return html;

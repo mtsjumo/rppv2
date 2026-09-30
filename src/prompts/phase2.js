@@ -2,7 +2,13 @@
  * Prompt builder untuk Phase 2 (Modul Ajar).
  */
 
-import { LATEX_RULE, buildContextSummary, fewshotNote } from './base.js';
+import {
+  CONTENT_QUALITY_RULES,
+  LATEX_RULE,
+  NOTATION_RULES,
+  buildContextSummary,
+  fewshotNote,
+} from './base.js';
 import { FEWSHOT_MODUL_AJAR } from './fewshot.js';
 
 const SYSTEM_PROMPT = `Kamu adalah AI pembuat Modul Ajar Kurikulum Merdeka untuk MTs/SMP Indonesia. Output HANYA JSON valid, tidak ada teks lain.
@@ -37,11 +43,12 @@ ATURAN:
 7. Mindmap dengan minimal 3 cabang utama
 8. Referensi minimal 3 sumber
 9. Sertakan bagian Refleksi Guru untuk evaluasi pembelajaran
-10. NOTASI SAINTIFIK/MATEMATIS WAJIB LaTeX: setiap rumus, persamaan, pecahan, pangkat/indeks,
-    reaksi kimia, dan simbol WAJIB dibungkus \\(...\\) (inline) atau \\[...\\] (display).
-    Lihat detail dan contoh di prompt pengguna.
-11. DILARANG memakai $...$ untuk rumus — selalu \\(...\\) / \\[...\\].
-12. Selalu konsisten dengan CP, TP, dan topik yang sudah ditetapkan pada RPP inti.`;
+10. Setiap sub-bab memuat contoh yang konkret dan dapat diverifikasi (angka, kasus, atau fenomena nyata), bukan contoh umum. Glosarium dan FAQ khusus untuk materi ini.
+11. Selalu konsisten dengan CP, TP, dan topik yang sudah ditetapkan pada RPP inti.
+
+${CONTENT_QUALITY_RULES}
+
+${NOTATION_RULES}`;
 
 /**
  * @param {object} input isi form
@@ -64,11 +71,11 @@ export function buildModulAjarPrompt(input, rppData = {}) {
 
 ${LATEX_RULE}
 
-NOTASI SAINTIFIK & MATEMATIS (WAJIB agar tampil sebagai rumus, bukan teks polos):
-- Berlaku di SEMUA field teks: pengertian, konten sub-bab, contoh, definisi, jawaban FAQ.
-- Contoh BENAR: \\(H_{2}SO_{4}\\), \\(x^{2} + 3x - 2 = 0\\), \\[E = m c^{2}\\], \\(\\frac{1}{2}\\).
-- Contoh SALAH (jangan ditiru): H2SO4, x^2, E = mc2, $x^2$.
-- Di dalam JSON, backslash ditulis GANDA agar valid, mis. "rumus": "\\\\(x^{2}\\\\)".
+CONTOH NOTASI (berlaku di SEMUA field teks: pengertian, konten sub-bab, contoh, definisi, jawaban FAQ):
+- Rumus struktural WAJIB LaTeX: \\(\\frac{1}{2}\\), \\[E = \\frac{1}{2} m v^{2}\\], \\(\\sqrt{a^{2} + b^{2}}\\).
+- Cukup teks biasa: m², cm³, H₂O, H₂SO₄, CO₂, 2H₂ + O₂ → 2H₂O, 25 °C, 3 × 10⁸ m/s.
+- Salah: membungkus kata atau kalimat biasa dengan LaTeX, atau menulis pecahan bertingkat sebagai teks "1/2 m v^2".
+- Di dalam JSON, backslash ditulis GANDA agar valid, mis. "rumus": "\\\\frac{1}{2}".
 
 CONTOH STRUKTUR (JANGAN salin isinya, gunakan sebagai panduan format dan kedalaman):
 ${FEWSHOT_MODUL_AJAR}
